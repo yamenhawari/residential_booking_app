@@ -1,0 +1,50 @@
+name: residential_booking_app
+description: "A new Flutter project."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.5
+
+  # Functional Programming
+  dartz: ^0.10.1
+
+  # Networking
+  http: ^1.2.1
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # UI & Responsiveness
+  flutter_screenutil: ^5.9.3
+
+  # Dependency Injection
+  get_it: ^9.2.0
+
+  # Essential for Mandatory Tasks
+  image_picker: ^1.2.1
+  intl: ^0.20.2
+  path_provider: ^2.1.4
+  internet_connection_checker: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
