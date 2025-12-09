@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../../domain/entities/enums/user_enums.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
@@ -26,9 +25,10 @@ class AuthCubit extends Cubit<AuthState> {
 
   static AuthCubit get(BuildContext context) => BlocProvider.of(context);
 
-  // --- 1. Check if user is already logged in (Splash) ---
+  /// 1. Check if user is already logged in (Splash Screen)
   Future<void> checkAuthStatus() async {
-    emit(AuthLoading());
+    // Don't emit loading here if you want a silent check,
+    // but usually Splash screens show a loader anyway.
     final result = await getCurrentUserUseCase(NoParams());
 
     result.fold(
@@ -37,21 +37,11 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  // --- 2. Register ---
-  Future<void> register({
-    required String phoneNumber,
-    required String password,
-    required UserRole role, // UI passes this now//TODO check
-    required String fcmToken,
-  }) async {
+  /// 2. Register User (Multipart Request)
+  Future<void> register(RegisterParams params) async {
     emit(AuthLoading());
 
-    final result = await registerUseCase(RegisterParams(
-      phoneNumber: phoneNumber,
-      password: password,
-      role: role,
-      fcmToken: fcmToken,
-    ));
+    final result = await registerUseCase(params);
 
     result.fold(
       (failure) => emit(AuthError(failure.message)),
@@ -59,21 +49,11 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  // --- 3. Login ---
-  Future<void> login({
-    required String phoneNumber,
-    required String password,
-    required String fcmToken,
-    required bool isRememberMe, // UI passes this now
-  }) async {
+  /// 3. Login User
+  Future<void> login(LoginParams params) async {
     emit(AuthLoading());
 
-    final result = await loginUseCase(LoginParams(
-      phoneNumber: phoneNumber,
-      password: password,
-      fcmToken: fcmToken,
-      isRememberMe: isRememberMe,
-    ));
+    final result = await loginUseCase(params);
 
     result.fold(
       (failure) => emit(AuthError(failure.message)),
@@ -81,7 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  // --- 4. Verify OTP ---
+  /// 4. Verify OTP (If flow requires it)
   Future<void> verifyOtp({
     required String phoneNumber,
     required String code,
@@ -99,7 +79,7 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  // --- 5. Logout ---
+  /// 5. Logout
   Future<void> logout() async {
     emit(AuthLoading());
 

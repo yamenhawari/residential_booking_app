@@ -1,22 +1,13 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/error/failures.dart';
-import '../entities/enums/user_enums.dart';
 import '../entities/user.dart';
+import '../usecases/login_usecase.dart';
+import '../usecases/register_usecase.dart';
 
 abstract class AuthRepository {
-  Future<Either<Failure, User>> register({
-    required String phoneNumber,
-    required String password,
-    required UserRole role,
-    required String fcmToken,
-  });
+  Future<Either<Failure, User>> register(RegisterParams params);
 
-  Future<Either<Failure, User>> login({
-    required String phoneNumber,
-    required String password,
-    required String fcmToken,
-    required bool isRememberMe,
-  });
+  Future<Either<Failure, User>> login(LoginParams params);
 
   Future<Either<Failure, Unit>> verifyOtp({
     required String phoneNumber,

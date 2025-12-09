@@ -3,11 +3,13 @@ import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/resources/app_strings.dart';
-import '../../domain/entities/enums/user_enums.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -21,41 +23,21 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, User>> register({
-    required String phoneNumber,
-    required String password,
-    required UserRole role,
-    required String fcmToken,
-  }) async {
-    return _authenticate(() => remoteDataSource.register(
-          phoneNumber: phoneNumber,
-          password: password,
-          role: role,
-          fcmToken: fcmToken,
-        ));
+  Future<Either<Failure, User>> register(RegisterParams params) async {
+    return _authenticate(() => remoteDataSource.register(params));
   }
 
   @override
-  Future<Either<Failure, User>> login({
-    required String phoneNumber,
-    required String password,
-    required String fcmToken,
-    required bool isRememberMe,
-  }) async {
+  Future<Either<Failure, User>> login(LoginParams params) async {
     if (await networkInfo.isConnected) {
       try {
-        final remoteUser = await remoteDataSource.login(
-          phoneNumber: phoneNumber,
-          password: password,
-          fcmToken: fcmToken,
-        );
+        final remoteUser = await remoteDataSource.login(params);
 
-        if (isRememberMe) {
+        if (params.isRememberMe) {
           await localDataSource.cacheUser(remoteUser);
         } else {
           await localDataSource.deleteUser();
         }
-
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
@@ -65,11 +47,11 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // ... verifyOtp, logout, getCurrentUser (same as previous) ...
   @override
-  Future<Either<Failure, Unit>> verifyOtp({
-    required String phoneNumber,
-    required String code,
-  }) async {
+  Future<Either<Failure, Unit>> verifyOtp(
+      {required String phoneNumber, required String code}) async {
+    // ... implementation from previous message ...
     if (await networkInfo.isConnected) {
       try {
         await remoteDataSource.verifyOtp(phoneNumber: phoneNumber, code: code);
@@ -84,6 +66,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> logout() async {
+    // ... implementation from previous message ...
     if (await networkInfo.isConnected) {
       try {
         final token = await localDataSource.getCachedToken();
@@ -93,6 +76,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } on CacheException {
+        // If cache is bad, force logout locally anyway
         await localDataSource.deleteUser();
         return const Right(unit);
       }
@@ -111,12 +95,14 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // FIXED: Strictly typed to expect UserModel from the call
   Future<Either<Failure, User>> _authenticate(
-      Future<User> Function() authCall) async {
+      Future<UserModel> Function() authCall) async {
     if (await networkInfo.isConnected) {
       try {
         final remoteUser = await authCall();
-        await localDataSource.cacheUser(remoteUser as dynamic);
+        // remoteUser is definitely UserModel, so this is safe
+        await localDataSource.cacheUser(remoteUser);
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
