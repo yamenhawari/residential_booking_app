@@ -1,3 +1,3 @@
-enum UserRole { owner, tenant } //! Changable later
+enum UserRole { owner, tenant }
 
 enum UserStatus { active, pending, blocked, unknown }

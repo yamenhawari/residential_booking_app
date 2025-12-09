@@ -5,7 +5,7 @@ import '../usecases/login_usecase.dart';
 import '../usecases/register_usecase.dart';
 
 abstract class AuthRepository {
-  Future<Either<Failure, User>> register(RegisterParams params);
+  Future<Either<Failure, Unit>> register(RegisterParams params);
 
   Future<Either<Failure, User>> login(LoginParams params);
 

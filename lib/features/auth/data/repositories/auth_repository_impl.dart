@@ -9,7 +9,6 @@ import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -23,8 +22,17 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, User>> register(RegisterParams params) async {
-    return _authenticate(() => remoteDataSource.register(params));
+  Future<Either<Failure, Unit>> register(RegisterParams params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.register(params);
+        return const Right(unit);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
+    }
   }
 
   @override
@@ -47,11 +55,9 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  // ... verifyOtp, logout, getCurrentUser (same as previous) ...
   @override
   Future<Either<Failure, Unit>> verifyOtp(
       {required String phoneNumber, required String code}) async {
-    // ... implementation from previous message ...
     if (await networkInfo.isConnected) {
       try {
         await remoteDataSource.verifyOtp(phoneNumber: phoneNumber, code: code);
@@ -66,7 +72,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> logout() async {
-    // ... implementation from previous message ...
     if (await networkInfo.isConnected) {
       try {
         final token = await localDataSource.getCachedToken();
@@ -76,7 +81,6 @@ class AuthRepositoryImpl implements AuthRepository {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } on CacheException {
-        // If cache is bad, force logout locally anyway
         await localDataSource.deleteUser();
         return const Right(unit);
       }
@@ -92,23 +96,6 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } on CacheException {
       return Left(CacheFailure(AppStrings.error.cache));
-    }
-  }
-
-  // FIXED: Strictly typed to expect UserModel from the call
-  Future<Either<Failure, User>> _authenticate(
-      Future<UserModel> Function() authCall) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final remoteUser = await authCall();
-        // remoteUser is definitely UserModel, so this is safe
-        await localDataSource.cacheUser(remoteUser);
-        return Right(remoteUser);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      }
-    } else {
-      return Left(OfflineFailure(AppStrings.error.noInternet));
     }
   }
 }

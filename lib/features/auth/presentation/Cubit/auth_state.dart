@@ -14,27 +14,18 @@ class AuthLoading extends AuthState {}
 
 class AuthError extends AuthState {
   final String message;
-
   const AuthError(this.message);
-
   @override
   List<Object> get props => [message];
 }
 
-// --- Success States ---
-
 class AuthRegisterSuccess extends AuthState {
-  final User user;
-  const AuthRegisterSuccess(this.user);
-
-  @override
-  List<Object> get props => [user];
+  const AuthRegisterSuccess();
 }
 
 class AuthLoginSuccess extends AuthState {
   final User user;
   const AuthLoginSuccess(this.user);
-
   @override
   List<Object> get props => [user];
 }
@@ -43,12 +34,9 @@ class AuthOtpVerifiedSuccess extends AuthState {}
 
 class AuthLogoutSuccess extends AuthState {}
 
-// --- Splash/Startup States ---
-
 class AuthUserCheckSuccess extends AuthState {
   final User user;
   const AuthUserCheckSuccess(this.user);
-
   @override
   List<Object> get props => [user];
 }

@@ -4,16 +4,15 @@ import 'package:equatable/equatable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../entities/enums/user_enums.dart';
-import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
-class RegisterUseCase implements UseCase<User, RegisterParams> {
+class RegisterUseCase implements UseCase<Unit, RegisterParams> {
   final AuthRepository repository;
 
   RegisterUseCase(this.repository);
 
   @override
-  Future<Either<Failure, User>> call(RegisterParams params) async {
+  Future<Either<Failure, Unit>> call(RegisterParams params) async {
     return await repository.register(params);
   }
 }
@@ -25,7 +24,7 @@ class RegisterParams extends Equatable {
   final String password;
   final String dob; // YYYY-MM-DD
   final File profileImage;
-  final File idImage; // Required for Admin approval
+  final File idImage;
   final UserRole role;
   final String fcmToken;
 

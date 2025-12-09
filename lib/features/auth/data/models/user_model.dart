@@ -15,19 +15,17 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    final userData = json['user'] ?? json; // Handle nested or flat structure
-
+    final userData = json['user'] ?? json;
     return UserModel(
-      id: userData['id'] ?? 0,
-      firstName: userData['first_name'] ?? '',
-      lastName: userData['last_name'] ?? '',
-      phoneNumber: userData['phone_number'] ?? '',
+      id: userData['id'],
+      firstName: userData['first_name'],
+      lastName: userData['last_name'],
+      phoneNumber: userData['phone_number'],
       profileImageUrl: userData['profile_image'],
       dob: userData['date_of_birth'],
       role: _mapStringToRole(userData['role']),
       status: _mapStringToStatus(userData['status']),
-      token:
-          json['token'] ?? '', // Token usually sits outside the 'user' object
+      token: json['token'],
     );
   }
 
