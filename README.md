@@ -1,18 +1,4 @@
-This is a crucial moment. A professional start sets the tone for the whole project.
-
-Here is your Step-by-Step Guide to initializing your repository, including a Professional README and the exact Git Commands.
-
-Step 1: Create the README.md
-
-Create a file named README.md in the root folder of your project (next to pubspec.yaml) and paste this content. This documents exactly what we have built so far.
-
-code
-Markdown
-download
-content_copy
-expand_less
-
-# Residential Apartment Booking App
+Residential Apartment Booking App
 
 A comprehensive mobile application for booking residential apartments. This application connects Tenants with Owners to facilitate property booking, management, and review.
 
