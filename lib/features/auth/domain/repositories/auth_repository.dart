@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:residential_booking_app/core/entities/user.dart';
 import '../../../../core/error/failures.dart';
-import '../entities/user.dart';
 import '../usecases/login_usecase.dart';
 import '../usecases/register_usecase.dart';
 

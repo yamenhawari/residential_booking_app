@@ -1,23 +1,23 @@
 import 'package:dartz/dartz.dart';
+import 'package:residential_booking_app/core/datasources/user_local_data_source.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/resources/app_strings.dart';
-import '../../domain/entities/user.dart';
+import '../../../../core/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
-import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final AuthLocalDataSource localDataSource;
+  final UserLocalDataSource userLocalDataSource;
   final NetworkInfo networkInfo;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
-    required this.localDataSource,
+    required this.userLocalDataSource,
     required this.networkInfo,
   });
 
@@ -40,12 +40,8 @@ class AuthRepositoryImpl implements AuthRepository {
     if (await networkInfo.isConnected) {
       try {
         final remoteUser = await remoteDataSource.login(params);
+        await userLocalDataSource.saveUser(remoteUser);
 
-        if (params.isRememberMe) {
-          await localDataSource.cacheUser(remoteUser);
-        } else {
-          await localDataSource.deleteUser();
-        }
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
@@ -74,14 +70,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, Unit>> logout() async {
     if (await networkInfo.isConnected) {
       try {
-        final token = await localDataSource.getCachedToken();
+        final token = await userLocalDataSource.getToken();
         await remoteDataSource.logout(token);
-        await localDataSource.deleteUser();
+        await userLocalDataSource.deleteUser();
         return const Right(unit);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } on CacheException {
-        await localDataSource.deleteUser();
+        await userLocalDataSource.deleteUser();
         return const Right(unit);
       }
     } else {
@@ -92,7 +88,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
-      final user = await localDataSource.getCachedUser();
+      final user = await userLocalDataSource.getUser();
       return Right(user);
     } on CacheException {
       return Left(CacheFailure(AppStrings.error.cache));

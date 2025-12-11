@@ -22,7 +22,7 @@ class RegisterParams extends Equatable {
   final String lastName;
   final String phoneNumber;
   final String password;
-  final String dob; // YYYY-MM-DD
+  final String dob;
   final File profileImage;
   final File idImage;
   final UserRole role;

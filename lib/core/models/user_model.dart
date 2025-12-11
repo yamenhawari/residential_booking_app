@@ -1,5 +1,5 @@
-import '../../domain/entities/enums/user_enums.dart';
-import '../../domain/entities/user.dart';
+import '../../features/auth/domain/entities/enums/user_enums.dart';
+import '../entities/user.dart';
 
 class UserModel extends User {
   const UserModel({

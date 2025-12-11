@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'enums/user_enums.dart';
+import '../../features/auth/domain/entities/enums/user_enums.dart';
 
 class User extends Equatable {
   final int id;

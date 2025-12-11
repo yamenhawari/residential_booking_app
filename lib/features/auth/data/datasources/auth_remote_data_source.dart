@@ -8,7 +8,7 @@ import '../../../../core/resources/app_strings.dart';
 import '../../domain/entities/enums/user_enums.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
-import '../models/user_model.dart';
+import '../../../../core/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Unit> register(RegisterParams params);
