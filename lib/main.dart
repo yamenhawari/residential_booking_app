@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:residential_booking_app/core/navigation/app_router.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
-import 'package:residential_booking_app/core/resources/app_theme.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/cubit/home/home_cubit.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
