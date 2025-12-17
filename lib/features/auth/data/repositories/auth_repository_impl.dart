@@ -52,21 +52,6 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> verifyOtp(
-      {required String phoneNumber, required String code}) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await remoteDataSource.verifyOtp(phoneNumber: phoneNumber, code: code);
-        return const Right(unit);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      }
-    } else {
-      return Left(OfflineFailure(AppStrings.error.noInternet));
-    }
-  }
-
-  @override
   Future<Either<Failure, Unit>> logout() async {
     if (await networkInfo.isConnected) {
       try {

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
+import 'package:residential_booking_app/core/navigation/app_router.dart';
+import 'package:residential_booking_app/core/navigation/app_routes.dart';
+import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/core/resources/app_theme.dart';
+import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
+import 'package:residential_booking_app/features/home/presentation/cubit/home/home_cubit.dart';
+import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
 import 'core/di/injection_container.dart' as di;
-import 'core/resources/app_theme.dart';
-import 'core/widgets/loading_widget.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/auth/presentation/cubit/auth_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,57 +33,28 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider(
+            BlocProvider<AuthCubit>(
               create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
+            ),
+            BlocProvider<HomeCubit>(
+              create: (_) => di.sl<HomeCubit>(),
+            ),
+            BlocProvider<BookingCubit>(
+              create: (_) => di.sl<BookingCubit>(),
+            ),
+            BlocProvider<OwnerCubit>(
+              create: (_) => di.sl<OwnerCubit>(),
             ),
           ],
           child: MaterialApp(
             title: 'Residential Booking',
             debugShowCheckedModeBanner: false,
-
-            // Clean Theme Usage
-            theme: AppTheme.lightTheme,
-
-            home: const AuthWrapper(),
+            navigatorKey: di.sl<NavigationService>().navigatorKey,
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: AppRoutes.loginRegister,
           ),
         );
       },
-    );
-  }
-}
-
-class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthLoading) {
-          return const Scaffold(body: LoadingWidget());
-        } else if (state is AuthUserCheckSuccess) {
-          return const TempPage();
-        } else if (state is AuthUserCheckFail || state is AuthLogoutSuccess) {
-          return const TempPage();
-        }
-
-        return const TempPage();
-      },
-    );
-  }
-}
-
-class TempPage extends StatelessWidget {
-  const TempPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Center(child: Text("Temp Page")),
-        ],
-      ),
     );
   }
 }

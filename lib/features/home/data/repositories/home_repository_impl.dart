@@ -27,9 +27,20 @@ class HomeRepositoryImpl implements HomeRepository {
         return Right(result);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
-      } catch (e) {
-        // Fallback for parsing errors or unexpected crashes
-        return Left(ServerFailure(AppStrings.error.server));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Apartment>> getApartmentById(int apartmentId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.getApartmentById(apartmentId);
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
       }
     } else {
       return Left(OfflineFailure(AppStrings.error.noInternet));

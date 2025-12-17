@@ -1,13 +1,24 @@
 class ApiConstants {
-  // Base URL (Change this based on Emulator 10.0.2.2 or Real Device IP)
-  static const String baseUrl = "http://192.168.1.5:8000/api";
+  static const String ip = "192.168.97.167:8000";
+  static const String baseUrl = "http://$ip/api";
+  static const String storageBaseUrl = "http://$ip/storage/";
 
-  // --- Auth Endpoints ---
-  static const String register = "$baseUrl/auth/register";
-  static const String login = "$baseUrl/auth/login";
-  static const String logout = "$baseUrl/auth/logout";
-  static const String verifyOtp = "$baseUrl/auth/verify-otp";
+  static const String register = "$baseUrl/register";
+  static const String login = "$baseUrl/login";
+  static const String logout = "$baseUrl/logout";
 
-  // --- Home / Apartments Endpoints ---
   static const String apartments = "$baseUrl/apartments";
+
+  static const String bookings = "$baseUrl/bookings";
+
+  static const String myBookings = "$baseUrl/bookings/my/all";
+
+  static String cancelBooking(int id) => "$baseUrl/bookings/$id/cancel";
+  static String modifyBooking(int id) => "$baseUrl/bookings/$id/request-update";
+  static String rateBooking(int id) => "$baseUrl/bookings/$id/review";
+
+  static String confirmBooking(int id) => "$baseUrl/bookings/confirm/$id";
+  static String approveUpdate(int id) =>
+      "$baseUrl/bookings/updates/$id/approve";
+  static String rejectUpdate(int id) => "$baseUrl/bookings/updates/$id/reject";
 }

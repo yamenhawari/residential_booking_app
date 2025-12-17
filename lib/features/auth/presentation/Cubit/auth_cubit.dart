@@ -5,20 +5,17 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
-import '../../domain/usecases/verify_otp_usecase.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final RegisterUseCase registerUseCase;
   final LoginUseCase loginUseCase;
-  final VerifyOtpUseCase verifyOtpUseCase;
   final LogoutUseCase logoutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
 
   AuthCubit({
     required this.registerUseCase,
     required this.loginUseCase,
-    required this.verifyOtpUseCase,
     required this.logoutUseCase,
     required this.getCurrentUserUseCase,
   }) : super(AuthInitial());
@@ -48,17 +45,6 @@ class AuthCubit extends Cubit<AuthState> {
     result.fold(
       (failure) => emit(AuthError(failure.message)),
       (user) => emit(AuthLoginSuccess(user)),
-    );
-  }
-
-  Future<void> verifyOtp(
-      {required String phoneNumber, required String code}) async {
-    emit(AuthLoading());
-    final result = await verifyOtpUseCase(
-        VerifyOtpParams(phoneNumber: phoneNumber, code: code));
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (_) => emit(AuthOtpVerifiedSuccess()),
     );
   }
 

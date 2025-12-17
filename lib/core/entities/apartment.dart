@@ -1,31 +1,27 @@
 import 'package:equatable/equatable.dart';
-import '../enums/city_enum.dart';
+import '../enums/governorate_enum.dart';
 
 class Apartment extends Equatable {
   final int id;
   final String title;
   final String description;
-  final City city;
-  final String area;
-  final double price;
+  final Governorate governorate;
+  final String address;
+  final double pricePerMonth;
   final double rating;
   final List<String> images;
-  final bool isAvailable;
   final int roomCount;
-  final int floor;
 
   const Apartment({
     required this.id,
     required this.title,
     required this.description,
-    required this.city,
-    required this.area,
-    required this.price,
+    required this.governorate,
+    required this.address,
+    required this.pricePerMonth,
     required this.rating,
     required this.images,
-    required this.isAvailable,
     required this.roomCount,
-    required this.floor,
   });
 
   String get mainImageUrl => images.isNotEmpty ? images[0] : '';
@@ -35,13 +31,11 @@ class Apartment extends Equatable {
         id,
         title,
         description,
-        city,
-        area,
-        price,
+        governorate,
+        address,
+        pricePerMonth,
         rating,
         images,
-        isAvailable,
         roomCount,
-        floor,
       ];
 }

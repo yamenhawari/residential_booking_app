@@ -1,5 +1,6 @@
-import '../../features/auth/domain/entities/enums/user_enums.dart';
 import '../entities/user.dart';
+import '../../features/auth/domain/entities/enums/user_enums.dart';
+import '../api/api_constants.dart';
 
 class UserModel extends User {
   const UserModel({
@@ -15,17 +16,25 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    final userData = json['user'] ?? json;
+    // Accept either 'User' or 'user' wrapper or raw user JSON
+    final userData = json['User'] ?? json['user'] ?? json;
+
+    // Support both 'Token' and 'token' as top-level or inside user data: {Token: '...'} or {token: '...'} or {User: {..., token: '...'}}
+    final String token =
+        json['Token'] ?? json['token'] ?? userData['token'] ?? '';
+
     return UserModel(
-      id: userData['id'],
-      firstName: userData['first_name'],
-      lastName: userData['last_name'],
-      phoneNumber: userData['phone_number'],
-      profileImageUrl: userData['profile_image'],
-      dob: userData['date_of_birth'],
+      id: userData['id'] ?? 0,
+      firstName: userData['first_name'] ?? '',
+      lastName: userData['last_name'] ?? '',
+      phoneNumber: userData['phone'] ?? '',
+      profileImageUrl: userData['profile_image'] != null
+          ? "${ApiConstants.storageBaseUrl}${userData['profile_image']}"
+          : null,
+      dob: userData['birth_date'],
       role: _mapStringToRole(userData['role']),
       status: _mapStringToStatus(userData['status']),
-      token: json['token'],
+      token: token,
     );
   }
 
@@ -34,12 +43,12 @@ class UserModel extends User {
       'id': id,
       'first_name': firstName,
       'last_name': lastName,
-      'phone_number': phoneNumber,
+      'phone': phoneNumber,
       'profile_image': profileImageUrl,
-      'date_of_birth': dob,
+      'birth_date': dob,
       'role': role == UserRole.owner ? 'owner' : 'tenant',
       'status': status.name,
-      'token': token,
+      'Token': token,
     };
   }
 
@@ -51,7 +60,7 @@ class UserModel extends User {
     switch (status) {
       case 'active':
         return UserStatus.active;
-      case 'pending':
+      case 'inactive':
         return UserStatus.pending;
       case 'blocked':
         return UserStatus.blocked;

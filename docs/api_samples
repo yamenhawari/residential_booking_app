@@ -1,0 +1,236 @@
+Critical Rules for Backend:
+
+Images: Always return Full URLs (e.g., http://ip:8000/storage/...), never relative paths.
+
+Date Format: YYYY-MM-DD.
+
+Authentication: All requests except Login/Register require Authorization: Bearer {token}.
+
+1. Authentication Feature
+   A. Register
+
+Method: POST
+
+Endpoint: /register
+
+Type: multipart/form-data
+
+Request:
+
+first_name: "Yamen"
+last_name: "Hawari"
+phone: "0912345678"
+password: "password123"
+password_confirmation: "password123"
+birth_date: "2000-01-01"
+role: "owner" // or "tenant"
+profile_image: (File)
+id_image: (File)
+fcm_token: "firebase_token_string" // بعدين
+
+Response (201 Created):
+
+{
+"message": "User Registered Successfully, waiting for admin approval",
+"data": {
+/// anything
+}
+}
+B. Login
+
+Method: POST
+
+Endpoint: /login
+
+Type: application/json
+
+Request:
+
+{
+"phone": "0912345678",
+"password": "password123",
+"fcm_token": "firebase_token_string" // بعدين
+}
+
+Response (200 Success):
+
+{
+"message": "Login Successfully",
+"Token": "25|laravel_sanctum_token_string",
+"User": {
+"id": 50,
+"first_name": "Yamen",
+"last_name": "Hawari",
+"phone": "0912345678",
+"role": "owner",
+"status": "active",
+"profile_image": "http://192.168.1.5:8000/storage/personal/avatar.jpg"
+}
+}
+
+Response (403 Pending/Blocked):
+
+{
+"message": "Your account is pending admin approval."
+} 2. Home & Apartments Feature
+A. Get Apartments (Search & Filter)
+
+Method: GET
+
+Endpoint: /apartments
+
+Note: If start_date and end_date are sent, exclude apartments that have bookings in that range.
+
+Query Parameters:
+http?hsgahj.com/aparment/?selectedGovernorates[]=damascus&selectedGovernorates[]=aleppo&min_price=100&max_price=500&start_date=2025-01-01&end_date=2025-01-05&rooms=2
+
+Response (200 OK):
+
+{
+"status": true,
+"data": [
+{
+"id": 101,
+"owner_id": 50, //? 1 not sure :< ???????
+"title": "Luxury Loft",
+"description": "Great view...",
+"governorate": "damascus",  
+ "address": "Mazzeh , Street 10",
+"price": 250.0,
+"rating": 4.8,
+"room_count": 3,
+"images[]": [
+"http://server.com/storage/apartments/img1.jpg",
+"http://server.com/storage/apartments/img2.jpg"
+]
+}
+]
+}
+B. Add Apartment (Owner Only)
+
+Method: POST
+
+Endpoint: /apartments
+
+Type: multipart/form-data
+
+Request:
+
+title: "Studio"
+description: "Cozy..."
+governorate: "homs"
+address: "Center"
+price: 100
+room_count: 1
+images[]: (File 1)
+images[]: (File 2)
+
+Response (201 Created):
+
+{
+"status": true,
+"message": "Apartment added successfully",
+"data": { "id": 200, "title": "Studio" ... }
+}
+
+3. Booking Feature
+   A. Create Booking
+
+Method: POST
+
+Endpoint: /bookings
+
+Request:
+
+{
+"apartment_id": 101,
+"start_date": "2025-01-01",
+"end_date": "2025-01-05"
+}
+
+Response (Success - 201):
+
+{ "status": true, "message": "Booking created. Waiting for owner approval." }
+
+Response (Error - 409/422):
+
+{ "message": "Selected dates are not available." }
+
+B. Get My Bookings (History)
+
+Method: GET
+
+Endpoint: /bookings/my/all
+
+Response (200 OK):
+{
+"status": true,
+"data": [
+{
+"id": 505,
+"status": "confirmed", //? 3 pending, confirmed, rejected, cancelled, completed
+"start_date": "2025-01-01",
+"end_date": "2025-01-05",
+"total_price": 1000.0,
+"created_at": "2024-12-14",
+
+---
+
+---
+
+//??????????????????????????????????????????????????????? 2
+"apartment": { // return apartment_id?
+"id": 101,
+"title": "Luxury Loft",
+"city": "damascus",
+"images": ["http://server.com/.../img1.jpg"]
+}
+//????????????????????????????????????????????????????????
+
+---
+
+---
+
+    }
+
+]
+}
+
+C. Owner Respond (Approve/Reject)
+
+Method: PUT
+
+Endpoint: /bookings/confirm/{id}
+
+Response:
+
+{ "message": "Booking Confirmed" } 4. Reviews Feature (After Completion)
+
+A. Rate a Booking
+
+Method: POST
+
+Endpoint: /bookings/{id}/review
+//? good??
+Request:
+{
+"rating": 4.5,
+"comment": "Great place!"
+}
+
+Response:
+
+{ "message": "Review submitted" } 5. Favorites Feature (Server Sync)
+
+A. Toggle Favorite
+
+Method: POST
+
+Endpoint: /favorites/{apartmentId}
+
+Response:
+
+{
+"status": true,
+"is_favorite": true // Returns the new state (optional, but helpful) //laterrrrr....
+}

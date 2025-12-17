@@ -7,7 +7,4 @@ class AppConstants {
   static const String kCachedUserKey = "cached_user";
   static const String kCachedThemeKey = "cached_theme";
   static const String kCachedLanguageKey = "cached_language";
-
-  // API Defaults
-  static const int kDefaultPageSize = 10;
 }

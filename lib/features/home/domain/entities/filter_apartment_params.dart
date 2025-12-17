@@ -1,38 +1,35 @@
 import 'package:equatable/equatable.dart';
 import 'package:residential_booking_app/core/resources/price_constants.dart';
-import '../../../../core/enums/city_enum.dart';
+import '../../../../core/enums/governorate_enum.dart';
 
 class FilterApartmentParams extends Equatable {
-  final List<City>? selectedCities;
-  final List<String>? selectedAreas;
+  final List<Governorate>? selectedGovernorates;
   final double minPrice;
   final double maxPrice;
+  final DateTime? startDate;
+  final DateTime? endDate;
   final int? roomCount;
-  final int? floorNumber;
 
   const FilterApartmentParams({
-    this.selectedCities,
-    this.selectedAreas,
-    required this.minPrice,
-    required this.maxPrice,
+    this.selectedGovernorates,
+    this.minPrice = PriceConstants.minPrice,
+    this.maxPrice = PriceConstants.maxPrice,
+    this.startDate,
+    this.endDate,
     this.roomCount,
-    this.floorNumber,
   });
 
-  factory FilterApartmentParams.defaultFilter() {
-    return const FilterApartmentParams(
-      minPrice: PriceConstants.minPriceUSD,
-      maxPrice: PriceConstants.maxPriceUSD,
-    );
+  factory FilterApartmentParams.defaultFeed() {
+    return const FilterApartmentParams();
   }
 
   @override
   List<Object?> get props => [
-        selectedCities,
-        selectedAreas,
+        selectedGovernorates,
         minPrice,
         maxPrice,
+        startDate,
+        endDate,
         roomCount,
-        floorNumber,
       ];
 }

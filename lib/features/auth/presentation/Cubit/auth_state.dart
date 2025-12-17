@@ -30,8 +30,6 @@ class AuthLoginSuccess extends AuthState {
   List<Object> get props => [user];
 }
 
-class AuthOtpVerifiedSuccess extends AuthState {}
-
 class AuthLogoutSuccess extends AuthState {}
 
 class AuthUserCheckSuccess extends AuthState {

@@ -18,3 +18,11 @@ class CacheFailure extends Failure {
 class OfflineFailure extends Failure {
   const OfflineFailure(super.message);
 }
+
+class BookingConflictFailure extends Failure {
+  const BookingConflictFailure(super.message);
+}
+
+class SelfBookingFailure extends Failure {
+  const SelfBookingFailure(super.message);
+}

@@ -1,0 +1,92 @@
+Auth Flow:
+
+1 - Splash Screen (App Branding - Auto login check - initinial data loading)
+
+2 - Welcome Screen (Welcome To our App [Proceed])
+
+3 - Login / Register Screen
+
+4- Login Screen (phone number + password + Forgot Password? )
+
+5 - Register Screen (User data + Terms Accept)
+
+Main App Flow :
+
+6 - Home Page (Search FilterBar + All apartments + Notifications Button)
+
+7 - Filter Search Screen (
+selectedGovernorates (Check Boxes)
+minPrice - maxPrice (domain)
+startDate Calender
+endDate Calender
+roomCount check 1 2 3 4 or 5+
+)
+
+7 - Apartment Details Screen (
+title,
+descreption,
+governorate,
+address,
+pricePerMonth,
+rating,
+images,
+roomCount
+)
+
+8 - Booking Screen (
+Date selection ,
+total price ,
+Payment Method [Sham Cash - MTN - VISA - Paypal - Cash],
+Confirm Button (Send Request and Navigate to My Booking Screen)
+)
+
+USER PROFILE & MANAGEMENT
+
+9 - My Bookings Screen (
+A list Of Booking Card Have :
+title and address and total price and date issued And Status:
+Pending -> light Black , Confirmed -> blue , Completed -> Green , cancelled - > Grey , Rejected -> Red
+)
+
+10 - Booking Details Screen (
+Booking Status
+Check Out (for fake completing)
+Modify-Cancel options
+Rate & Review (After check out)
+)
+
+11 - My Favorites Screen
+
+12 - Settings Screen ( have :
+1 - Profile Card to profile page
+2 - Favorites
+3 - Dark/Light Theme toogle
+4 - Notifications
+5 - Currency
+6 - Join Us As Investor (Optional)
+7 - Log Out
+
+)
+
+12 - Profile Details Screen (Details And Edit Button And Delete Button[5 sec Counter before confirm deleting])
+
+13 - Edit Profile Screen :
+(
+Update personal info,
+change Password,
+)
+
+---
+
+Only Owner Screens:
+
+14 - Owner Dashboard //! a tab shown only for investors :
+(
+add apartment - Respond to Booking (Alert Dialog) - My Apartments
+)
+
+15 - Add Apartment Screen
+
+16 - My Aartment Details (same as Aprtment details but if(isMyApartment) shows 2 options [Edit-Delete] instead of [Book-Now])
+
+17 - Edit Apartment Details (same as add apartment with pre-added fields same as last)

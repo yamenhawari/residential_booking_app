@@ -20,6 +20,9 @@ class _ErrorStrings {
   final String invalidCode = "Invalid Verification Code";
   final String noInternet = "No Internet Connection";
   final String cache = "Cache Error";
+  final String bookingConflict = "The selected dates are already booked.";
+  final String selfBooking = "You cannot book your own apartment.";
+  final String bookingFailed = "Failed to create booking.";
   final String unexpected = "Unexpected Error";
 }
 
@@ -27,7 +30,6 @@ class _SuccessStrings {
   const _SuccessStrings();
   final String login = "Login Successful";
   final String register = "Registration Successful";
-  final String otpVerified = "Phone Verified Successfully";
 }
 
 class _UiStrings {

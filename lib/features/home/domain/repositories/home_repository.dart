@@ -6,4 +6,6 @@ import '../entities/filter_apartment_params.dart';
 abstract class HomeRepository {
   Future<Either<Failure, List<Apartment>>> getApartments(
       FilterApartmentParams params);
+
+  Future<Either<Failure, Apartment>> getApartmentById(int apartmentId);
 }
