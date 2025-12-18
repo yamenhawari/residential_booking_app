@@ -6,6 +6,7 @@ import 'package:residential_booking_app/core/navigation/app_router.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
+import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/cubit/home/home_cubit.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
 import 'core/di/injection_container.dart' as di;
@@ -36,7 +37,10 @@ class MyApp extends StatelessWidget {
               create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
             ),
             BlocProvider<HomeCubit>(
-              create: (_) => di.sl<HomeCubit>(),
+              create: (_) => di.sl<HomeCubit>()..getApartments(),
+            ),
+            BlocProvider<ApartmentDetailsCubit>(
+              create: (_) => di.sl<ApartmentDetailsCubit>(),
             ),
             BlocProvider<BookingCubit>(
               create: (_) => di.sl<BookingCubit>(),
@@ -50,7 +54,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             navigatorKey: di.sl<NavigationService>().navigatorKey,
             onGenerateRoute: AppRouter.generateRoute,
-            initialRoute: AppRoutes.loginRegister,
+            initialRoute: AppRoutes.splash,
           ),
         );
       },

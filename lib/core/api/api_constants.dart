@@ -7,7 +7,7 @@ class ApiConstants {
   static const String login = "$baseUrl/login";
   static const String logout = "$baseUrl/logout";
 
-  static const String apartments = "$baseUrl/apartments";
+  static const String apartments = "$baseUrl/apartment";
 
   static const String bookings = "$baseUrl/bookings";
 

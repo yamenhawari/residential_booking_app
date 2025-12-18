@@ -37,7 +37,7 @@ class _SearchFieldState extends State<SearchFieldWidget> {
           },
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppColors.white, // Changed from Primary to White
+            fillColor: AppColors.white,
             hintText: "Search destination...",
             hintStyle: TextStyle(
               color: AppColors.textSecondary,
@@ -45,14 +45,14 @@ class _SearchFieldState extends State<SearchFieldWidget> {
             ),
             prefixIcon: const Icon(
               Icons.search,
-              color: AppColors.primary, // Icon is now Blue
+              color: AppColors.primary,
             ),
             suffixIcon: Container(
               margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
               decoration: BoxDecoration(
                   color: AppColors.lightGrey, shape: BoxShape.circle),
               child: const Icon(
-                Icons.tune, // Changed icon to 'tune' or 'filter_list'
+                Icons.tune,
                 color: AppColors.textPrimary,
                 size: 20,
               ),

@@ -16,100 +16,97 @@ class LoginRegisterScreen extends StatelessWidget {
         decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
         child: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Spacer(flex: 2),
                 Container(
-                  width: 110.w,
-                  height: 110.h,
+                  height: 120.h,
+                  width: 120.h,
+                  padding: EdgeInsets.all(25.h),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(28.r),
+                    shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.black.withOpacity(0.1),
+                        color: Colors.black.withOpacity(0.15),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
                     ],
                   ),
-                  child: Icon(
-                    Icons.home_work_rounded,
-                    size: 50.sp,
-                    color: AppColors.gradientMid,
+                  child: Image.asset(
+                    "assets/icons/home_15751764.png",
+                    fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(height: 40.h),
-
-                // Titles
+                SizedBox(height: 30.h),
                 Text(
                   'DreamStay',
                   style: TextStyle(
-                    fontSize: 32.sp,
-                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Pacifico',
+                    fontSize: 36.sp,
                     color: Colors.white,
-                    letterSpacing: 1,
+                    letterSpacing: 1.5,
                   ),
                 ),
-                SizedBox(height: 12.h),
-                Text(
-                  'Your smart solution for managing residential apartments easily and efficiently',
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    color: Colors.white.withOpacity(0.8),
-                    height: 1.5,
+                SizedBox(height: 16.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Text(
+                    'Your smart solution for managing residential apartments easily and efficiently',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      color: Colors.white.withOpacity(0.9),
+                      height: 1.5,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 60.h),
-
-                // Login Button (Primary Action)
+                const Spacer(flex: 3),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Nav.to(AppRoutes.login);
-                    },
+                    onPressed: () => Nav.to(AppRoutes.login),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: AppColors.gradientMid,
-                      elevation: 0,
+                      foregroundColor: AppColors.primary,
+                      elevation: 2,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
                     ),
                     child: Text(
                       'Login',
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.bold),
+                          fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
                 SizedBox(height: 16.h),
-
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: OutlinedButton(
-                    onPressed: () {
-                      Nav.to(AppRoutes.register);
-                    },
+                    onPressed: () => Nav.to(AppRoutes.register),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white, width: 2),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.r),
+                        borderRadius: BorderRadius.circular(16.r),
                       ),
                     ),
                     child: Text(
                       'Create Account',
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.bold),
+                          fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
+                SizedBox(height: 40.h),
               ],
             ),
           ),

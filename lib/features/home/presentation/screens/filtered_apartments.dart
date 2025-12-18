@@ -1,85 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:residential_booking_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:residential_booking_app/features/home/domain/entities/filter_apartment_params.dart';
 
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/nav_helper.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/loading_widget.dart';
-
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 import '../widgets/apartment_card.dart';
-import '../widgets/buttom_navigation_bar_widget.dart';
 import '../widgets/search_field_widget.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class FilteredApartments extends StatefulWidget {
+  final FilterApartmentParams filterApartmentParams;
+
+  const FilteredApartments({
+    super.key,
+    required this.filterApartmentParams,
+  });
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<FilteredApartments> createState() => _FilteredApartmentsState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _FilteredApartmentsState extends State<FilteredApartments> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<HomeCubit>()
+          .getApartments(params: widget.filterApartmentParams);
+    });
+  }
+
   Future<void> _onRefresh() async {
-    await context.read<HomeCubit>().getApartments();
+    await context
+        .read<HomeCubit>()
+        .getApartments(params: widget.filterApartmentParams);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBody: true,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
         scrolledUnderElevation: 0,
-        centerTitle: false,
-        title: Padding(
-          padding: EdgeInsets.only(left: 8.w),
-          child: Text(
-            "DreamStay",
-            style: TextStyle(
-              color: AppColors.primary,
-              fontSize: 26.sp,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Pacifico',
-              letterSpacing: 1,
-            ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20.sp, color: AppColors.textPrimary),
+          onPressed: () => Nav.back(),
+        ),
+        title: Text(
+          "Search Results",
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          Container(
-            height: 45.h,
-            margin: EdgeInsets.only(right: 20.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {
-                // TODO: Update this logic when Notification screen is ready
-                context.read<AuthCubit>().logout();
-                Nav.offAll(AppRoutes.loginRegister);
-              },
-              icon: Icon(
-                FontAwesomeIcons.bell,
-                color: AppColors.textPrimary,
-                size: 20.sp,
-              ),
-            ),
-          ),
-        ],
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
@@ -149,36 +132,55 @@ class _HomeScreenState extends State<HomeScreen> {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 10.h,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 20.h),
                           const SearchFieldWidget(),
-                          SizedBox(height: 25.h),
+                          SizedBox(height: 20.h),
+                          if (apartments.isNotEmpty)
+                            Text(
+                              "Found ${apartments.length} properties",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
                         ],
                       ),
                     ),
                   ),
+                  SliverToBoxAdapter(child: SizedBox(height: 10.h)),
                   if (apartments.isEmpty)
                     SliverToBoxAdapter(
                       child: Container(
-                        height: 300.h,
+                        height: 400.h,
                         alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.home_work_outlined,
+                            Icon(Icons.search_off_rounded,
                                 size: 60.sp, color: Colors.grey.shade300),
                             SizedBox(height: 10.h),
                             Text(
-                              "No apartments found.",
+                              "No apartments found matching your filters.",
                               style: TextStyle(
                                 color: AppColors.textSecondary,
-                                fontSize: 16.sp,
+                                fontSize: 15.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            TextButton(
+                              onPressed: () => Nav.back(),
+                              child: const Text(
+                                "Adjust Filters",
+                                style: TextStyle(color: AppColors.primary),
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -210,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+                  SliverToBoxAdapter(child: SizedBox(height: 40.h)),
                 ],
               ),
             );
@@ -219,7 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
           return const SizedBox.shrink();
         },
       ),
-      bottomNavigationBar: const ButtomNavigationBarWidget(),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:residential_booking_app/core/enums/apartment_status_enum.dart';
 import '../enums/governorate_enum.dart';
 
 class Apartment extends Equatable {
@@ -11,8 +12,10 @@ class Apartment extends Equatable {
   final double rating;
   final List<String> images;
   final int roomCount;
+  final ApartmentStatus status;
 
   const Apartment({
+    required this.status,
     required this.id,
     required this.title,
     required this.description,
@@ -37,5 +40,6 @@ class Apartment extends Equatable {
         rating,
         images,
         roomCount,
+        status
       ];
 }

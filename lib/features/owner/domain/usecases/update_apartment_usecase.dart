@@ -21,7 +21,7 @@ class UpdateApartmentParams extends Equatable {
   final String? title;
   final String? description;
   final Governorate? governorate;
-  final String? area;
+  final String? address;
   final double? price;
   final int? roomCount;
   final List<File>? newImages;
@@ -31,7 +31,7 @@ class UpdateApartmentParams extends Equatable {
     this.title,
     this.description,
     this.governorate,
-    this.area,
+    this.address,
     this.price,
     this.roomCount,
     this.newImages,
@@ -43,7 +43,7 @@ class UpdateApartmentParams extends Equatable {
         title,
         description,
         governorate,
-        area,
+        address,
         price,
         roomCount,
         newImages

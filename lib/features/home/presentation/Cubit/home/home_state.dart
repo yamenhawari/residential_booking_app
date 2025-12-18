@@ -30,14 +30,3 @@ class HomeError extends HomeState {
   @override
   List<Object> get props => [message];
 }
-
-class DetailsLoading extends HomeState {}
-
-class ApartmentByIdLoaded extends HomeState {
-  final Apartment apartment;
-
-  const ApartmentByIdLoaded(this.apartment);
-
-  @override
-  List<Object> get props => [apartment];
-}

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:equatable/equatable.dart';
 
 abstract class OwnerState extends Equatable {
@@ -22,4 +23,11 @@ class OwnerError extends OwnerState {
   const OwnerError(this.message);
   @override
   List<Object> get props => [message];
+}
+
+class OwnerImagesChanged extends OwnerState {
+  final List<File> images;
+  const OwnerImagesChanged(this.images);
+  @override
+  List<Object> get props => [images];
 }

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:residential_booking_app/core/resources/app_colors.dart';
 
 class ButtomNavigationBarWidget extends StatelessWidget {
   const ButtomNavigationBarWidget({super.key});
@@ -11,53 +12,66 @@ class ButtomNavigationBarWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: EdgeInsets.only(
-          left: 20.w,
-          right: 20.w,
-          bottom: 20.h,
-        ),
+        padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(30.r),
+          borderRadius: BorderRadius.circular(35.r),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              // REMOVED fixed width: 100 (It was too small for 5 icons)
               width: double.infinity,
-              height: 70.h,
+              height: 60.h,
               decoration: BoxDecoration(
-                color: Colors.white
-                    .withOpacity(0.1), // Adjusted for better glass look
-                borderRadius: BorderRadius.circular(30.r),
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(35.r),
                 border: Border.all(color: Colors.white.withOpacity(0.3)),
               ),
-              child: BottomNavigationBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                selectedItemColor: Colors.blue,
-                unselectedItemColor:
-                    Colors.black, // Or Colors.white based on your bg
-                type: BottomNavigationBarType.fixed,
-                showSelectedLabels: false,
-                showUnselectedLabels: false,
-                items: [
-                  const BottomNavigationBarItem(
-                      icon: Icon(FontAwesomeIcons.house), label: ""),
-                  const BottomNavigationBarItem(
-                      icon: Icon(FontAwesomeIcons.hotel), label: ""),
-                  const BottomNavigationBarItem(
-                    icon: Icon(FontAwesomeIcons.heart),
-                    label: "",
-                  ),
-                  const BottomNavigationBarItem(
-                      icon: Icon(FontAwesomeIcons.addressBook), label: ""),
-                  const BottomNavigationBarItem(
-                      icon: Icon(Icons.settings), label: ""),
-                ],
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                child: BottomNavigationBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  selectedItemColor: AppColors.primary,
+                  unselectedItemColor: Colors.black54,
+                  type: BottomNavigationBarType.fixed,
+                  showSelectedLabels: false,
+                  showUnselectedLabels: false,
+                  selectedFontSize: 0,
+                  unselectedFontSize: 0,
+                  iconSize: 20.sp,
+                  items: [
+                    _buildItem(FontAwesomeIcons.house, "Home"),
+                    _buildItem(FontAwesomeIcons.calendarCheck, "Bookings"),
+                    _buildItem(FontAwesomeIcons.heart, "Favorites"),
+                    _buildItem(FontAwesomeIcons.chartPie, "Dashboard"),
+                    _buildItem(FontAwesomeIcons.gear, "Settings"),
+                  ],
+                  currentIndex: 0,
+                  onTap: (index) {
+                    // TODO: Handle navigation
+                  },
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildItem(IconData icon, String label) {
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: EdgeInsets.only(top: 10.h),
+        child: Icon(icon),
+      ),
+      activeIcon: Padding(
+        padding: EdgeInsets.only(top: 10.h),
+        child: Icon(icon, size: 22.sp),
+      ),
+      label: label,
     );
   }
 }

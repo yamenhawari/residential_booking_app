@@ -1,42 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:residential_booking_app/core/resources/app_colors.dart';
+import '../../../../core/resources/app_colors.dart';
 
-/// Simple upload button. The [onFilePick] callback can be used to trigger
-/// a file picker in the screen and return the picked filename, which will
-/// be shown on the button.
-class UploadButton extends StatefulWidget {
+class UploadButton extends StatelessWidget {
   final String label;
   final String buttonText;
   final IconData icon;
-  final Future<String?> Function()? onFilePick;
+  final VoidCallback onFilePick;
+  final bool isFileSelected; // To change color if selected
 
   const UploadButton({
     super.key,
     required this.label,
     required this.buttonText,
     required this.icon,
-    this.onFilePick,
+    required this.onFilePick,
+    this.isFileSelected = false,
   });
-
-  @override
-  State<UploadButton> createState() => _UploadButtonState();
-}
-
-class _UploadButtonState extends State<UploadButton> {
-  String? _fileName;
-  bool _loading = false;
-
-  Future<void> _handleTap() async {
-    if (widget.onFilePick == null) return;
-    setState(() => _loading = true);
-    try {
-      final name = await widget.onFilePick!();
-      if (mounted) setState(() => _fileName = name);
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +24,7 @@ class _UploadButtonState extends State<UploadButton> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.label,
+          label,
           style: TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,
@@ -53,35 +33,37 @@ class _UploadButtonState extends State<UploadButton> {
         ),
         SizedBox(height: 8.h),
         InkWell(
-          onTap: _handleTap,
+          onTap: onFilePick,
           borderRadius: BorderRadius.circular(12.r),
           child: Container(
             width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 16.w),
+            padding: EdgeInsets.symmetric(vertical: 14.h),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: isFileSelected
+                  ? Colors.green.withOpacity(0.1)
+                  : AppColors.surface,
               borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(color: AppColors.background),
+              border: Border.all(
+                color: isFileSelected ? Colors.green : AppColors.border,
+                style: BorderStyle.solid,
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (_loading)
-                  SizedBox(
-                      width: 18.w,
-                      height: 18.h,
-                      child: CircularProgressIndicator(strokeWidth: 2.w))
-                else ...[
-                  Icon(widget.icon, color: AppColors.secondary),
-                  SizedBox(width: 8.w),
-                  Text(
-                    _fileName ?? widget.buttonText,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Icon(
+                  isFileSelected ? Icons.check_circle : icon,
+                  color: isFileSelected ? Colors.green : AppColors.secondary,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  buttonText,
+                  style: TextStyle(
+                    color: isFileSelected ? Colors.green : AppColors.secondary,
+                    fontWeight: FontWeight.w500,
                   ),
-                ]
+                ),
               ],
             ),
           ),

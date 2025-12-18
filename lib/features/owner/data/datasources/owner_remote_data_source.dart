@@ -1,9 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:http/http.dart' as http;
 import '../../../../core/api/api_constants.dart';
-import '../../../../core/datasources/user_local_data_source.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/resources/app_strings.dart';
+import '../../../../core/api/api_consumer.dart';
 import '../../domain/usecases/add_apartment_usecase.dart';
 import '../../domain/usecases/update_apartment_usecase.dart';
 import '../../domain/usecases/respond_booking_usecase.dart';
@@ -16,100 +13,99 @@ abstract class OwnerRemoteDataSource {
 }
 
 class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
-  final http.Client client;
-  final UserLocalDataSource userLocalDataSource;
+  final ApiConsumer apiConsumer;
 
-  OwnerRemoteDataSourceImpl(
-      {required this.client, required this.userLocalDataSource});
+  OwnerRemoteDataSourceImpl({required this.apiConsumer});
 
-  Future<Map<String, String>> _getHeaders() async {
-    final token = await userLocalDataSource.getToken();
-    return {
-      'Accept': AppStrings.api.accept,
-      'Authorization': '${AppStrings.api.bearer} $token',
-    };
+  int _mapGovernorateToId(dynamic gov) {
+    switch (gov.toString()) {
+      case 'Governorate.damascus':
+        return 1;
+      case 'Governorate.aleppo':
+        return 2;
+      case 'Governorate.homs':
+        return 3;
+      case 'Governorate.rifDimashq':
+        return 4;
+      case 'Governorate.daraa':
+        return 5;
+      case 'Governorate.latakia':
+        return 6;
+      case 'Governorate.tartus':
+        return 7;
+      case 'Governorate.quneitra':
+        return 8;
+      case 'Governorate.deirEzZor':
+        return 9;
+      case 'Governorate.hama':
+        return 10;
+      default:
+        return 1;
+    }
   }
 
   @override
   Future<Unit> addApartment(AddApartmentParams params) async {
-    final request =
-        http.MultipartRequest('POST', Uri.parse(ApiConstants.apartments));
-    request.headers.addAll(await _getHeaders());
+    final fields = {
+      'city_id': "1",
+      'title': params.title,
+      'description': params.description,
+      'address': params.address,
+      'governorate_id': _mapGovernorateToId(params.governorate).toString(),
+      'price_per_month': params.price.toString(),
+      'room_count': params.roomCount.toString(),
+    };
 
-    request.fields['title'] = params.title;
-    request.fields['description'] = params.description;
-    request.fields['goovernate'] = params.governorate.name;
-    request.fields['address'] = params.address;
-    request.fields['price'] = params.price.toString();
-    request.fields['room_count'] = params.roomCount.toString();
+    final files = params.images
+        .map((image) => FileParam(name: 'images[]', file: image))
+        .toList();
 
-    for (var image in params.images) {
-      if (await image.exists()) {
-        request.files
-            .add(await http.MultipartFile.fromPath('images[]', image.path));
-      }
-    }
+    await apiConsumer.postMultipart(
+      ApiConstants.apartments,
+      fields: fields,
+      files: files,
+    );
 
-    final response = await request.send();
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return unit;
-    } else {
-      throw ServerException(AppStrings.error.server);
-    }
+    return unit;
   }
 
   @override
   Future<Unit> updateApartment(UpdateApartmentParams params) async {
-    final request = http.MultipartRequest(
-        'POST', Uri.parse("${ApiConstants.apartments}/${params.apartmentId}"));
-    request.headers.addAll(await _getHeaders());
+    final fields = <String, String>{};
 
-    // request.fields['_method'] = 'PUT'; // Uncomment if backend requires this method spoofing
-
-    if (params.title != null) request.fields['title'] = params.title!;
-    if (params.description != null) {
-      request.fields['description'] = params.description!;
-    }
+    if (params.title != null) fields['title'] = params.title!;
+    if (params.description != null) fields['description'] = params.description!;
     if (params.governorate != null) {
-      request.fields['goovernate'] = params.governorate!.name;
+      fields['governorate_id'] =
+          _mapGovernorateToId(params.governorate!).toString();
     }
-    if (params.area != null) request.fields['area'] = params.area!;
+    if (params.address != null) fields['address'] = params.address!;
     if (params.price != null) {
-      request.fields['price'] = params.price!.toString();
+      fields['price_per_month'] = params.price!.toString();
     }
     if (params.roomCount != null) {
-      request.fields['room_count'] = params.roomCount!.toString();
+      fields['room_count'] = params.roomCount!.toString();
     }
 
+    final files = <FileParam>[];
     if (params.newImages != null) {
-      for (var image in params.newImages!) {
-        if (await image.exists()) {
-          request.files
-              .add(await http.MultipartFile.fromPath('images[]', image.path));
-        }
-      }
+      files.addAll(params.newImages!
+          .map((image) => FileParam(name: 'images[]', file: image)));
     }
 
-    final response = await request.send();
-    if (response.statusCode == 200) {
-      return unit;
-    } else {
-      throw ServerException(AppStrings.error.server);
-    }
+    await apiConsumer.postMultipart(
+      "${ApiConstants.apartments}/${params.apartmentId}",
+      fields: fields,
+      files: files,
+    );
+
+    return unit;
   }
 
   @override
   Future<Unit> deleteApartment(int apartmentId) async {
-    final response = await client.delete(
-      Uri.parse("${ApiConstants.apartments}/$apartmentId"),
-      headers: await _getHeaders(),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      return unit;
-    } else {
-      throw ServerException(AppStrings.error.server);
-    }
+    await apiConsumer.delete("${ApiConstants.apartments}/$apartmentId");
+    return unit;
   }
 
   @override
@@ -118,17 +114,12 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
         ? ApiConstants.confirmBooking(params.bookingId)
         : "${ApiConstants.bookings}/${params.bookingId}/cancel";
 
-    final method = 'PUT';
-
-    final request = http.Request(method, Uri.parse(url));
-    request.headers.addAll(await _getHeaders());
-
-    final response = await client.send(request);
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return unit;
+    if (params.accept) {
+      await apiConsumer.put(url);
     } else {
-      throw ServerException(AppStrings.error.server);
+      await apiConsumer.put(url);
     }
+
+    return unit;
   }
 }

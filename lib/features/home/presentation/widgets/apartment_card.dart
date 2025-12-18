@@ -1,40 +1,57 @@
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/heart_widget.dart';
+import 'package:residential_booking_app/core/widgets/smooth_loading_widget.dart';
 
 class ApartmentCard extends StatelessWidget {
+  final Apartment apartment;
   final VoidCallback? ontap;
-  const ApartmentCard({super.key, this.ontap});
+  const ApartmentCard({super.key, this.ontap, required this.apartment});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: ontap,
-      child: Card(
-        elevation: 4,
-        color: AppColors.white, // Changed from Primary to White
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r), // Increased rounding
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.r),
         child: Stack(
           children: [
-            Ink.image(
-              image: AssetImage(
-                "assets/images/1.jpg",
+            // 1. Background Image (Cached for performance)
+            Positioned.fill(
+              child: CachedNetworkImage(
+                imageUrl: apartment.mainImageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Center(
+                  child: SmoothLoadingWidget(color: AppColors.primary),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[200],
+                  child: Icon(Icons.broken_image,
+                      color: Colors.grey[400], size: 30.sp),
+                ),
               ),
-              fit: BoxFit.cover,
-              height: 260.h, // Adjusted to fill height
-              width: double.infinity,
             ),
-            // Gradient overlay for text readability at bottom
+
+            // 2. Gradient Overlay (For text readability)
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              height: 120.h,
+              height: 160.h,
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -42,27 +59,85 @@ class ApartmentCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withOpacity(0.9),
                     ],
                   ),
                 ),
               ),
             ),
+
+            // 3. Ripple Effect (On top of image, but behind text)
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: ontap,
+                  highlightColor: Colors.white.withOpacity(0.1),
+                  splashColor: Colors.white.withOpacity(0.1),
+                ),
+              ),
+            ),
+
+            // 4. Text Content (Floating above the ripple)
+            Positioned(
+              bottom: 16.h,
+              left: 16.w,
+              right: 16.w,
+              child: IgnorePointer(
+                // Ensures clicks pass through text to the InkWell
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      apartment.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
+                      ),
+                    ),
+                    SizedBox(height: 6.h),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,
+                            color: AppColors.secondary, size: 14.sp),
+                        SizedBox(width: 4.w),
+                        Expanded(
+                          child: Text(
+                            apartment.address,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // 5. Price Tag (Glassmorphism)
             Positioned(
               top: 20.h,
-              right: 15.w,
+              right: 16.w,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
+                borderRadius: BorderRadius.circular(10.r),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                   child: Container(
-                    color: Colors.white.withOpacity(0.2),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
-                    ),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    color: Colors.black.withOpacity(0.25),
                     child: Text(
-                      '\$4200 / mo',
+                      '\$${apartment.pricePerMonth.toStringAsFixed(0)}',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -73,50 +148,12 @@ class ApartmentCard extends StatelessWidget {
                 ),
               ),
             ),
+
+            // 6. Heart Widget (Interactive Layer)
             Positioned(
-              top: 15.h,
-              left: 12.w, // Moved Heart to left or right based on preference
-              child: HeartWidget(),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 15.w,
-              right: 15.w,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 12.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Big Flat",
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 6.h),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color:
-                              AppColors.secondary, // Use accent color for icon
-                          size: 16.sp,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          "Damascus, Al_Maza",
-                          style: TextStyle(
-                            color: AppColors.white.withOpacity(0.9),
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+              top: 16.h,
+              left: 16.w,
+              child: const HeartWidget(),
             ),
           ],
         ),

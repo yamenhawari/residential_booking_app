@@ -6,13 +6,9 @@ enum Governorate {
   tartus,
   hama,
   rifDimashq,
-  sweida,
   daraa,
   quneitra,
-  deirEzZor,
-  hasakah,
-  raqqa,
-  idlib;
+  deirEzZor;
 
   String get displayName {
     switch (this) {
@@ -30,20 +26,12 @@ enum Governorate {
         return 'Hama';
       case Governorate.rifDimashq:
         return 'Rif Dimashq';
-      case Governorate.sweida:
-        return 'Sweida';
       case Governorate.daraa:
         return 'Daraa';
       case Governorate.quneitra:
         return 'Quneitra';
       case Governorate.deirEzZor:
         return 'Deir Ez-Zor';
-      case Governorate.hasakah:
-        return 'Hasakah';
-      case Governorate.raqqa:
-        return 'Raqqa';
-      case Governorate.idlib:
-        return 'Idlib';
     }
   }
 }

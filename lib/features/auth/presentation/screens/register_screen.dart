@@ -1,12 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:residential_booking_app/core/resources/app_colors.dart';
-import 'package:residential_booking_app/core/utils/app_snackbars.dart';
-import 'package:residential_booking_app/features/auth/presentation/widgets/custom_text_field.dart';
-import 'package:residential_booking_app/features/auth/presentation/widgets/role_card.dart';
-import 'package:residential_booking_app/features/auth/presentation/widgets/upload_button.dart';
-import 'package:residential_booking_app/features/auth/presentation/widgets/auth_fields.dart';
-import 'package:residential_booking_app/core/utils/validators.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:residential_booking_app/features/auth/domain/entities/enums/user_enums.dart';
+import 'package:residential_booking_app/features/auth/presentation/widgets/primary_button.dart';
+
+import '../../../../core/resources/app_colors.dart';
+import '../../../../core/utils/app_dialogs.dart';
+import '../../../../core/utils/app_snackbars.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/utils/nav_helper.dart';
+import '../../../../core/navigation/app_routes.dart';
+import '../../../../core/widgets/app_text_field.dart';
+
+import '../../domain/usecases/register_usecase.dart';
+import '../cubit/auth_cubit.dart';
+import '../cubit/auth_state.dart';
+import '../widgets/role_card.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -23,261 +35,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _birthDateController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  String _selectedRole = 'tenant';
+  UserRole _selectedRole = UserRole.tenant;
   bool _acceptTerms = false;
 
+  final ImagePicker _picker = ImagePicker();
+  XFile? _profileImage;
+  XFile? _idImage;
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(
-          backgroundColor: AppColors.background,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new,
-                color: AppColors.textPrimary),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Sign Up',
-            style: TextStyle(
-                color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // --- Header ---
-                Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  'Please fill in the details below to get started.',
-                  style: TextStyle(
-                      color: AppColors.textSecondary, fontSize: 15.sp),
-                ),
-                SizedBox(height: 32.h),
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _birthDateController.dispose();
+    super.dispose();
+  }
 
-                // --- Role Selector ---
-                const Text(
-                  'I am a:',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary),
-                ),
-                SizedBox(height: 12.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RoleCard(
-                        label: 'Tenant',
-                        icon: Icons.person_outline,
-                        isSelected: _selectedRole == 'tenant',
-                        onTap: () => setState(() => _selectedRole = 'tenant'),
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: RoleCard(
-                        label: 'Investor',
-                        icon: Icons.show_chart,
-                        isSelected: _selectedRole == 'investor',
-                        onTap: () => setState(() => _selectedRole = 'investor'),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 32.h),
+  Future<void> _pickImage(bool isProfile) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
 
-                // --- Form Fields ---
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        label: 'First Name',
-                        hint: 'first name',
-                        controller: _firstNameController,
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: CustomTextField(
-                        label: 'Last Name',
-                        hint: 'last name',
-                        controller: _lastNameController,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.h),
-
-                const Text(
-                  'Phone Number',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary),
-                ),
-                LoginPhoneField(
-                  controller: _phoneController,
-                  hint: '912 345 678',
-                  validator: Validators.validatePhone,
-                ),
-                SizedBox(height: 20.h),
-
-                CustomTextField(
-                  label: 'Password',
-                  hint: '••••••••',
-                  controller: _passwordController,
-                  isPassword: true,
-                  validator: Validators.validatePassword,
-                ),
-                SizedBox(height: 20.h),
-
-                GestureDetector(
-                  onTap: _selectBirthDate,
-                  child: AbsorbPointer(
-                    child: CustomTextField(
-                      label: 'Date of Birth',
-                      hint: 'YYYY-MM-DD',
-                      controller: _birthDateController,
-                      suffixIcon: Icons.calendar_today_outlined,
-                      validator: Validators.validateDate,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20.h),
-
-                // --- Upload Buttons ---
-                UploadButton(
-                  label: 'Profile Photo',
-                  buttonText: 'Upload Photo',
-                  icon: Icons.camera_alt_outlined,
-                  onFilePick: () async {
-                    // Implement file picking here in-screen (keeps widget DRY)
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16.h),
-                UploadButton(
-                  label: 'ID Card',
-                  buttonText: 'Upload ID',
-                  icon: Icons.badge_outlined,
-                  onFilePick: () async {
-                    // Implement file picking here in-screen (keeps widget DRY)
-                    return null;
-                  },
-                ),
-                SizedBox(height: 24.h),
-
-                // --- Terms Checkbox ---
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 24.h,
-                      width: 24.w,
-                      child: Checkbox(
-                        value: _acceptTerms,
-                        onChanged: (v) =>
-                            setState(() => _acceptTerms = v ?? false),
-                        activeColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4.r)),
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: RichText(
-                        text: const TextSpan(
-                          text: 'I agree to the ',
-                          style: TextStyle(color: AppColors.textSecondary),
-                          children: [
-                            TextSpan(
-                              text: 'Terms of Service',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextSpan(text: ' and '),
-                            TextSpan(
-                              text: 'Privacy Policy',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 32.h),
-
-                // --- Submit Button ---
-                Container(
-                  width: double.infinity,
-                  height: 52.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    gradient: _acceptTerms ? AppColors.primaryGradient : null,
-                    color: _acceptTerms
-                        ? null
-                        : AppColors.textSecondary.withOpacity(0.3),
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (!(_formKey.currentState?.validate() ?? false)) {
-                        AppSnackBars.showWarning(context,
-                            message: "Please fill all fields");
-                        return;
-                      }
-                      if (!_acceptTerms) {
-                        AppSnackBars.showWarning(context,
-                            message: "Please Accept to The The Terms First");
-                        return;
-                      }
-                      _submitForm();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Create Account',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ));
+      if (pickedFile != null) {
+        setState(() {
+          if (isProfile) {
+            _profileImage = pickedFile;
+          } else {
+            _idImage = pickedFile;
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBars.showError(context, message: "Failed to pick image");
+      }
+    }
   }
 
   Future<void> _selectBirthDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -300,7 +101,423 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _submitForm() {
-    AppSnackBars.showSuccess(context, message: "Creating Your Account");
+  void _handleRegister() {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      AppSnackBars.showWarning(context,
+          message: 'Please check your input fields');
+      return;
+    }
+    if (_profileImage == null) {
+      AppSnackBars.showWarning(context,
+          message: "Please upload a profile photo");
+      return;
+    }
+    if (_idImage == null) {
+      AppSnackBars.showWarning(context, message: "Please upload an ID photo");
+      return;
+    }
+    context.read<AuthCubit>().register(RegisterParams(
+          dob: _birthDateController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          lastName: _lastNameController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+          password: _passwordController.text,
+          role: _selectedRole,
+          fcmToken: "dummy_fcm_token",
+          profileImage: File(_profileImage!.path),
+          idImage: File(_idImage!.path),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is AuthRegisterSuccess) {
+              AppSnackBars.showSuccess(context,
+                  message: "Account Created Successfully!");
+              Nav.offAll(AppRoutes.login);
+            } else if (state is AuthError) {
+              AppDialogs.showError(context, message: state.message);
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is AuthLoading;
+
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      InkWell(
+                        onTap: () => Nav.back(),
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: Container(
+                          padding: EdgeInsets.all(10.w),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: const Icon(Icons.arrow_back_ios_new,
+                              size: 18, color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(height: 30.h),
+                      Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        'Join our community today.',
+                        style: TextStyle(
+                            color: AppColors.textSecondary, fontSize: 15.sp),
+                      ),
+                      SizedBox(height: 30.h),
+
+                      // --- Profile Image Picker ---
+                      Center(
+                        child: GestureDetector(
+                          onTap: () => _pickImage(true),
+                          child: Stack(
+                            children: [
+                              Container(
+                                height: 100.h,
+                                width: 100.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: AppColors.primary, width: 2),
+                                  image: _profileImage != null
+                                      ? DecorationImage(
+                                          image: FileImage(
+                                              File(_profileImage!.path)),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: _profileImage == null
+                                    ? Icon(Icons.person,
+                                        size: 50.sp,
+                                        color: Colors.grey.shade300)
+                                    : null,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: EdgeInsets.all(8.w),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.camera_alt,
+                                      size: 16.sp, color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 30.h),
+
+                      // --- Your Role Cards ---
+                      Row(
+                        children: [
+                          Expanded(
+                            child: RoleCard(
+                              label: 'Tenant',
+                              icon: Icons.person_outline,
+                              isSelected: _selectedRole == UserRole.tenant,
+                              onTap: () => setState(
+                                  () => _selectedRole = UserRole.tenant),
+                            ),
+                          ),
+                          SizedBox(width: 16.w),
+                          Expanded(
+                            child: RoleCard(
+                              label: 'Investor',
+                              icon: Icons.apartment,
+                              isSelected: _selectedRole == UserRole.owner,
+                              onTap: () => setState(
+                                  () => _selectedRole = UserRole.owner),
+                            ),
+                          ),
+                        ],
+                      ),
+                      // -----------------------
+
+                      SizedBox(height: 24.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AppTextField(
+                              label: 'First Name',
+                              hint: 'John',
+                              controller: _firstNameController,
+                              validator: Validators.validateName,
+                            ),
+                          ),
+                          SizedBox(width: 16.w),
+                          Expanded(
+                            child: AppTextField(
+                              label: 'Last Name',
+                              hint: 'Doe',
+                              controller: _lastNameController,
+                              validator: Validators.validateName,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        label: 'Phone Number',
+                        hint: '09xxxxxxxx',
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        validator: Validators.validatePhone,
+                        prefix: Padding(
+                          padding: EdgeInsets.fromLTRB(1.w, 1.w, 10.w, 1.w),
+                          child: Container(
+                            width: 65.w,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(11.r),
+                                bottomLeft: Radius.circular(11.r),
+                              ),
+                            ),
+                            child: const Text(
+                              '+963',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        label: 'Date of Birth',
+                        hint: 'YYYY-MM-DD',
+                        controller: _birthDateController,
+                        readOnly: true,
+                        onTap: _selectBirthDate,
+                        suffixIcon: Icons.calendar_today_outlined,
+                        validator: Validators.validateDate,
+                      ),
+                      SizedBox(height: 16.h),
+                      AppTextField(
+                        label: 'Password',
+                        hint: '••••••••',
+                        controller: _passwordController,
+                        isPassword: true,
+                        validator: Validators.validatePassword,
+                      ),
+                      SizedBox(height: 24.h),
+                      Text(
+                        'Verification Document',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+
+                      // --- ID Picker (Clean Design) ---
+                      InkWell(
+                        onTap: () => _pickImage(false),
+                        borderRadius: BorderRadius.circular(16.r),
+                        child: Container(
+                          height: 120.h,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: _idImage != null
+                                ? AppColors.primary.withOpacity(0.05)
+                                : Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: _idImage != null
+                                  ? AppColors.primary
+                                  : Colors.grey.shade300,
+                              style: BorderStyle.solid,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: _idImage != null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.check_circle,
+                                        color: AppColors.primary, size: 32.sp),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      "ID Card Selected",
+                                      style: TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Tap to change",
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.badge_outlined,
+                                        color: AppColors.textSecondary,
+                                        size: 32.sp),
+                                    SizedBox(height: 8.h),
+                                    Text(
+                                      "Upload ID Card",
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14.sp,
+                                      ),
+                                    ),
+                                    Text(
+                                      "PNG, JPG or PDF",
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      // ------------------------------
+
+                      SizedBox(height: 24.h),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 24.h,
+                            width: 24.w,
+                            child: Checkbox(
+                              value: _acceptTerms,
+                              onChanged: (v) =>
+                                  setState(() => _acceptTerms = v ?? false),
+                              activeColor: AppColors.primary,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.r)),
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: RichText(
+                              text: const TextSpan(
+                                text: 'I agree to the ',
+                                style:
+                                    TextStyle(color: AppColors.textSecondary),
+                                children: [
+                                  TextSpan(
+                                    text: 'Terms of Service',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(text: ' and '),
+                                  TextSpan(
+                                    text: 'Privacy Policy',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 32.h),
+                      if (isLoading)
+                        Container(
+                          width: double.infinity,
+                          height: 56.h,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          ),
+                        )
+                      else
+                        PrimaryButton(
+                          label: 'Create Account',
+                          enabled: _acceptTerms,
+                          onPressed: _handleRegister,
+                        ),
+                      SizedBox(height: 24.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account? ",
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Nav.replace(AppRoutes.login),
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

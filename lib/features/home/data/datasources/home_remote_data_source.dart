@@ -1,10 +1,5 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 import '../../../../core/api/api_constants.dart';
-import '../../../../core/datasources/user_local_data_source.dart';
-import '../../../../core/error/exceptions.dart';
-import '../../../../core/resources/app_strings.dart';
+import '../../../../core/api/api_consumer.dart';
 import '../../domain/entities/filter_apartment_params.dart';
 import '../../../../core/models/apartment_model.dart';
 
@@ -14,61 +9,28 @@ abstract class HomeRemoteDataSource {
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
-  final http.Client client;
-  final UserLocalDataSource userLocalDataSource;
+  final ApiConsumer apiConsumer;
 
-  HomeRemoteDataSourceImpl({
-    required this.client,
-    required this.userLocalDataSource,
-  });
+  HomeRemoteDataSourceImpl({required this.apiConsumer});
 
   @override
   Future<List<ApartmentModel>> getApartments(
       FilterApartmentParams params) async {
-    final token = await userLocalDataSource.getToken();
-
-    final uri = Uri.parse(ApiConstants.apartments)
-        .replace(queryParameters: _mapParamsToQuery(params));
-
-    final response = await client.get(
-      uri,
-      headers: {
-        'Content-Type': AppStrings.api.contentType,
-        'Accept': AppStrings.api.accept,
-        'Authorization': '${AppStrings.api.bearer} $token',
-      },
+    final response = await apiConsumer.get(
+      ApiConstants.apartments,
+      queryParameters: _mapParamsToQuery(params),
     );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonBody = json.decode(response.body);
-      final List<dynamic> data = jsonBody['data'];
-      return data.map((e) => ApartmentModel.fromJson(e)).toList();
-    } else {
-      throw ServerException(AppStrings.error.server);
-    }
+    final List<dynamic> data = response;
+    return data.map((e) => ApartmentModel.fromJson(e)).toList();
   }
 
   @override
   Future<ApartmentModel> getApartmentById(int apartmentId) async {
-    final token = await userLocalDataSource.getToken();
-
-    final uri = Uri.parse('${ApiConstants.apartments}/$apartmentId');
-
-    final response = await client.get(
-      uri,
-      headers: {
-        'Content-Type': AppStrings.api.contentType,
-        'Accept': AppStrings.api.accept,
-        'Authorization': '${AppStrings.api.bearer} $token',
-      },
+    final response = await apiConsumer.get(
+      '${ApiConstants.apartments}/$apartmentId',
     );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonBody = json.decode(response.body);
-      return ApartmentModel.fromJson(jsonBody['data']);
-    } else {
-      throw ServerException(AppStrings.error.server);
-    }
+    return ApartmentModel.fromJson(response);
   }
 
   Map<String, dynamic> _mapParamsToQuery(FilterApartmentParams params) {
@@ -76,8 +38,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
     if (params.selectedGovernorates != null &&
         params.selectedGovernorates!.isNotEmpty) {
-      map['governorates'] =
-          params.selectedGovernorates!.map((e) => e.name).toList();
+      map['governorate_id'] = params.selectedGovernorates!
+          .map((e) => _mapGovernorateToId(e.name))
+          .toList();
     }
 
     map['min_price'] = params.minPrice.toString();
@@ -95,5 +58,32 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       map['room_count'] = params.roomCount.toString();
     }
     return map;
+  }
+
+  int _mapGovernorateToId(dynamic gov) {
+    switch (gov.toString()) {
+      case 'Governorate.damascus':
+        return 1;
+      case 'Governorate.aleppo':
+        return 2;
+      case 'Governorate.homs':
+        return 3;
+      case 'Governorate.rifDimashq':
+        return 4;
+      case 'Governorate.daraa':
+        return 5;
+      case 'Governorate.latakia':
+        return 6;
+      case 'Governorate.tartus':
+        return 7;
+      case 'Governorate.quneitra':
+        return 8;
+      case 'Governorate.deirEzZor':
+        return 9;
+      case 'Governorate.hama':
+        return 10;
+      default:
+        return 1;
+    }
   }
 }

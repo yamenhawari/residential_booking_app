@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/login_register_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/register_screen.dart';
+import 'package:residential_booking_app/features/auth/presentation/screens/splash_screen.dart';
+import 'package:residential_booking_app/features/home/domain/entities/filter_apartment_params.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/apartment_details_screen.dart';
+import 'package:residential_booking_app/features/home/presentation/screens/filtered_apartments.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/home_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
 import 'app_routes.dart';
@@ -12,6 +15,17 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case AppRoutes.filteredApartments:
+        if (args is FilterApartmentParams) {
+          return MaterialPageRoute(
+            builder: (context) =>
+                FilteredApartments(filterApartmentParams: args),
+          );
+        }
+      case AppRoutes.splash:
+        return MaterialPageRoute(
+          builder: (context) => SplashScreen(),
+        );
       case AppRoutes.loginRegister:
         return MaterialPageRoute(
           builder: (context) => LoginRegisterScreen(),
