@@ -28,9 +28,7 @@ class UserModel extends User {
       firstName: userData['first_name'] ?? '',
       lastName: userData['last_name'] ?? '',
       phoneNumber: userData['phone'] ?? '',
-      profileImageUrl: userData['profile_image'] != null
-          ? "${ApiConstants.storageBaseUrl}${userData['profile_image']}"
-          : null,
+      profileImageUrl: userData['profile_image'],
       dob: userData['birth_date'],
       role: _mapStringToRole(userData['role']),
       status: _mapStringToStatus(userData['status']),

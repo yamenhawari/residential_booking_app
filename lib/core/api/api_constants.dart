@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String ip = "192.168.97.167:8000";
+  static const String ip = "192.168.1.101:8000";
   static const String baseUrl = "http://$ip/api";
   static const String storageBaseUrl = "http://$ip/storage/";
 

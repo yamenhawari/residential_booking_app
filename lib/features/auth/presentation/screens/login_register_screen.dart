@@ -24,10 +24,10 @@ class LoginRegisterScreen extends StatelessWidget {
                 Container(
                   height: 120.h,
                   width: 120.h,
-                  padding: EdgeInsets.all(25.h),
+                  padding: EdgeInsets.all(17.h),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+                    color: const Color.fromARGB(218, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(30.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.15),
@@ -38,7 +38,7 @@ class LoginRegisterScreen extends StatelessWidget {
                   ),
                   child: Image.asset(
                     "assets/icons/home_15751764.png",
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                   ),
                 ),
                 SizedBox(height: 30.h),
@@ -69,8 +69,14 @@ class LoginRegisterScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
                     onPressed: () => Nav.to(AppRoutes.login),
+                    icon: const Icon(Icons.login, color: AppColors.primary),
+                    label: Text(
+                      'Login',
+                      style: TextStyle(
+                          fontSize: 18.sp, fontWeight: FontWeight.bold),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: AppColors.primary,
@@ -79,19 +85,20 @@ class LoginRegisterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                     ),
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold),
-                    ),
                   ),
                 ),
                 SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
-                  child: OutlinedButton(
+                  child: OutlinedButton.icon(
                     onPressed: () => Nav.to(AppRoutes.register),
+                    icon: const Icon(Icons.person_add, color: Colors.white),
+                    label: Text(
+                      'Create Account',
+                      style: TextStyle(
+                          fontSize: 18.sp, fontWeight: FontWeight.bold),
+                    ),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white, width: 2),
                       foregroundColor: Colors.white,
@@ -99,14 +106,19 @@ class LoginRegisterScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                     ),
-                    child: Text(
-                      'Create Account',
-                      style: TextStyle(
-                          fontSize: 18.sp, fontWeight: FontWeight.bold),
-                    ),
                   ),
                 ),
-                SizedBox(height: 40.h),
+                SizedBox(height: 24.h),
+                // Suggestion: Add a privacy note
+                Text(
+                  "By continuing, you agree to our Terms of Service and Privacy Policy.",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 12.sp,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16.h),
               ],
             ),
           ),

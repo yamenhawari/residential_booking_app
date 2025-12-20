@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:residential_booking_app/features/auth/presentation/cubit/auth_cubit.dart';
-
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/nav_helper.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/loading_widget.dart';
-
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 import '../widgets/apartment_card.dart';
-import '../widgets/buttom_navigation_bar_widget.dart';
 import '../widgets/search_field_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -67,11 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             child: IconButton(
-              onPressed: () {
-                // TODO: Update this logic when Notification screen is ready
-                context.read<AuthCubit>().logout();
-                Nav.offAll(AppRoutes.loginRegister);
-              },
+              onPressed: () {},
               icon: Icon(
                 FontAwesomeIcons.bell,
                 color: AppColors.textPrimary,
@@ -113,7 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       state.message,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: 14.sp, color: AppColors.textSecondary),
+                        fontSize: 14.sp,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     SizedBox(height: 30.h),
                     SizedBox(
@@ -127,8 +121,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                        child: const Text("Retry",
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          "Retry",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                       ),
                     )
                   ],
@@ -163,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (apartments.isEmpty)
                     SliverToBoxAdapter(
                       child: Container(
-                        height: 300.h,
+                        height: 500.h,
                         alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -219,7 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
           return const SizedBox.shrink();
         },
       ),
-      bottomNavigationBar: const ButtomNavigationBarWidget(),
     );
   }
 }

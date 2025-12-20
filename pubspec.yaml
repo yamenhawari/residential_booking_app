@@ -55,7 +55,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/icons/home_15751764.png
+    - assets/icons/
+    - assets/images/
 
   fonts:
     - family: Pacifico

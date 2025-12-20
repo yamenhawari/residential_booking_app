@@ -7,7 +7,10 @@ import 'package:residential_booking_app/features/home/domain/entities/filter_apa
 import 'package:residential_booking_app/features/home/presentation/screens/apartment_details_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/filtered_apartments.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/home_screen.dart';
+import 'package:residential_booking_app/features/home/presentation/screens/main_layout_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
+import 'package:residential_booking_app/features/intro/presentation/introduction_screen.dart';
+import 'package:residential_booking_app/features/settings/presentation/screens/settings_screen.dart';
 import 'app_routes.dart';
 
 class AppRouter {
@@ -15,6 +18,18 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case AppRoutes.mainLayout:
+        return MaterialPageRoute(
+          builder: (context) => MainLayoutScreen(),
+        );
+      case AppRoutes.settings:
+        return MaterialPageRoute(
+          builder: (context) => const SettingsScreen(),
+        );
+      case AppRoutes.introduction:
+        return MaterialPageRoute(
+          builder: (context) => IntroductionScreen(),
+        );
       case AppRoutes.filteredApartments:
         if (args is FilterApartmentParams) {
           return MaterialPageRoute(

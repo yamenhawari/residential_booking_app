@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (state is AuthLoginSuccess) {
               AppSnackBars.showSuccess(context,
                   message: "Welcome back, ${state.user.firstName}!");
-              Nav.offAll(AppRoutes.home);
+              Nav.offAll(AppRoutes.mainLayout);
             } else if (state is AuthError) {
               AppDialogs.showWarning(context, message: state.message);
             } else if (state is AuthUserCheckFail) {
@@ -97,10 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               height: 120.h,
                               width: 120.h,
-                              padding: EdgeInsets.all(25.h),
+                              padding: EdgeInsets.all(17.sp),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                shape: BoxShape.circle,
+                                borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
                                     color: AppColors.primary.withOpacity(0.15),
@@ -143,8 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         keyboardType: TextInputType.phone,
                         validator: Validators.validatePhone,
                         prefix: Padding(
-                          padding: EdgeInsets.fromLTRB(1.w, 1.w, 10.w, 1.w),
+                          padding: EdgeInsets.fromLTRB(1.w, 1.h, 10.w, 1.h),
                           child: Container(
+                            height: 51.h,
                             width: 65.w,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -177,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            AppSnackBars.showSuccess(context,
+                            AppSnackBars.showInfo(context,
                                 message: "Feature coming soon!");
                           },
                           child: Text(

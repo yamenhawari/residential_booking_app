@@ -53,12 +53,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _pickImage(bool isProfile) async {
+    final ImageSource? source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('Take a photo'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null) return;
     try {
       final XFile? pickedFile = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 80,
       );
-
       if (pickedFile != null) {
         setState(() {
           if (isProfile) {
@@ -147,7 +170,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           },
           builder: (context, state) {
             final isLoading = state is AuthLoading;
-
             return SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -187,7 +209,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       SizedBox(height: 30.h),
 
-                      // --- Profile Image Picker ---
                       Center(
                         child: GestureDetector(
                           onTap: () => _pickImage(true),
@@ -241,7 +262,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       SizedBox(height: 30.h),
 
-                      // --- Your Role Cards ---
                       Row(
                         children: [
                           Expanded(
@@ -265,7 +285,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
-                      // -----------------------
 
                       SizedBox(height: 24.h),
                       Row(
@@ -299,6 +318,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         prefix: Padding(
                           padding: EdgeInsets.fromLTRB(1.w, 1.w, 10.w, 1.w),
                           child: Container(
+                            height: 51.h,
                             width: 65.w,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -347,9 +367,84 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       SizedBox(height: 8.h),
 
-                      // --- ID Picker (Clean Design) ---
+                      // --- ID Picker (Accept PDF) ---
                       InkWell(
-                        onTap: () => _pickImage(false),
+                        onTap: () async {
+                          final List<String> allowedExtensions = [
+                            'jpg',
+                            'jpeg',
+                            'png',
+                            'pdf'
+                          ];
+                          final ImageSource? source =
+                              await showModalBottomSheet<ImageSource>(
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20.r)),
+                            ),
+                            builder: (_) => SafeArea(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.photo_camera),
+                                    title: const Text('Take a photo'),
+                                    onTap: () => Navigator.pop(
+                                        context, ImageSource.camera),
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.photo_library),
+                                    title: const Text('Choose from files'),
+                                    onTap: () => Navigator.pop(
+                                        context, ImageSource.gallery),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                          if (source == null) return;
+                          try {
+                            if (source == ImageSource.gallery) {
+                              // Use FilePicker for PDF support
+                              // (Requires adding file_picker package. For now, image_picker only.)
+                              final XFile? file = await _picker.pickImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 80,
+                              );
+                              if (file != null) {
+                                final ext =
+                                    file.path.split('.').last.toLowerCase();
+                                if (!allowedExtensions.contains(ext)) {
+                                  if (context.mounted) {
+                                    AppSnackBars.showError(context,
+                                        message:
+                                            "Unsupported file type. Please pick JPG, PNG or PDF.");
+                                  }
+                                  return;
+                                }
+                                setState(() {
+                                  _idImage = file;
+                                });
+                              }
+                            } else {
+                              final XFile? file = await _picker.pickImage(
+                                source: ImageSource.camera,
+                                imageQuality: 80,
+                              );
+                              if (file != null) {
+                                setState(() {
+                                  _idImage = file;
+                                });
+                              }
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              AppSnackBars.showError(context,
+                                  message: "Failed to pick document");
+                            }
+                          }
+                        },
                         borderRadius: BorderRadius.circular(16.r),
                         child: Container(
                           height: 120.h,
@@ -371,11 +466,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.check_circle,
-                                        color: AppColors.primary, size: 32.sp),
+                                    Icon(
+                                      _idImage?.path.endsWith('.pdf') == true
+                                          ? Icons.picture_as_pdf
+                                          : Icons.check_circle,
+                                      color: _idImage?.path.endsWith('.pdf') ==
+                                              true
+                                          ? Colors.red
+                                          : AppColors.primary,
+                                      size: 32.sp,
+                                    ),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      "ID Card Selected",
+                                      _idImage?.path.endsWith('.pdf') == true
+                                          ? "PDF Document Selected"
+                                          : "ID Card Selected",
                                       style: TextStyle(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.bold,

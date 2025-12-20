@@ -27,9 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
             AppSnackBars.showSuccess(context,
                 message: "Welcome Back ${state.user.firstName}");
           }
-          Nav.offAll(AppRoutes.home);
-        } else if (state is AuthUserCheckFail || state is AuthError) {
+          Nav.offAll(AppRoutes.mainLayout);
+        } else if (state is AuthError) {
           Nav.offAll(AppRoutes.loginRegister);
+        } else if (state is AuthUserCheckFail) {
+          Nav.offAll(AppRoutes.introduction);
         }
       },
       child: Scaffold(
@@ -44,10 +46,10 @@ class _SplashScreenState extends State<SplashScreen> {
               Container(
                 height: 120.h,
                 width: 120.h,
-                padding: EdgeInsets.all(25.h),
+                padding: EdgeInsets.all(17.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  shape: BoxShape.circle,
+                  borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.15),
