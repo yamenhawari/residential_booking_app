@@ -18,6 +18,7 @@ class FilterChipSelector<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Wrap(
       spacing: 8.w,
       runSpacing: 8.h,
@@ -33,13 +34,14 @@ class FilterChipSelector<T> extends StatelessWidget {
               color: selected ? AppColors.primary : Colors.transparent,
               borderRadius: BorderRadius.circular(20.r),
               border: Border.all(
-                color: selected ? AppColors.primary : AppColors.lightGrey,
+                color: selected ? AppColors.primary : theme.dividerColor,
               ),
             ),
             child: Text(
               labelBuilder(item),
               style: TextStyle(
-                color: selected ? Colors.white : AppColors.textSecondary,
+                color:
+                    selected ? Colors.white : theme.textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.w500,
                 fontSize: 14.sp,
               ),

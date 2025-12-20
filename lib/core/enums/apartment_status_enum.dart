@@ -3,7 +3,6 @@ enum ApartmentStatus {
   rented,
   unavailable;
 
-  // Helper to convert String from Backend -> Enum
   static ApartmentStatus fromString(String value) {
     switch (value.toLowerCase()) {
       case 'available':

@@ -30,7 +30,6 @@ class DateRangeSelector extends StatelessWidget {
 
     if (picked != null && context.mounted) {
       if (isStart) {
-        // If new start is after old end, clear end
         DateTime? newEnd = state.endDate;
         if (newEnd != null && newEnd.isBefore(picked)) newEnd = null;
         context.read<FilterCubit>().setDateRange(picked, newEnd);
@@ -47,6 +46,7 @@ class DateRangeSelector extends StatelessWidget {
         return Row(
           children: [
             _dateBox(
+              context,
               "Start Date",
               state.startDate,
               () => _pickDate(context, true, state),
@@ -54,6 +54,7 @@ class DateRangeSelector extends StatelessWidget {
             ),
             SizedBox(width: 12.w),
             _dateBox(
+              context,
               "End Date",
               state.endDate,
               state.startDate == null
@@ -69,8 +70,9 @@ class DateRangeSelector extends StatelessWidget {
     );
   }
 
-  Widget _dateBox(
-      String hint, DateTime? date, VoidCallback? onTap, VoidCallback onClear) {
+  Widget _dateBox(BuildContext context, String hint, DateTime? date,
+      VoidCallback? onTap, VoidCallback onClear) {
+    final theme = Theme.of(context);
     final isEnabled = onTap != null;
     return Expanded(
       child: GestureDetector(
@@ -79,15 +81,19 @@ class DateRangeSelector extends StatelessWidget {
           height: 56.h,
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
-            color: isEnabled ? AppColors.white : Colors.grey[200],
+            color: isEnabled
+                ? theme.cardColor
+                : theme.disabledColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(color: AppColors.lightGrey),
+            border: Border.all(color: theme.dividerColor),
           ),
           child: Row(
             children: [
               Icon(Icons.calendar_today,
                   size: 18.sp,
-                  color: isEnabled ? AppColors.textSecondary : Colors.grey),
+                  color: isEnabled
+                      ? theme.textTheme.bodyMedium?.color
+                      : Colors.grey),
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
@@ -97,13 +103,16 @@ class DateRangeSelector extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: date != null
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary,
+                        ? theme.textTheme.bodyLarge?.color
+                        : theme.textTheme.bodyMedium?.color,
                   ),
                 ),
               ),
               if (date != null)
-                InkWell(onTap: onClear, child: Icon(Icons.close, size: 18.sp)),
+                InkWell(
+                    onTap: onClear,
+                    child: Icon(Icons.close,
+                        size: 18.sp, color: theme.iconTheme.color)),
             ],
           ),
         ),

@@ -1,6 +1,5 @@
 import '../entities/user.dart';
 import '../../features/auth/domain/entities/enums/user_enums.dart';
-import '../api/api_constants.dart';
 
 class UserModel extends User {
   const UserModel({
@@ -16,10 +15,7 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    // Accept either 'User' or 'user' wrapper or raw user JSON
     final userData = json['User'] ?? json['user'] ?? json;
-
-    // Support both 'Token' and 'token' as top-level or inside user data: {Token: '...'} or {token: '...'} or {User: {..., token: '...'}}
     final String token =
         json['Token'] ?? json['token'] ?? userData['token'] ?? '';
 

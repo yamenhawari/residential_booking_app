@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:residential_booking_app/features/auth/domain/entities/enums/user_enums.dart';
 import 'package:residential_booking_app/features/auth/presentation/widgets/primary_button.dart';
-
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/app_dialogs.dart';
 import '../../../../core/utils/app_snackbars.dart';
@@ -14,7 +12,6 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/utils/nav_helper.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/app_text_field.dart';
-
 import '../../domain/usecases/register_usecase.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -55,6 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _pickImage(bool isProfile) async {
     final ImageSource? source = await showModalBottomSheet<ImageSource>(
       context: context,
+      backgroundColor: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
@@ -106,7 +104,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
-          data: ThemeData.light().copyWith(
+          data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
@@ -154,8 +152,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: BlocConsumer<AuthCubit, AuthState>(
@@ -185,30 +184,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Container(
                           padding: EdgeInsets.all(10.w),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
+                            border: Border.all(color: theme.dividerColor),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new,
-                              size: 18, color: Colors.black),
+                          child: Icon(Icons.arrow_back_ios_new,
+                              size: 18, color: theme.iconTheme.color),
                         ),
                       ),
                       SizedBox(height: 30.h),
                       Text(
                         'Create Account',
-                        style: TextStyle(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                        style: theme.textTheme.displayLarge
+                            ?.copyWith(fontSize: 28.sp),
                       ),
                       SizedBox(height: 8.h),
                       Text(
                         'Join our community today.',
-                        style: TextStyle(
-                            color: AppColors.textSecondary, fontSize: 15.sp),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontSize: 15.sp),
                       ),
                       SizedBox(height: 30.h),
-
                       Center(
                         child: GestureDetector(
                           onTap: () => _pickImage(true),
@@ -218,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 height: 100.h,
                                 width: 100.h,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: theme.cardColor,
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                       color: AppColors.primary, width: 2),
@@ -261,7 +256,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       SizedBox(height: 30.h),
-
                       Row(
                         children: [
                           Expanded(
@@ -285,7 +279,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 24.h),
                       Row(
                         children: [
@@ -318,7 +311,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         prefix: Padding(
                           padding: EdgeInsets.fromLTRB(1.w, 1.w, 10.w, 1.w),
                           child: Container(
-                            height: 51.h,
+                            height: 55.h,
                             width: 65.w,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -359,26 +352,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       SizedBox(height: 24.h),
                       Text(
                         'Verification Document',
-                        style: TextStyle(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
                         ),
                       ),
                       SizedBox(height: 8.h),
-
-                      // --- ID Picker (Accept PDF) ---
                       InkWell(
                         onTap: () async {
-                          final List<String> allowedExtensions = [
-                            'jpg',
-                            'jpeg',
-                            'png',
-                            'pdf'
-                          ];
                           final ImageSource? source =
                               await showModalBottomSheet<ImageSource>(
                             context: context,
+                            backgroundColor: theme.cardColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(20.r)),
@@ -405,38 +390,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           );
                           if (source == null) return;
                           try {
-                            if (source == ImageSource.gallery) {
-                              // Use FilePicker for PDF support
-                              // (Requires adding file_picker package. For now, image_picker only.)
-                              final XFile? file = await _picker.pickImage(
-                                source: ImageSource.gallery,
-                                imageQuality: 80,
-                              );
-                              if (file != null) {
-                                final ext =
-                                    file.path.split('.').last.toLowerCase();
-                                if (!allowedExtensions.contains(ext)) {
-                                  if (context.mounted) {
-                                    AppSnackBars.showError(context,
-                                        message:
-                                            "Unsupported file type. Please pick JPG, PNG or PDF.");
-                                  }
-                                  return;
-                                }
-                                setState(() {
-                                  _idImage = file;
-                                });
-                              }
-                            } else {
-                              final XFile? file = await _picker.pickImage(
-                                source: ImageSource.camera,
-                                imageQuality: 80,
-                              );
-                              if (file != null) {
-                                setState(() {
-                                  _idImage = file;
-                                });
-                              }
+                            final XFile? file = await _picker.pickImage(
+                              source: source,
+                              imageQuality: 80,
+                            );
+                            if (file != null) {
+                              setState(() {
+                                _idImage = file;
+                              });
                             }
                           } catch (e) {
                             if (context.mounted) {
@@ -452,12 +413,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           decoration: BoxDecoration(
                             color: _idImage != null
                                 ? AppColors.primary.withOpacity(0.05)
-                                : Colors.grey.shade50,
+                                : theme.cardColor,
                             borderRadius: BorderRadius.circular(16.r),
                             border: Border.all(
                               color: _idImage != null
                                   ? AppColors.primary
-                                  : Colors.grey.shade300,
+                                  : theme.dividerColor,
                               style: BorderStyle.solid,
                               width: 1.5,
                             ),
@@ -489,10 +450,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ),
                                     Text(
                                       "Tap to change",
-                                      style: TextStyle(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 12.sp,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(fontSize: 12.sp),
                                     ),
                                   ],
                                 )
@@ -500,30 +459,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.badge_outlined,
-                                        color: AppColors.textSecondary,
+                                        color:
+                                            theme.textTheme.bodyMedium?.color,
                                         size: 32.sp),
                                     SizedBox(height: 8.h),
                                     Text(
                                       "Upload ID Card",
-                                      style: TextStyle(
-                                        color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.w600,
+                                      style:
+                                          theme.textTheme.titleMedium?.copyWith(
                                         fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     Text(
                                       "PNG, JPG or PDF",
-                                      style: TextStyle(
-                                        color: AppColors.textSecondary,
-                                        fontSize: 12.sp,
-                                      ),
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(fontSize: 12.sp),
                                     ),
                                   ],
                                 ),
                         ),
                       ),
-                      // ------------------------------
-
                       SizedBox(height: 24.h),
                       Row(
                         children: [
@@ -542,10 +498,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(width: 8.w),
                           Expanded(
                             child: RichText(
-                              text: const TextSpan(
+                              text: TextSpan(
                                 text: 'I agree to the ',
-                                style:
-                                    TextStyle(color: AppColors.textSecondary),
+                                style: theme.textTheme.bodyMedium,
                                 children: [
                                   TextSpan(
                                     text: 'Terms of Service',
@@ -596,10 +551,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Text(
                             "Already have an account? ",
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14.sp,
-                            ),
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(fontSize: 14.sp),
                           ),
                           GestureDetector(
                             onTap: () => Nav.replace(AppRoutes.login),

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart'; // Import Image Picker
+import 'package:image_picker/image_picker.dart';
 
 import '../../domain/usecases/add_apartment_usecase.dart';
 import '../../domain/usecases/delete_apartment_usecase.dart';

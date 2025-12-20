@@ -92,7 +92,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
         ),
         child: PhysicalModel(
           color: Colors.transparent,
-          elevation: 16, // Glass-like elevation
+          elevation: 16,
           borderRadius: BorderRadius.circular(22.r),
           clipBehavior: Clip.antiAlias,
           child: ClipRRect(

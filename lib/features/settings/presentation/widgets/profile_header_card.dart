@@ -10,6 +10,7 @@ class ProfileHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return FutureBuilder<UserModel>(
       future: GetIt.I<UserLocalDataSource>().getUser(),
       builder: (context, snapshot) {
@@ -21,7 +22,7 @@ class ProfileHeaderCard extends StatelessWidget {
         return Container(
           padding: EdgeInsets.all(20.w),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(20.r),
             boxShadow: [
               BoxShadow(
@@ -64,11 +65,8 @@ class ProfileHeaderCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style:
+                          theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
                     ),
                     SizedBox(height: 6.h),
                     Container(
@@ -92,7 +90,8 @@ class ProfileHeaderCard extends StatelessWidget {
                 ),
               ),
               if (user != null)
-                Icon(Icons.edit_outlined, color: Colors.grey, size: 22.sp),
+                Icon(Icons.edit_outlined,
+                    color: theme.iconTheme.color, size: 22.sp),
             ],
           ),
         );

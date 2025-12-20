@@ -15,17 +15,21 @@ class CurrencySelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: EdgeInsets.all(5.w),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: theme.brightness == Brightness.dark
+            ? Colors.grey.shade800
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Row(
         children: [
           Expanded(
             child: _buildCurrencyCard(
+              context,
               "USD",
               FontAwesomeIcons.dollarSign,
               selectedCurrency == "USD",
@@ -34,6 +38,7 @@ class CurrencySelectorWidget extends StatelessWidget {
           SizedBox(width: 10.w),
           Expanded(
             child: _buildCurrencyCard(
+              context,
               "SYP",
               FontAwesomeIcons.coins,
               selectedCurrency == "SYP",
@@ -44,14 +49,16 @@ class CurrencySelectorWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrencyCard(String code, IconData icon, bool isSelected) {
+  Widget _buildCurrencyCard(
+      BuildContext context, String code, IconData icon, bool isSelected) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => onCurrencyChanged(code),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(vertical: 16.h),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected ? theme.cardColor : Colors.transparent,
           borderRadius: BorderRadius.circular(12.r),
           boxShadow: isSelected
               ? [
@@ -71,13 +78,17 @@ class CurrencySelectorWidget extends StatelessWidget {
             Icon(
               icon,
               size: 20.sp,
-              color: isSelected ? AppColors.primary : Colors.grey,
+              color: isSelected
+                  ? AppColors.primary
+                  : theme.iconTheme.color?.withOpacity(0.5),
             ),
             SizedBox(height: 8.h),
             Text(
               code,
               style: TextStyle(
-                color: isSelected ? AppColors.primary : Colors.grey,
+                color: isSelected
+                    ? AppColors.primary
+                    : theme.textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.bold,
                 fontSize: 14.sp,
               ),

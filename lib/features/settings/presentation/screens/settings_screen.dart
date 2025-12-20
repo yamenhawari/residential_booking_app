@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 import '../widgets/currency_selector_widget.dart';
 import '../widgets/logout_button.dart';
 import '../widgets/profile_header_card.dart';
@@ -14,24 +17,107 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _isDarkMode = false;
-  String _selectedCurrency = "USD";
+  void _showThemeSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                child: Text(
+                  "Select Theme",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              BlocBuilder<ThemeCubit, ThemeMode>(
+                builder: (context, currentMode) {
+                  return Column(
+                    children: [
+                      _buildThemeOption(
+                        context,
+                        title: "System Default",
+                        icon: Icons.brightness_auto,
+                        mode: ThemeMode.system,
+                        isSelected: currentMode == ThemeMode.system,
+                      ),
+                      _buildThemeOption(
+                        context,
+                        title: "Light Mode",
+                        icon: Icons.light_mode,
+                        mode: ThemeMode.light,
+                        isSelected: currentMode == ThemeMode.light,
+                      ),
+                      _buildThemeOption(
+                        context,
+                        title: "Dark Mode",
+                        icon: Icons.dark_mode,
+                        mode: ThemeMode.dark,
+                        isSelected: currentMode == ThemeMode.dark,
+                      ),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: 16.h),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required ThemeMode mode,
+    required bool isSelected,
+  }) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color:
+            isSelected ? AppColors.primary : Theme.of(context).iconTheme.color,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected
+              ? AppColors.primary
+              : Theme.of(context).textTheme.bodyLarge?.color,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      trailing: isSelected
+          ? const Icon(Icons.check_circle, color: AppColors.primary)
+          : null,
+      onTap: () {
+        context.read<ThemeCubit>().changeTheme(mode);
+        Navigator.pop(context);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         title: Text(
           "Settings",
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
         ),
       ),
       body: SingleChildScrollView(
@@ -41,26 +127,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const ProfileHeaderCard(),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Currency"),
+            _buildSectionHeader("Appearance", theme),
             SizedBox(height: 12.h),
-            CurrencySelectorWidget(
-              selectedCurrency: _selectedCurrency,
-              onCurrencyChanged: (val) =>
-                  setState(() => _selectedCurrency = val),
+            BlocBuilder<ThemeCubit, ThemeMode>(
+              builder: (context, state) {
+                IconData icon;
+                String text;
+                switch (state) {
+                  case ThemeMode.light:
+                    icon = Icons.light_mode;
+                    text = "Light Mode";
+                    break;
+                  case ThemeMode.dark:
+                    icon = Icons.dark_mode;
+                    text = "Dark Mode";
+                    break;
+                  case ThemeMode.system:
+                    icon = Icons.brightness_auto;
+                    text = "System Default";
+                    break;
+                }
+                return SettingsTile(
+                  icon: icon,
+                  iconColor: Colors.deepPurple,
+                  title: "Theme",
+                  subtitle: text,
+                  onTap: () => _showThemeSelector(context),
+                );
+              },
             ),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Preferences"),
+            _buildSectionHeader("Currency", theme),
             SizedBox(height: 12.h),
-            SettingsTile(
-              icon: _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-              iconColor: Colors.deepPurple,
-              title: "Dark Mode",
-              trailing: Switch(
-                value: _isDarkMode,
-                activeColor: AppColors.primary,
-                onChanged: (val) => setState(() => _isDarkMode = val),
-              ),
+
+            // --- UPDATED CURRENCY SELECTOR WITH CUBIT ---
+            BlocBuilder<CurrencyCubit, String>(
+              builder: (context, currency) {
+                return CurrencySelectorWidget(
+                  selectedCurrency: currency,
+                  onCurrencyChanged: (val) =>
+                      context.read<CurrencyCubit>().changeCurrency(val),
+                );
+              },
             ),
+            // --------------------------------------------
+
+            SizedBox(height: 30.h),
+            _buildSectionHeader("Preferences", theme),
+            SizedBox(height: 12.h),
             SettingsTile(
               icon: Icons.notifications_rounded,
               iconColor: Colors.orange,
@@ -69,7 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {},
             ),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Opportunities"),
+            _buildSectionHeader("Opportunities", theme),
             SizedBox(height: 12.h),
             SettingsTile(
               icon: Icons.monetization_on_rounded,
@@ -88,7 +202,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Account"),
+            _buildSectionHeader("Account", theme),
             SizedBox(height: 12.h),
             SettingsTile(
               icon: Icons.favorite_rounded,
@@ -118,7 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(String title, ThemeData theme) {
     return Padding(
       padding: EdgeInsets.only(left: 4.w),
       child: Text(
@@ -126,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: 14.sp,
           fontWeight: FontWeight.bold,
-          color: AppColors.textSecondary,
+          color: theme.textTheme.bodyMedium?.color,
         ),
       ),
     );

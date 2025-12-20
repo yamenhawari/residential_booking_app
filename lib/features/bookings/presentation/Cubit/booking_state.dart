@@ -10,7 +10,6 @@ abstract class BookingState extends Equatable {
 
 class BookingInitial extends BookingState {}
 
-// --- STATES FOR THE LIST (History Page) ---
 class GetBookingsLoading extends BookingState {}
 
 class GetBookingsSuccess extends BookingState {
@@ -27,7 +26,6 @@ class GetBookingsFailure extends BookingState {
   List<Object> get props => [message];
 }
 
-// --- STATES FOR ACTIONS (Create/Cancel/Modify Buttons) ---
 class BookingActionLoading extends BookingState {}
 
 class BookingActionSuccess extends BookingState {

@@ -34,5 +34,4 @@ class _SuccessStrings {
 
 class _UiStrings {
   const _UiStrings();
-  // Add UI specific strings here later (e.g., Button labels)
 }

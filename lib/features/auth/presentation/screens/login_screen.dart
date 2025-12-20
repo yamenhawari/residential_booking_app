@@ -48,8 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: BlocConsumer<AuthCubit, AuthState>(
@@ -67,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
           },
           builder: (context, state) {
             final isLoading = state is AuthLoading;
-
             return SafeArea(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -83,11 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Container(
                           padding: EdgeInsets.all(10.w),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade200),
+                            border: Border.all(color: theme.dividerColor),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
-                          child: const Icon(Icons.arrow_back_ios_new,
-                              size: 18, color: Colors.black),
+                          child: Icon(Icons.arrow_back_ios_new,
+                              size: 18, color: theme.iconTheme.color),
                         ),
                       ),
                       SizedBox(height: 40.h),
@@ -99,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               width: 120.h,
                               padding: EdgeInsets.all(17.sp),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: theme.cardColor,
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
@@ -127,10 +127,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(height: 8.h),
                             Text(
                               'Login to continue',
-                              style: TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 16.sp, fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
@@ -145,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         prefix: Padding(
                           padding: EdgeInsets.fromLTRB(1.w, 1.h, 10.w, 1.h),
                           child: Container(
-                            height: 51.h,
+                            height: 55.h,
                             width: 65.w,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
@@ -218,10 +216,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account? ",
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 14.sp,
-                            ),
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(fontSize: 14.sp),
                           ),
                           GestureDetector(
                             onTap: () => Nav.replace(AppRoutes.register),

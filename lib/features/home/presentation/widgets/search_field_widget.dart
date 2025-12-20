@@ -13,13 +13,14 @@ class SearchFieldWidget extends StatefulWidget {
 class _SearchFieldState extends State<SearchFieldWidget> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           )
         ],
       ),
@@ -35,29 +36,28 @@ class _SearchFieldState extends State<SearchFieldWidget> {
               ),
             );
           },
+          style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: theme.cardColor,
             hintText: "Search destination...",
-            hintStyle: TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14.sp,
-            ),
+            hintStyle: theme.textTheme.bodyMedium,
             prefixIcon: const Icon(
               Icons.search,
               color: AppColors.primary,
             ),
             suffixIcon: Container(
-              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
               decoration: BoxDecoration(
-                  color: AppColors.lightGrey, shape: BoxShape.circle),
-              child: const Icon(
+                  color: theme.dividerColor, shape: BoxShape.circle),
+              child: Icon(
                 Icons.tune,
-                color: AppColors.textPrimary,
+                color: theme.iconTheme.color,
                 size: 20,
               ),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
               borderSide: BorderSide.none,

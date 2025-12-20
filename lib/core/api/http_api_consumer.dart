@@ -11,8 +11,7 @@ class HttpApiConsumer implements ApiConsumer {
   final http.Client client;
   final UserLocalDataSource userLocalDataSource;
 
-  static const Duration _timeoutDuration =
-      Duration(seconds: 12); // short period because its on develpoing mode
+  static const Duration _timeoutDuration = Duration(seconds: 20);
 
   HttpApiConsumer({
     required this.client,
@@ -59,9 +58,8 @@ class HttpApiConsumer implements ApiConsumer {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(requiresAuth: requiresAuth);
 
-      final response = await client
-          .get(uri, headers: headers)
-          .timeout(_timeoutDuration); // Add Timeout
+      final response =
+          await client.get(uri, headers: headers).timeout(_timeoutDuration);
 
       return _handleResponse(response);
     } on TimeoutException {
@@ -114,8 +112,7 @@ class HttpApiConsumer implements ApiConsumer {
             headers: headers,
             body: body != null ? json.encode(body) : null,
           )
-          .timeout(_timeoutDuration); // Add Timeout
-
+          .timeout(_timeoutDuration);
       return _handleResponse(response);
     } on TimeoutException {
       throw ServerException("Request timed out. Please try again later.");

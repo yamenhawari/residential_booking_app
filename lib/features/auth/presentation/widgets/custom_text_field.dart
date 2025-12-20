@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 
-/// Enhanced text field used across auth screens.
-/// - Uses `TextFormField` so validation can be handled by surrounding `Form`.
 class CustomTextField extends StatelessWidget {
   final String label;
   final String hint;
@@ -31,14 +29,14 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
             fontSize: 14.sp,
           ),
         ),
@@ -49,30 +47,30 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           maxLength: maxLength,
           inputFormatters: inputFormatters,
-          style: const TextStyle(color: AppColors.textPrimary),
+          style: theme.textTheme.bodyLarge,
           validator: validator,
           decoration: InputDecoration(
             counterText: '',
             hintText: hint,
-            hintStyle: const TextStyle(color: AppColors.textSecondary),
+            hintStyle: theme.textTheme.bodyMedium,
             filled: true,
-            fillColor: AppColors.surface,
+            fillColor: theme.cardColor,
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.background),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: const BorderSide(color: AppColors.background),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide(color: AppColors.background, width: 1.5.w),
+              borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
             ),
             suffixIcon: suffixIcon != null
-                ? Icon(suffixIcon, color: AppColors.textSecondary)
+                ? Icon(suffixIcon, color: theme.iconTheme.color)
                 : null,
           ),
         ),

@@ -17,26 +17,23 @@ class SearchFilterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return BlocProvider(
       create: (context) => FilterCubit(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: theme.scaffoldBackgroundColor,
           elevation: 0,
           scrolledUnderElevation: 0,
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.close, size: 24.sp, color: Colors.black),
+            icon: Icon(Icons.close, size: 24.sp, color: theme.iconTheme.color),
             onPressed: () => Nav.back(),
           ),
           title: Text(
             "Filters",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-            ),
+            style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
           ),
           actions: [
             Builder(
@@ -67,7 +64,7 @@ class SearchFilterScreen extends StatelessWidget {
                       SizedBox(height: 12.h),
                       const DateRangeSelector(),
                       SizedBox(height: 24.h),
-                      Divider(color: Colors.grey.shade200),
+                      Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
                       const FilterSectionTitle(title: "Rooms"),
                       SizedBox(height: 12.h),
@@ -79,7 +76,7 @@ class SearchFilterScreen extends StatelessWidget {
                         labelBuilder: (item) => item == 5 ? "5+" : "$item",
                       ),
                       SizedBox(height: 24.h),
-                      Divider(color: Colors.grey.shade200),
+                      Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
                       const FilterSectionTitle(title: "Location"),
                       SizedBox(height: 12.h),
@@ -92,7 +89,7 @@ class SearchFilterScreen extends StatelessWidget {
                         labelBuilder: (item) => item.displayName,
                       ),
                       SizedBox(height: 24.h),
-                      Divider(color: Colors.grey.shade200),
+                      Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
                       const FilterSectionTitle(title: "Price Range (Monthly)"),
                       SizedBox(height: 12.h),
@@ -104,9 +101,8 @@ class SearchFilterScreen extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(24.w),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border:
-                        Border(top: BorderSide(color: Colors.grey.shade100)),
+                    color: theme.cardColor,
+                    border: Border(top: BorderSide(color: theme.dividerColor)),
                   ),
                   child: SizedBox(
                     height: 56.h,

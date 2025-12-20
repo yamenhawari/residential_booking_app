@@ -19,9 +19,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
-        await Future.delayed(Duration(milliseconds: 1700));
+        await Future.delayed(const Duration(milliseconds: 2000));
         if (state is AuthUserCheckSuccess) {
           if (context.mounted) {
             AppSnackBars.showSuccess(context,
@@ -38,47 +41,60 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          decoration: BoxDecoration(
+            gradient: isDark ? null : AppColors.primaryGradient,
+            color: isDark ? theme.scaffoldBackgroundColor : null,
+          ),
+          child: Stack(
             children: [
-              const Spacer(),
-              Container(
-                height: 120.h,
-                width: 120.h,
-                padding: EdgeInsets.all(17.h),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 140.h,
+                      width: 140.h,
+                      padding: EdgeInsets.all(20.h),
+                      decoration: BoxDecoration(
+                        color: isDark ? theme.cardColor : Colors.white,
+                        borderRadius: BorderRadius.circular(35.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 30,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: Image.asset(
+                        "assets/icons/home_15751764.png",
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    SizedBox(height: 30.h),
+                    Text(
+                      'DreamStay',
+                      style: TextStyle(
+                        fontFamily: 'Pacifico',
+                        fontSize: 42.sp,
+                        color: isDark ? AppColors.primary : Colors.white,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ],
                 ),
-                child: Image.asset(
-                  "assets/icons/home_15751764.png",
-                  fit: BoxFit.contain,
+              ),
+              Positioned(
+                bottom: 60.h,
+                left: 0,
+                right: 0,
+                child: SizedBox(
+                  height: 50.h,
+                  child: SmoothLoadingWidget(
+                    color: isDark ? AppColors.primary : Colors.white,
+                  ),
                 ),
               ),
-              SizedBox(height: 24.h),
-              Text(
-                'DreamStay',
-                style: TextStyle(
-                  fontFamily: 'Pacifico',
-                  fontSize: 40.sp,
-                  color: Colors.white,
-                  letterSpacing: 1.5,
-                ),
-              ),
-              const Spacer(),
-              SizedBox(
-                height: 50.h,
-                child: const SmoothLoadingWidget(color: Colors.white),
-              ),
-              SizedBox(height: 50.h),
             ],
           ),
         ),

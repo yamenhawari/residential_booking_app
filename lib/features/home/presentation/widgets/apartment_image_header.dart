@@ -29,6 +29,7 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       height: 350.h,
       width: double.infinity,
@@ -54,14 +55,15 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
                         );
                       },
                       errorBuilder: (_, __, ___) => Container(
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.error)),
+                          color: theme.scaffoldBackgroundColor,
+                          child:
+                              Icon(Icons.error, color: theme.iconTheme.color)),
                     )
                   : Image.asset(
                       imagePath,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) =>
-                          Container(color: Colors.grey[300]),
+                          Container(color: theme.scaffoldBackgroundColor),
                     );
             },
           ),
@@ -69,9 +71,9 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
             top: 50.h,
             left: 20.w,
             child: CircleAvatar(
-              backgroundColor: Colors.white.withOpacity(0.9),
+              backgroundColor: theme.cardColor.withOpacity(0.9),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -89,7 +91,7 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 _displayImages.length,
-                (index) => _buildIndicator(index),
+                (index) => _buildIndicator(index, theme),
               ),
             ),
           ),
@@ -98,14 +100,14 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
     );
   }
 
-  Widget _buildIndicator(int index) {
+  Widget _buildIndicator(int index, ThemeData theme) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       margin: EdgeInsets.symmetric(horizontal: 4.w),
       height: 8.h,
       width: _currentIndex == index ? 24.w : 8.w,
       decoration: BoxDecoration(
-        color: _currentIndex == index ? AppColors.primary : AppColors.white,
+        color: _currentIndex == index ? AppColors.primary : theme.cardColor,
         borderRadius: BorderRadius.circular(4.r),
       ),
     );

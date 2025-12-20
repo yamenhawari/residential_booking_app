@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:residential_booking_app/core/resources/app_colors.dart';
 
 class SettingsTile extends StatelessWidget {
   final IconData icon;
@@ -22,10 +21,11 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
@@ -60,20 +60,17 @@ class SettingsTile extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: TextStyle(
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
                         ),
                       ),
                       if (subtitle != null) ...[
                         SizedBox(height: 4.h),
                         Text(
                           subtitle!,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontSize: 12.sp),
                         ),
                       ],
                     ],
@@ -83,7 +80,7 @@ class SettingsTile extends StatelessWidget {
                   trailing!
                 else
                   Icon(Icons.arrow_forward_ios,
-                      size: 14.sp, color: Colors.grey.shade300),
+                      size: 14.sp, color: theme.dividerColor),
               ],
             ),
           ),

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
-import 'package:residential_booking_app/features/intro/widgets/big_slide_action_button.dart';
+import 'package:residential_booking_app/features/intro/presentation/widgets/big_slide_action_button.dart';
 
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({super.key});
@@ -15,7 +15,6 @@ class IntroductionScreen extends StatefulWidget {
 class _IntroductionScreenState extends State<IntroductionScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
   Key _sliderKey = UniqueKey();
 
   final List<Map<String, String>> _slides = [
@@ -42,7 +41,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   void _goToNextPage() async {
     await Future.delayed(const Duration(milliseconds: 200));
-
     if (_currentPage < _slides.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 500),
@@ -55,8 +53,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           PageView.builder(
@@ -70,10 +69,9 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
             },
             itemCount: _slides.length,
             itemBuilder: (context, index) {
-              return _buildPageContent(_slides[index]);
+              return _buildPageContent(_slides[index], theme);
             },
           ),
-          // Skip Button
           if (_currentPage != _slides.length - 1)
             Positioned(
               top: 50.h,
@@ -83,16 +81,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 child: Text(
                   "Skip",
                   style: TextStyle(
-                    color: AppColors.textPrimary,
+                    color: theme.textTheme.titleLarge?.color,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
                   ),
                 ),
               ),
             ),
-          // Bottom Controls
           Positioned(
-            bottom: 50.h,
+            bottom: 40.h,
             left: 24.w,
             right: 24.w,
             child: Column(
@@ -109,13 +106,13 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                       decoration: BoxDecoration(
                         color: _currentPage == index
                             ? AppColors.primary
-                            : Colors.grey.shade300,
+                            : theme.dividerColor,
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 40.h),
+                SizedBox(height: 30.h),
                 BigSlideActionBtn(
                   key: _sliderKey,
                   onSubmit: _goToNextPage,
@@ -129,71 +126,86 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
-  Widget _buildPageContent(Map<String, String> data) {
-    final borderRadius = BorderRadius.only(
-      topLeft: Radius.circular(100.r),
-      bottomRight: Radius.circular(100.r),
-      topRight: Radius.circular(30.r),
-      bottomLeft: Radius.circular(30.r),
-    );
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: 340.h,
-            width: double.infinity,
+  Widget _buildPageContent(Map<String, String> data, ThemeData theme) {
+    return Column(
+      children: [
+        SizedBox(
+          height: 0.55.sh,
+          width: double.infinity,
+          child: Container(
+            margin: EdgeInsets.fromLTRB(20.w, 60.h, 20.w, 0),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: theme.cardColor,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(100.r),
+                bottomRight: Radius.circular(100.r),
+                topRight: Radius.circular(30.r),
+                bottomLeft: Radius.circular(30.r),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
             child: ClipRRect(
-              borderRadius: borderRadius,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(100.r),
+                bottomRight: Radius.circular(100.r),
+                topRight: Radius.circular(30.r),
+                bottomLeft: Radius.circular(30.r),
+              ),
               child: Image.asset(
                 data["image"]!,
                 fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
                 errorBuilder: (context, error, stackTrace) {
-                  return Icon(
-                    Icons.apartment_rounded,
-                    size: 120.sp,
-                    color: AppColors.primary.withOpacity(0.2),
+                  return Center(
+                    child: Icon(
+                      Icons.image_not_supported_rounded,
+                      size: 60.sp,
+                      color: theme.disabledColor,
+                    ),
                   );
                 },
               ),
             ),
           ),
-          SizedBox(height: 50.h),
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              data["title"]!,
-              style: TextStyle(
-                fontSize: 40.sp,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-                height: 1.1,
-                letterSpacing: -1,
-              ),
-              textAlign: TextAlign.left,
+        ),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data["title"]!,
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    fontSize: 38.sp,
+                    height: 1.1,
+                    letterSpacing: -0.5,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(height: 16.h),
+                Text(
+                  data["desc"]!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 16.sp,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(height: 20.h),
+              ],
             ),
           ),
-          SizedBox(height: 16.h),
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              data["desc"]!,
-              style: TextStyle(
-                fontSize: 17.sp,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          SizedBox(height: 120.h),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

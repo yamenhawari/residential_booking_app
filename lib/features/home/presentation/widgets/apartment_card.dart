@@ -1,11 +1,14 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/heart_widget.dart';
 import 'package:residential_booking_app/core/widgets/smooth_loading_widget.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 
 class ApartmentCard extends StatelessWidget {
   final Apartment apartment;
@@ -14,9 +17,10 @@ class ApartmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
@@ -30,7 +34,6 @@ class ApartmentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         child: Stack(
           children: [
-            // 1. Background Image (Cached for performance)
             Positioned.fill(
               child: CachedNetworkImage(
                 imageUrl: apartment.mainImageUrl,
@@ -39,14 +42,12 @@ class ApartmentCard extends StatelessWidget {
                   child: SmoothLoadingWidget(color: AppColors.primary),
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: Colors.grey[200],
+                  color: theme.scaffoldBackgroundColor,
                   child: Icon(Icons.broken_image,
                       color: Colors.grey[400], size: 30.sp),
                 ),
               ),
             ),
-
-            // 2. Gradient Overlay (For text readability)
             Positioned(
               bottom: 0,
               left: 0,
@@ -65,8 +66,6 @@ class ApartmentCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // 3. Ripple Effect (On top of image, but behind text)
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
@@ -77,14 +76,11 @@ class ApartmentCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // 4. Text Content (Floating above the ripple)
             Positioned(
               bottom: 16.h,
               left: 16.w,
               right: 16.w,
               child: IgnorePointer(
-                // Ensures clicks pass through text to the InkWell
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -123,8 +119,6 @@ class ApartmentCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // 5. Price Tag (Glassmorphism)
             Positioned(
               top: 20.h,
               right: 16.w,
@@ -136,20 +130,22 @@ class ApartmentCard extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                     color: Colors.black.withOpacity(0.25),
-                    child: Text(
-                      '\$${apartment.pricePerMonth.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
-                      ),
+                    child: BlocBuilder<CurrencyCubit, String>(
+                      builder: (context, currency) {
+                        return Text(
+                          "${PriceFormatter.format(apartment.pricePerMonth, currency)}/mo",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
               ),
             ),
-
-            // 6. Heart Widget (Interactive Layer)
             Positioned(
               top: 16.h,
               left: 16.w,

@@ -9,7 +9,7 @@ import 'package:residential_booking_app/features/home/presentation/screens/filte
 import 'package:residential_booking_app/features/home/presentation/screens/home_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/main_layout_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
-import 'package:residential_booking_app/features/intro/presentation/introduction_screen.dart';
+import 'package:residential_booking_app/features/intro/presentation/screens/introduction_screen.dart';
 import 'package:residential_booking_app/features/settings/presentation/screens/settings_screen.dart';
 import 'app_routes.dart';
 

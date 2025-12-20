@@ -73,7 +73,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<Unit> logout(String token) async {
-    // Logout requires auth, which is the default
     await apiConsumer.post(ApiConstants.logout);
     return unit;
   }

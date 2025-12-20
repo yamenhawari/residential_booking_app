@@ -25,11 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
@@ -52,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
             margin: EdgeInsets.only(right: 20.w),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(color: Colors.grey.shade200),
+              color: theme.cardColor,
+              border: Border.all(color: theme.dividerColor),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05),
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {},
               icon: Icon(
                 FontAwesomeIcons.bell,
-                color: AppColors.textPrimary,
+                color: theme.iconTheme.color,
                 size: 20.sp,
               ),
             ),
@@ -94,20 +95,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       "Oops! Something went wrong.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: theme.textTheme.titleLarge,
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       state.message,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     SizedBox(height: 30.h),
                     SizedBox(
@@ -136,11 +130,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           if (state is HomeLoaded) {
             final apartments = state.apartments;
-
             return RefreshIndicator(
               onRefresh: _onRefresh,
               color: AppColors.primary,
-              backgroundColor: Colors.white,
+              backgroundColor: theme.cardColor,
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -170,11 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             SizedBox(height: 10.h),
                             Text(
                               "No apartments found.",
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: theme.textTheme.bodyMedium
+                                  ?.copyWith(fontSize: 16.sp),
                             ),
                           ],
                         ),
@@ -212,7 +202,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           }
-
           return const SizedBox.shrink();
         },
       ),

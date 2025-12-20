@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../core/resources/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
   final TextEditingController controller;
@@ -54,16 +53,16 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
             ),
           ),
           SizedBox(height: 8.h),
@@ -76,44 +75,25 @@ class _AppTextFieldState extends State<AppTextField> {
           inputFormatters: widget.inputFormatters,
           readOnly: widget.readOnly,
           onTap: widget.onTap,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 14.sp,
-          ),
+          style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: const TextStyle(color: AppColors.textSecondary),
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            border: _buildBorder(AppColors.borderDefault),
-            enabledBorder: _buildBorder(AppColors.borderDefault),
-            focusedBorder: _buildBorder(AppColors.borderFocus, width: 1.5),
-            errorBorder: _buildBorder(Colors.red),
             prefixIcon: widget.prefix,
-            suffixIcon: _buildSuffixIcon(),
+            suffixIcon: _buildSuffixIcon(theme),
           ),
         ),
       ],
     );
   }
 
-  OutlineInputBorder _buildBorder(Color color, {double width = 1.0}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12.r),
-      borderSide: BorderSide(color: color, width: width.w),
-    );
-  }
-
-  Widget? _buildSuffixIcon() {
+  Widget? _buildSuffixIcon(ThemeData theme) {
     if (widget.isPassword) {
       return IconButton(
         icon: Icon(
           _obscureText
               ? Icons.visibility_off_outlined
               : Icons.visibility_outlined,
-          color: AppColors.textSecondary,
+          color: theme.textTheme.bodyMedium?.color,
         ),
         onPressed: _toggleVisibility,
       );
@@ -121,11 +101,10 @@ class _AppTextFieldState extends State<AppTextField> {
 
     if (widget.suffixIcon != null) {
       return IconButton(
-        icon: Icon(widget.suffixIcon, color: AppColors.textSecondary),
+        icon: Icon(widget.suffixIcon, color: theme.textTheme.bodyMedium?.color),
         onPressed: widget.onSuffixTap,
       );
     }
-
     return null;
   }
 }

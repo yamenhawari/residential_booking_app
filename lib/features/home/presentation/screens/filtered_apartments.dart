@@ -43,25 +43,22 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new,
-              size: 20.sp, color: AppColors.textPrimary),
+              size: 20.sp, color: theme.iconTheme.color),
           onPressed: () => Nav.back(),
         ),
         title: Text(
           "Search Results",
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
         ),
       ),
       body: BlocBuilder<HomeCubit, HomeState>(
@@ -85,18 +82,13 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                     Text(
                       "Oops! Something went wrong.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: theme.textTheme.titleLarge,
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       state.message,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14.sp, color: AppColors.textSecondary),
+                      style: theme.textTheme.bodyMedium,
                     ),
                     SizedBox(height: 30.h),
                     SizedBox(
@@ -126,7 +118,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
             return RefreshIndicator(
               onRefresh: _onRefresh,
               color: AppColors.primary,
-              backgroundColor: Colors.white,
+              backgroundColor: theme.cardColor,
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -144,10 +136,9 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                           if (apartments.isNotEmpty)
                             Text(
                               "Found ${apartments.length} properties",
-                              style: TextStyle(
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
                               ),
                             ),
                         ],
@@ -168,8 +159,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                             SizedBox(height: 10.h),
                             Text(
                               "No apartments found matching your filters.",
-                              style: TextStyle(
-                                color: AppColors.textSecondary,
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w500,
                               ),

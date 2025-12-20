@@ -7,7 +7,7 @@ class UploadButton extends StatelessWidget {
   final String buttonText;
   final IconData icon;
   final VoidCallback onFilePick;
-  final bool isFileSelected; // To change color if selected
+  final bool isFileSelected;
 
   const UploadButton({
     super.key,
@@ -20,15 +20,15 @@ class UploadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+          style: theme.textTheme.titleMedium?.copyWith(
             fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
           ),
         ),
         SizedBox(height: 8.h),
@@ -41,10 +41,10 @@ class UploadButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: isFileSelected
                   ? Colors.green.withOpacity(0.1)
-                  : AppColors.surface,
+                  : theme.cardColor,
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
-                color: isFileSelected ? Colors.green : AppColors.border,
+                color: isFileSelected ? Colors.green : theme.dividerColor,
                 style: BorderStyle.solid,
               ),
             ),

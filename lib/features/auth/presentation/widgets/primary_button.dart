@@ -17,13 +17,14 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       height: 52,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: enabled ? AppColors.primaryGradient : null,
-        color: enabled ? null : AppColors.textSecondary.withOpacity(0.25),
+        color: enabled ? null : theme.disabledColor.withOpacity(0.25),
       ),
       child: ElevatedButton(
         onPressed: enabled && !loading ? onPressed : null,
@@ -43,7 +44,7 @@ class PrimaryButton extends StatelessWidget {
             : Text(
                 label,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

@@ -5,10 +5,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/core/enums/apartment_status_enum.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_state.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/apartment_image_header.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 
 class ApartmentDetailsScreen extends StatefulWidget {
   final int id;
@@ -27,8 +29,9 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: BlocBuilder<ApartmentDetailsCubit, ApartmentDetailsState>(
         builder: (context, state) {
           if (state is ApartmentDetailsLoading) {
@@ -46,7 +49,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               ),
             );
           } else if (state is ApartmentDetailsLoaded) {
-            return _buildContent(state.apartment);
+            return _buildContent(state.apartment, theme);
           }
           return const SizedBox.shrink();
         },
@@ -54,7 +57,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
     );
   }
 
-  Widget _buildContent(Apartment apartment) {
+  Widget _buildContent(Apartment apartment, ThemeData theme) {
     return Stack(
       children: [
         CustomScrollView(
@@ -73,9 +76,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                       Expanded(
                         child: Text(
                           apartment.title,
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.bold,
+                          style: theme.textTheme.displayLarge?.copyWith(
                             fontSize: 24.sp,
                             height: 1.2,
                           ),
@@ -109,15 +110,14 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                   Row(
                     children: [
                       Icon(FontAwesomeIcons.locationDot,
-                          color: AppColors.textSecondary, size: 16.sp),
+                          color: theme.textTheme.bodyMedium?.color,
+                          size: 16.sp),
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
                           "${apartment.governorate.displayName}, ${apartment.address}",
-                          style: TextStyle(
-                            color: AppColors.textSecondary,
-                            fontSize: 14.sp,
-                          ),
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontSize: 14.sp),
                         ),
                       ),
                     ],
@@ -125,20 +125,19 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                   SizedBox(height: 12.h),
                   _buildStatusBadge(apartment.status),
                   SizedBox(height: 32.h),
-                  Divider(color: Colors.grey[100], thickness: 1.5),
+                  Divider(color: theme.dividerColor, thickness: 1.5),
                   SizedBox(height: 32.h),
-                  _buildSectionTitle('Facilities'),
+                  _buildSectionTitle('Facilities', theme),
                   SizedBox(height: 16.h),
-                  _buildFacilitiesRow(apartment),
+                  _buildFacilitiesRow(apartment, theme),
                   SizedBox(height: 32.h),
-                  Divider(color: Colors.grey[100], thickness: 1.5),
+                  Divider(color: theme.dividerColor, thickness: 1.5),
                   SizedBox(height: 32.h),
-                  _buildSectionTitle('Description'),
+                  _buildSectionTitle('Description', theme),
                   SizedBox(height: 12.h),
                   Text(
                     apartment.description,
-                    style: TextStyle(
-                      color: AppColors.textSecondary,
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       fontSize: 15.sp,
                       height: 1.6,
                     ),
@@ -148,53 +147,48 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
             ),
           ],
         ),
-        _buildBottomBar(apartment),
+        _buildBottomBar(apartment, theme),
       ],
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, ThemeData theme) {
     return Text(
       title,
-      style: TextStyle(
-        fontSize: 18.sp,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
+      style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
     );
   }
 
-  Widget _buildFacilitiesRow(Apartment apartment) {
+  Widget _buildFacilitiesRow(Apartment apartment, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildFacilityItem(
-            FontAwesomeIcons.bed, "${apartment.roomCount} Rooms"),
-        _buildFacilityItem(FontAwesomeIcons.bath, "1 Bath"),
-        _buildFacilityItem(FontAwesomeIcons.wifi, "Wifi"),
-        _buildFacilityItem(FontAwesomeIcons.kitchenSet, "Kitchen"),
+            FontAwesomeIcons.bed, "${apartment.roomCount} Rooms", theme),
+        _buildFacilityItem(FontAwesomeIcons.bath, "1 Bath", theme),
+        _buildFacilityItem(FontAwesomeIcons.wifi, "Wifi", theme),
+        _buildFacilityItem(FontAwesomeIcons.kitchenSet, "Kitchen", theme),
       ],
     );
   }
 
-  Widget _buildFacilityItem(IconData icon, String label) {
+  Widget _buildFacilityItem(IconData icon, String label, ThemeData theme) {
     return Container(
       width: 75.w,
       padding: EdgeInsets.symmetric(vertical: 12.h),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F7FA),
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: theme.dividerColor),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.textPrimary, size: 20.sp),
+          Icon(icon, color: theme.iconTheme.color, size: 20.sp),
           SizedBox(height: 8.h),
           Text(
             label,
-            style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w500),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500),
             textAlign: TextAlign.center,
           )
         ],
@@ -252,7 +246,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
     );
   }
 
-  Widget _buildBottomBar(Apartment apartment) {
+  Widget _buildBottomBar(Apartment apartment, ThemeData theme) {
     final bool isAvailable = apartment.status == ApartmentStatus.available;
 
     return Align(
@@ -260,7 +254,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
       child: Container(
         padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 30.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           boxShadow: [
             BoxShadow(
@@ -278,34 +272,36 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               children: [
                 Text(
                   "Price",
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(height: 4.h),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "\$${apartment.pricePerMonth.toStringAsFixed(0)}",
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24.sp,
-                          fontFamily: 'Inter',
-                        ),
+                BlocBuilder<CurrencyCubit, String>(
+                  builder: (context, currency) {
+                    return RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: PriceFormatter.format(
+                                apartment.pricePerMonth, currency),
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24.sp,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          TextSpan(
+                            text: " /mo",
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(fontSize: 14.sp),
+                          ),
+                        ],
                       ),
-                      TextSpan(
-                        text: " /month",
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -314,11 +310,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               child: SizedBox(
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: isAvailable
-                      ? () {
-                          // TODO: Implement Booking Logic
-                        }
-                      : null,
+                  onPressed: isAvailable ? () {} : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     disabledBackgroundColor: Colors.grey.shade300,

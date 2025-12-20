@@ -18,17 +18,17 @@ class RoleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16.h),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
-              : AppColors.surface,
+          color:
+              isSelected ? AppColors.primary.withOpacity(0.1) : theme.cardColor,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.borderDefault,
+            color: isSelected ? AppColors.primary : theme.dividerColor,
             width: 1.5,
           ),
         ),
@@ -36,14 +36,18 @@ class RoleCard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected
+                  ? AppColors.primary
+                  : theme.textTheme.bodyMedium?.color,
               size: 28.sp,
             ),
             SizedBox(height: 8.h),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected
+                    ? AppColors.primary
+                    : theme.textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.bold,
                 fontSize: 14.sp,
               ),

@@ -9,36 +9,42 @@ class LoginRegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
+        decoration: BoxDecoration(
+          gradient: isDark ? null : AppColors.primaryGradient,
+          color: isDark ? theme.scaffoldBackgroundColor : null,
+        ),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(flex: 2),
+                const Spacer(flex: 3),
                 Container(
-                  height: 120.h,
-                  width: 120.h,
-                  padding: EdgeInsets.all(17.h),
+                  height: 130.h,
+                  width: 130.h,
+                  padding: EdgeInsets.all(20.h),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(218, 255, 255, 255),
-                    borderRadius: BorderRadius.circular(30.r),
+                    color: isDark ? theme.cardColor : Colors.white,
+                    borderRadius: BorderRadius.circular(35.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.15),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                        blurRadius: 30,
+                        offset: const Offset(0, 15),
                       ),
                     ],
                   ),
                   child: Image.asset(
                     "assets/icons/home_15751764.png",
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 SizedBox(height: 30.h),
@@ -46,8 +52,8 @@ class LoginRegisterScreen extends StatelessWidget {
                   'DreamStay',
                   style: TextStyle(
                     fontFamily: 'Pacifico',
-                    fontSize: 36.sp,
-                    color: Colors.white,
+                    fontSize: 40.sp,
+                    color: isDark ? AppColors.primary : Colors.white,
                     letterSpacing: 1.5,
                   ),
                 ),
@@ -58,29 +64,34 @@ class LoginRegisterScreen extends StatelessWidget {
                     'Your smart solution for managing residential apartments easily and efficiently',
                     style: TextStyle(
                       fontSize: 15.sp,
-                      color: Colors.white.withOpacity(0.9),
+                      color: isDark
+                          ? theme.textTheme.bodyMedium?.color
+                          : Colors.white.withOpacity(0.9),
                       height: 1.5,
                       fontWeight: FontWeight.w400,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                const Spacer(flex: 3),
+                const Spacer(flex: 4),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton.icon(
                     onPressed: () => Nav.to(AppRoutes.login),
-                    icon: const Icon(Icons.login, color: AppColors.primary),
+                    icon: Icon(Icons.login,
+                        color: isDark ? Colors.white : AppColors.primary),
                     label: Text(
                       'Login',
                       style: TextStyle(
                           fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primary,
-                      elevation: 2,
+                      backgroundColor:
+                          isDark ? AppColors.primary : Colors.white,
+                      foregroundColor:
+                          isDark ? Colors.white : AppColors.primary,
+                      elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),
                       ),
@@ -93,15 +104,19 @@ class LoginRegisterScreen extends StatelessWidget {
                   height: 56.h,
                   child: OutlinedButton.icon(
                     onPressed: () => Nav.to(AppRoutes.register),
-                    icon: const Icon(Icons.person_add, color: Colors.white),
+                    icon: Icon(Icons.person_add,
+                        color: isDark ? AppColors.primary : Colors.white),
                     label: Text(
                       'Create Account',
                       style: TextStyle(
                           fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.white, width: 2),
-                      foregroundColor: Colors.white,
+                      side: BorderSide(
+                          color: isDark ? AppColors.primary : Colors.white,
+                          width: 2),
+                      foregroundColor:
+                          isDark ? AppColors.primary : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),
                       ),
@@ -109,16 +124,17 @@ class LoginRegisterScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 24.h),
-                // Suggestion: Add a privacy note
                 Text(
                   "By continuing, you agree to our Terms of Service and Privacy Policy.",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: isDark
+                        ? theme.textTheme.bodyMedium?.color?.withOpacity(0.5)
+                        : Colors.white.withOpacity(0.7),
                     fontSize: 12.sp,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 16.h),
+                SizedBox(height: 20.h),
               ],
             ),
           ),

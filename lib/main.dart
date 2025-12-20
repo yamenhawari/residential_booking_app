@@ -5,10 +5,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:residential_booking_app/core/navigation/app_router.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/core/resources/app_theme.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/cubit/home/home_cubit.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 import 'core/di/injection_container.dart' as di;
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 
@@ -26,13 +29,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(
-          411.42857142857144, 866.2857142857143), //For My Emulator :)
+      designSize: const Size(411.4, 866.3),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
+            BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
+            BlocProvider<CurrencyCubit>(
+                create: (_) => CurrencyCubit()), // Add this
             BlocProvider<AuthCubit>(
               create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
             ),
@@ -49,12 +54,19 @@ class MyApp extends StatelessWidget {
               create: (_) => di.sl<OwnerCubit>(),
             ),
           ],
-          child: MaterialApp(
-            title: 'Residential Booking',
-            debugShowCheckedModeBanner: false,
-            navigatorKey: di.sl<NavigationService>().navigatorKey,
-            onGenerateRoute: AppRouter.generateRoute,
-            initialRoute: AppRoutes.splash,
+          child: BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, themeMode) {
+              return MaterialApp(
+                title: 'DreamStay',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeMode,
+                navigatorKey: di.sl<NavigationService>().navigatorKey,
+                onGenerateRoute: AppRouter.generateRoute,
+                initialRoute: AppRoutes.splash,
+              );
+            },
           ),
         );
       },

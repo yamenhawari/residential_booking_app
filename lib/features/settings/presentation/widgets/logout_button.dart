@@ -11,6 +11,7 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SizedBox(
       width: double.infinity,
       height: 56.h,
@@ -20,7 +21,7 @@ class LogoutButton extends StatelessWidget {
           Nav.offAll(AppRoutes.loginRegister);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.white,
+          backgroundColor: theme.cardColor,
           elevation: 0,
           side: BorderSide(color: AppColors.error.withOpacity(0.5)),
           shape: RoundedRectangleBorder(

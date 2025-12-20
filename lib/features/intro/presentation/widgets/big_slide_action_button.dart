@@ -9,12 +9,12 @@ class BigSlideActionBtn extends StatefulWidget {
   final Color? baseColor;
 
   const BigSlideActionBtn({
-    super.key,
+    Key? key,
     required this.onSubmit,
     required this.label,
     this.isLoading = false,
     this.baseColor,
-  });
+  }) : super(key: key);
 
   @override
   State<BigSlideActionBtn> createState() => _BigSlideActionBtnState();
@@ -23,37 +23,54 @@ class BigSlideActionBtn extends StatefulWidget {
 class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
   double _dragPercent = 0.0;
   bool _isSliding = false;
+  bool _isCompleted = false;
 
   void _onHorizontalDragUpdate(DragUpdateDetails details, double width) {
-    if (widget.isLoading) return;
+    if (widget.isLoading || _isCompleted) return;
     final dx = details.localPosition.dx.clamp(0.0, width);
     setState(() {
       _dragPercent = dx / width;
     });
   }
 
-  void _onHorizontalDragEnd(double width) {
-    if (widget.isLoading) return;
+  void _onHorizontalDragEnd(DragEndDetails details, double width) {
+    if (widget.isLoading || _isCompleted) return;
     if (_dragPercent > 0.8) {
       setState(() {
         _dragPercent = 1.0;
         _isSliding = true;
+        _isCompleted = true;
       });
-      Future.delayed(const Duration(milliseconds: 300), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         widget.onSubmit();
-        setState(() {
-          _dragPercent = 0.0;
-          _isSliding = false;
-        });
       });
     } else {
       setState(() {
         _dragPercent = 0.0;
+        _isSliding = false;
       });
     }
   }
 
-  Color get _color => widget.baseColor ?? AppColors.primary;
+  void _onHorizontalDragStart(DragStartDetails details) {
+    if (widget.isLoading || _isCompleted) return;
+    setState(() {
+      _isSliding = true;
+    });
+  }
+
+  Color get _color {
+    if (_isCompleted) return AppColors.success;
+    return widget.baseColor ?? AppColors.primary;
+  }
+
+  void _reset() {
+    setState(() {
+      _dragPercent = 0.0;
+      _isSliding = false;
+      _isCompleted = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +85,13 @@ class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
                 decoration: BoxDecoration(
                   color: _color,
                   borderRadius: BorderRadius.circular(18.r),
                   boxShadow: [
                     BoxShadow(
-                      color: _color.withOpacity(0.12),
+                      color: _color.withOpacity(0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -84,26 +102,24 @@ class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
               ),
               Positioned.fill(
                 child: IgnorePointer(
-                  ignoring: widget.isLoading || _isSliding,
+                  ignoring: widget.isLoading || _isSliding || _isCompleted,
                   child: GestureDetector(
-                    onHorizontalDragStart: (_) {
-                      if (widget.isLoading) return;
-                      setState(() {
-                        _isSliding = true;
-                      });
-                    },
+                    onHorizontalDragStart: (details) =>
+                        _onHorizontalDragStart(details),
                     onHorizontalDragUpdate: (details) =>
                         _onHorizontalDragUpdate(details, maxW),
-                    onHorizontalDragEnd: (_) => _onHorizontalDragEnd(maxW),
+                    onHorizontalDragEnd: (details) =>
+                        _onHorizontalDragEnd(details, maxW),
                     child: Stack(
                       alignment: Alignment.centerLeft,
                       children: [
                         AnimatedContainer(
                           duration: const Duration(milliseconds: 120),
+                          curve: Curves.easeOut,
                           width: (_dragPercent * maxW).clamp(58.h, maxW),
                           height: 58.h,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.10),
+                            color: Colors.white.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(18.r),
                           ),
                         ),
@@ -119,24 +135,33 @@ class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(18.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                )
+                              ],
                             ),
                             child: widget.isLoading
                                 ? Center(
                                     child: SizedBox(
                                       height: 26.h,
                                       width: 26.h,
-                                      child: const CircularProgressIndicator(
+                                      child: CircularProgressIndicator(
                                         valueColor:
                                             AlwaysStoppedAnimation<Color>(
-                                                AppColors.primary),
+                                                _color),
                                         strokeWidth: 3,
                                       ),
                                     ),
                                   )
                                 : Icon(
-                                    Icons.arrow_forward,
+                                    _isCompleted
+                                        ? Icons.check_rounded
+                                        : Icons.arrow_forward_rounded,
                                     color: _color,
-                                    size: 29.sp,
+                                    size: 28.sp,
                                   ),
                           ),
                         ),
@@ -147,13 +172,13 @@ class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
                                 duration: const Duration(milliseconds: 180),
                                 opacity: _dragPercent < 0.3 ? 1.0 : 0.0,
                                 child: Text(
-                                  widget.label,
+                                  _isCompleted ? "Success!" : widget.label,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 20.sp,
+                                    fontSize: 18.sp,
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
                               ),
@@ -165,6 +190,17 @@ class _BigSlideActionBtnState extends State<BigSlideActionBtn> {
                   ),
                 ),
               ),
+              if (_isCompleted)
+                Positioned.fill(
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(18.r),
+                      onTap: _reset,
+                      child: Container(),
+                    ),
+                  ),
+                ),
             ],
           ),
         );
