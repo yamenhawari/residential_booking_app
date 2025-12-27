@@ -7,7 +7,7 @@ import 'package:residential_booking_app/core/datasources/user_local_data_source.
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
 import 'package:residential_booking_app/core/network/network_info.dart';
 import 'package:residential_booking_app/features/bookings/data/datasources/booking_remote_data_source.dart';
-import 'package:residential_booking_app/features/bookings/data/repositories/post_repository_impl.dart';
+import 'package:residential_booking_app/features/bookings/data/repositories/booking_repository_impl.dart';
 import 'package:residential_booking_app/features/bookings/domain/entities/add_review_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/repositories/booking_repository.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/cancel_booking_usecase.dart';

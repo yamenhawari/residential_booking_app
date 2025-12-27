@@ -19,23 +19,41 @@ class ApartmentModel extends Apartment {
   });
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
+    // 1. Safe parsing for roomCount (Handling the mismatch: API uses 'rooms')
+    final rawRooms = json['rooms'] ?? json['room_count'];
+    int parsedRooms = 0;
+    if (rawRooms != null) {
+      parsedRooms = int.tryParse(rawRooms.toString()) ?? 0;
+    }
+
+    // 2. Safe parsing for governorate_id
+    final rawGovId = json['governorate_id'];
+    int govId = 1;
+    if (rawGovId != null) {
+      govId = int.tryParse(rawGovId.toString()) ?? 1;
+    }
+
     return ApartmentModel(
-        id: json['id'],
-        title: json['title'],
-        description: json['description'],
-        governorate:
-            _mapIdToGovernorate(int.parse(json['governorate_id'].toString())),
-        address: json['address'],
-        pricePerMonth:
-            (double.tryParse(json['price_per_month'].toString()) ?? 0.0),
-        rating:
-            (json['rating'] != null) ? (json['rating'] as num).toDouble() : 0.0,
-        images: (json['images'] as List)
-            .map((e) =>
-                "${ApiConstants.storageBaseUrl}${e['image_url'].toString()}")
-            .toList(),
-        roomCount: int.parse(json['room_count'].toString()),
-        status: ApartmentStatus.fromString(json['status'] ?? 'available'));
+      id: json['id'] ?? 0,
+      title: json['title']?.toString() ?? 'No Title',
+      description: json['description']?.toString() ?? '',
+      governorate: _mapIdToGovernorate(govId),
+      address: json['address']?.toString() ?? '',
+      pricePerMonth:
+          (double.tryParse(json['price_per_month'].toString()) ?? 0.0),
+      rating:
+          (json['rating'] != null) ? (json['rating'] as num).toDouble() : 4.3,
+      // 3. Safe mapping for images (handling empty list)
+      images: json['images'] != null && (json['images'] as List).isNotEmpty
+          ? (json['images'] as List)
+              .map((e) =>
+                  "${ApiConstants.storageBaseUrl}${e['image_url'] ?? ''}")
+              .toList()
+          : [],
+      roomCount: parsedRooms,
+      status:
+          ApartmentStatus.fromString(json['status']?.toString() ?? 'available'),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -71,40 +89,28 @@ class ApartmentModel extends Apartment {
         return Governorate.tartus;
       case 8:
         return Governorate.quneitra;
+      // FIX: Added missing return keywords below
       case 9:
-        Governorate.deirEzZor;
+        return Governorate.deirEzZor;
       case 10:
-        Governorate.hama;
+        return Governorate.hama;
       default:
         return Governorate.damascus;
     }
-    return Governorate.damascus;
   }
 
   int _mapGovernorateToId(dynamic gov) {
-    switch (gov.toString()) {
-      case 'Governorate.damascus':
-        return 1;
-      case 'Governorate.aleppo':
-        return 2;
-      case 'Governorate.homs':
-        return 3;
-      case 'Governorate.rifDimashq':
-        return 4;
-      case 'Governorate.daraa':
-        return 5;
-      case 'Governorate.latakia':
-        return 6;
-      case 'Governorate.tartus':
-        return 7;
-      case 'Governorate.quneitra':
-        return 8;
-      case 'Governorate.deirEzZor':
-        return 9;
-      case 'Governorate.hama':
-        return 10;
-      default:
-        return 1;
-    }
+    final govString = gov.toString();
+    if (govString.contains('damascus')) return 1;
+    if (govString.contains('aleppo')) return 2;
+    if (govString.contains('homs')) return 3;
+    if (govString.contains('rifDimashq')) return 4;
+    if (govString.contains('daraa')) return 5;
+    if (govString.contains('latakia')) return 6;
+    if (govString.contains('tartus')) return 7;
+    if (govString.contains('quneitra')) return 8;
+    if (govString.contains('deirEzZor')) return 9;
+    if (govString.contains('hama')) return 10;
+    return 1;
   }
 }

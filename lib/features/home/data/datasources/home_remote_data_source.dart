@@ -20,8 +20,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       ApiConstants.apartments,
       queryParameters: _mapParamsToQuery(params),
     );
-
-    final List<dynamic> data = response;
+    print(
+        "===================\n\n\n\n\n\n\n\n${response.toString()}\n\n\n\n\n\n\n\n=========================");
+    final List<dynamic> data = response as List;
     return data.map((e) => ApartmentModel.fromJson(e)).toList();
   }
 

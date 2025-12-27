@@ -27,6 +27,8 @@ class HomeRepositoryImpl implements HomeRepository {
         return Right(result);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return Left(OfflineFailure(AppStrings.error.noInternet));
@@ -41,6 +43,9 @@ class HomeRepositoryImpl implements HomeRepository {
         return Right(result);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
+      } catch (e) {
+        // FIX: Catch unexpected errors here as well
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return Left(OfflineFailure(AppStrings.error.noInternet));
