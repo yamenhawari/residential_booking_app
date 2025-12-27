@@ -9,12 +9,12 @@ class BigSlideActionBtn extends StatefulWidget {
   final Color? baseColor;
 
   const BigSlideActionBtn({
-    Key? key,
+    super.key,
     required this.onSubmit,
     required this.label,
     this.isLoading = false,
     this.baseColor,
-  }) : super(key: key);
+  });
 
   @override
   State<BigSlideActionBtn> createState() => _BigSlideActionBtnState();

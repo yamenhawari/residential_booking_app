@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class BottomNavigationBarWidget extends StatelessWidget {
+  final bool isOwner;
   final int currentIndex;
   final ValueChanged<int> onTap;
 
@@ -12,6 +14,7 @@ class BottomNavigationBarWidget extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.isOwner,
   });
 
   Color _getIconColor(int index, BuildContext context) {
@@ -52,31 +55,32 @@ class BottomNavigationBarWidget extends StatelessWidget {
       _navIcon(
         context,
         icon: const Icon(FontAwesomeIcons.house),
-        tooltip: "Home",
+        tooltip: AppLocalizations.of(context)!.home,
         index: 0,
       ),
       _navIcon(
         context,
         icon: const Icon(FontAwesomeIcons.calendarCheck),
-        tooltip: "Bookings",
+        tooltip: AppLocalizations.of(context)!.bookings,
         index: 1,
       ),
       _navIcon(
         context,
         icon: const Icon(FontAwesomeIcons.heart),
-        tooltip: "Favorites",
+        tooltip: AppLocalizations.of(context)!.favorites,
         index: 2,
       ),
-      _navIcon(
-        context,
-        icon: const Icon(FontAwesomeIcons.chartPie),
-        tooltip: "Dashboard",
-        index: 3,
-      ),
+      if (isOwner)
+        _navIcon(
+          context,
+          icon: const Icon(FontAwesomeIcons.chartPie),
+          tooltip: AppLocalizations.of(context)!.dashboard,
+          index: 3,
+        ),
       _navIcon(
         context,
         icon: const Icon(Icons.settings),
-        tooltip: "Settings",
+        tooltip: AppLocalizations.of(context)!.settings,
         index: 4,
       ),
     ];

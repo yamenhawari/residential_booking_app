@@ -4,6 +4,7 @@ import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/features/intro/presentation/widgets/big_slide_action_button.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class IntroductionScreen extends StatefulWidget {
   const IntroductionScreen({super.key});
@@ -19,23 +20,22 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
 
   final List<Map<String, String>> _slides = [
     {
-      "title": "Welcome to\nDreamStay",
-      "desc": "Experience the easiest way to find and book your perfect home.",
+      "title": "introWelcomeTitle",
+      "desc": "introWelcomeDesc",
       "image": "assets/images/onboarding1.gif",
-      "button": "Slide to Start"
+      "button": "introSlideToStartButton"
     },
     {
-      "title": "Smart\nBooking",
-      "desc":
-          "Manage your stays, payments, and contracts all in one secure place.",
+      "title": "introSmartBookingTitle",
+      "desc": "introSmartBookingDesc",
       "image": "assets/images/onboarding2.gif",
-      "button": "Slide to Next"
+      "button": "introSlideToNextButton"
     },
     {
-      "title": "Ready to\nMove In?",
-      "desc": "Thousands of verified apartments are waiting for you.",
+      "title": "introReadyToMoveInTitle",
+      "desc": "introReadyToMoveInDesc",
       "image": "assets/images/onboarding3.gif",
-      "button": "Slide to Login"
+      "button": "introSlideToLoginButton"
     },
   ];
 
@@ -48,6 +48,34 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
       );
     } else {
       Nav.offAll(AppRoutes.loginRegister);
+    }
+  }
+
+    String _getLocalizedString(BuildContext context, String key) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+    switch (key) {
+      case "introWelcomeTitle":
+        return l10n.introWelcomeTitle;
+      case "introWelcomeDesc":
+        return l10n.introWelcomeDesc;
+      case "introSlideToStartButton":
+        return l10n.introSlideToStartButton;
+      case "introSmartBookingTitle":
+        return l10n.introSmartBookingTitle;
+      case "introSmartBookingDesc":
+        return l10n.introSmartBookingDesc;
+      case "introSlideToNextButton":
+        return l10n.introSlideToNextButton;
+      case "introReadyToMoveInTitle":
+        return l10n.introReadyToMoveInTitle;
+      case "introReadyToMoveInDesc":
+        return l10n.introReadyToMoveInDesc;
+      case "introSlideToLoginButton":
+        return l10n.introSlideToLoginButton;
+      case "skipButton":
+        return l10n.skipButton;
+      default:
+        return key; // Fallback in case of an unknown key
     }
   }
 
@@ -79,7 +107,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               child: TextButton(
                 onPressed: () => Nav.offAll(AppRoutes.loginRegister),
                 child: Text(
-                  "Skip",
+                  AppLocalizations.of(context)!.skipButton,
                   style: TextStyle(
                     color: theme.textTheme.titleLarge?.color,
                     fontWeight: FontWeight.bold,
@@ -116,7 +144,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 BigSlideActionBtn(
                   key: _sliderKey,
                   onSubmit: _goToNextPage,
-                  label: _slides[_currentPage]["button"]!,
+                  label: _getLocalizedString(context, _slides[_currentPage]["button"]!),
                 ),
               ],
             ),
@@ -183,7 +211,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  data["title"]!,
+                  _getLocalizedString(context, data["title"]!),
                   style: theme.textTheme.displayLarge?.copyWith(
                     fontSize: 38.sp,
                     height: 1.1,
@@ -193,7 +221,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  data["desc"]!,
+                  _getLocalizedString(context, data["desc"]!),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 16.sp,
                     height: 1.5,

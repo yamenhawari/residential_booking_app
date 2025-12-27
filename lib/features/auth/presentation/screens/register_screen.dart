@@ -16,6 +16,7 @@ import '../../domain/usecases/register_usecase.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/role_card.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -62,12 +63,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_camera),
-              title: const Text('Take a photo'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from gallery'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -91,7 +92,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBars.showError(context, message: "Failed to pick image");
+        AppSnackBars.showError(context,
+            message: AppLocalizations.of(context)!.failedToPickImage);
       }
     }
   }
@@ -125,16 +127,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _handleRegister() {
     if (!(_formKey.currentState?.validate() ?? false)) {
       AppSnackBars.showWarning(context,
-          message: 'Please check your input fields');
+          message: AppLocalizations.of(context)!.checkInputFields);
       return;
     }
     if (_profileImage == null) {
       AppSnackBars.showWarning(context,
-          message: "Please upload a profile photo");
+          message: AppLocalizations.of(context)!.uploadProfilePhoto);
       return;
     }
     if (_idImage == null) {
-      AppSnackBars.showWarning(context, message: "Please upload an ID photo");
+      AppSnackBars.showWarning(context,
+          message: AppLocalizations.of(context)!.uploadIdPhoto);
       return;
     }
     context.read<AuthCubit>().register(RegisterParams(
@@ -144,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           phoneNumber: _phoneController.text.trim(),
           password: _passwordController.text,
           role: _selectedRole,
-          fcmToken: "dummy_fcm_token",
+          fcmToken: "fcm_token", //! dont forget todo later
           profileImage: File(_profileImage!.path),
           idImage: File(_idImage!.path),
         ));
@@ -161,7 +164,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           listener: (context, state) {
             if (state is AuthRegisterSuccess) {
               AppSnackBars.showSuccess(context,
-                  message: "Account Created Successfully!");
+                  message:
+                      AppLocalizations.of(context)!.accountCreatedSuccessfully);
               Nav.offAll(AppRoutes.login);
             } else if (state is AuthError) {
               AppDialogs.showError(context, message: state.message);
@@ -260,7 +264,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Expanded(
                             child: RoleCard(
-                              label: 'Tenant',
+                              label: AppLocalizations.of(context)!.tenant,
                               icon: Icons.person_outline,
                               isSelected: _selectedRole == UserRole.tenant,
                               onTap: () => setState(
@@ -270,7 +274,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(width: 16.w),
                           Expanded(
                             child: RoleCard(
-                              label: 'Investor',
+                              label: AppLocalizations.of(context)!.investor,
                               icon: Icons.apartment,
                               isSelected: _selectedRole == UserRole.owner,
                               onTap: () => setState(
@@ -284,8 +288,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Expanded(
                             child: AppTextField(
-                              label: 'First Name',
-                              hint: 'John',
+                              label: AppLocalizations.of(context)!.firstName,
+                              hint: AppLocalizations.of(context)!.firstNameHint,
                               controller: _firstNameController,
                               validator: Validators.validateName,
                             ),
@@ -293,8 +297,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           SizedBox(width: 16.w),
                           Expanded(
                             child: AppTextField(
-                              label: 'Last Name',
-                              hint: 'Doe',
+                              label: AppLocalizations.of(context)!.lastName,
+                              hint: AppLocalizations.of(context)!.lastNameHint,
                               controller: _lastNameController,
                               validator: Validators.validateName,
                             ),
@@ -303,38 +307,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       SizedBox(height: 16.h),
                       AppTextField(
-                        label: 'Phone Number',
-                        hint: '09xxxxxxxx',
+                        label: AppLocalizations.of(context)!.phone,
+                        hint: AppLocalizations.of(context)!.phoneHint,
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         validator: Validators.validatePhone,
-                        prefix: Padding(
-                          padding: EdgeInsets.fromLTRB(1.w, 1.w, 10.w, 1.w),
-                          child: Container(
-                            height: 55.h,
-                            width: 65.w,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(11.r),
-                                bottomLeft: Radius.circular(11.r),
-                              ),
-                            ),
-                            child: const Text(
-                              '+963',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ),
                       ),
                       SizedBox(height: 16.h),
                       AppTextField(
-                        label: 'Date of Birth',
-                        hint: 'YYYY-MM-DD',
+                        label: AppLocalizations.of(context)!.dateOfBirth,
+                        hint: AppLocalizations.of(context)!.dateOfBirthHint,
                         controller: _birthDateController,
                         readOnly: true,
                         onTap: _selectBirthDate,
@@ -343,15 +325,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       SizedBox(height: 16.h),
                       AppTextField(
-                        label: 'Password',
-                        hint: '••••••••',
+                        label: AppLocalizations.of(context)!.password,
+                        hint: AppLocalizations.of(context)!.passwordHint,
                         controller: _passwordController,
                         isPassword: true,
                         validator: Validators.validatePassword,
                       ),
                       SizedBox(height: 24.h),
                       Text(
-                        'Verification Document',
+                        AppLocalizations.of(context)!.verificationDocument,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
@@ -374,13 +356,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 children: [
                                   ListTile(
                                     leading: const Icon(Icons.photo_camera),
-                                    title: const Text('Take a photo'),
+                                    title: Text(AppLocalizations.of(context)!
+                                        .takePhoto),
                                     onTap: () => Navigator.pop(
                                         context, ImageSource.camera),
                                   ),
                                   ListTile(
                                     leading: const Icon(Icons.photo_library),
-                                    title: const Text('Choose from files'),
+                                    title: Text(AppLocalizations.of(context)!
+                                        .chooseFromFiles),
                                     onTap: () => Navigator.pop(
                                         context, ImageSource.gallery),
                                   ),
@@ -402,7 +386,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           } catch (e) {
                             if (context.mounted) {
                               AppSnackBars.showError(context,
-                                  message: "Failed to pick document");
+                                  message: AppLocalizations.of(context)!
+                                      .failedToPickDocument);
                             }
                           }
                         },
@@ -440,8 +425,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     SizedBox(height: 8.h),
                                     Text(
                                       _idImage?.path.endsWith('.pdf') == true
-                                          ? "PDF Document Selected"
-                                          : "ID Card Selected",
+                                          ? AppLocalizations.of(context)!
+                                              .pdfDocumentSelected
+                                          : AppLocalizations.of(context)!
+                                              .idCardSelected,
                                       style: TextStyle(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.bold,
@@ -449,7 +436,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "Tap to change",
+                                      AppLocalizations.of(context)!.tapToChange,
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(fontSize: 12.sp),
                                     ),
@@ -464,7 +451,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         size: 32.sp),
                                     SizedBox(height: 8.h),
                                     Text(
-                                      "Upload ID Card",
+                                      AppLocalizations.of(context)!
+                                          .uploadIdCard,
                                       style:
                                           theme.textTheme.titleMedium?.copyWith(
                                         fontSize: 14.sp,
@@ -472,7 +460,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "PNG, JPG or PDF",
+                                      AppLocalizations.of(context)!.pngJpgPdf,
                                       style: theme.textTheme.bodyMedium
                                           ?.copyWith(fontSize: 12.sp),
                                     ),
@@ -499,19 +487,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Expanded(
                             child: RichText(
                               text: TextSpan(
-                                text: 'I agree to the ',
+                                text: AppLocalizations.of(context)!.agreeToThe,
                                 style: theme.textTheme.bodyMedium,
                                 children: [
                                   TextSpan(
-                                    text: 'Terms of Service',
+                                    text: AppLocalizations.of(context)!
+                                        .termsOfService,
                                     style: TextStyle(
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  TextSpan(text: ' and '),
                                   TextSpan(
-                                    text: 'Privacy Policy',
+                                      text: AppLocalizations.of(context)!.and),
+                                  TextSpan(
+                                    text: AppLocalizations.of(context)!
+                                        .privacyPolicy,
                                     style: TextStyle(
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.bold,
@@ -541,7 +532,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         )
                       else
                         PrimaryButton(
-                          label: 'Create Account',
+                          label: AppLocalizations.of(context)!.createAccount,
                           enabled: _acceptTerms,
                           onPressed: _handleRegister,
                         ),
@@ -550,14 +541,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Already have an account? ",
+                            AppLocalizations.of(context)!
+                                .alreadyHaveAccountPrompt,
                             style: theme.textTheme.bodyMedium
                                 ?.copyWith(fontSize: 14.sp),
                           ),
                           GestureDetector(
                             onTap: () => Nav.replace(AppRoutes.login),
                             child: Text(
-                              "Login",
+                              AppLocalizations.of(context)!.login,
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.bold,

@@ -10,6 +10,7 @@ import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 import '../widgets/apartment_card.dart';
 import '../widgets/search_field_widget.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Padding(
           padding: EdgeInsets.only(left: 8.w),
           child: Text(
-            "DreamStay",
+            AppLocalizations.of(context)!.appTitle,
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 26.sp,
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         size: 80.sp, color: Colors.grey.shade300),
                     SizedBox(height: 20.h),
                     Text(
-                      "Oops! Something went wrong.",
+                      AppLocalizations.of(context)!.somethingWentWrong,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleLarge,
                     ),
@@ -115,8 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                        child: const Text(
-                          "Retry",
+                        child: Text(
+                          AppLocalizations.of(context)!.retry,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white),
                         ),
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 size: 60.sp, color: Colors.grey.shade300),
                             SizedBox(height: 10.h),
                             Text(
-                              "No apartments found.",
+                              AppLocalizations.of(context)!.noApartmentsFound,
                               style: theme.textTheme.bodyMedium
                                   ?.copyWith(fontSize: 16.sp),
                             ),

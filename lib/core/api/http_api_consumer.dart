@@ -65,7 +65,7 @@ class HttpApiConsumer implements ApiConsumer {
     } on TimeoutException {
       throw ServerException("Request timed out. Please try again later.");
     } on SocketException {
-      throw ServerException("No internet connection.");
+      throw ServerException("Please Check internet connection.");
     }
   }
 
@@ -91,7 +91,7 @@ class HttpApiConsumer implements ApiConsumer {
     } on TimeoutException {
       throw ServerException("Request timed out. Please try again later.");
     } on SocketException {
-      throw ServerException("No internet connection.");
+      throw ServerException("Please Check internet connection.");
     }
   }
 
@@ -117,7 +117,7 @@ class HttpApiConsumer implements ApiConsumer {
     } on TimeoutException {
       throw ServerException("Request timed out. Please try again later.");
     } on SocketException {
-      throw ServerException("No internet connection.");
+      throw ServerException("Please Check internet connection.");
     }
   }
 
@@ -144,7 +144,7 @@ class HttpApiConsumer implements ApiConsumer {
     } on TimeoutException {
       throw ServerException("Request timed out. Please try again later.");
     } on SocketException {
-      throw ServerException("No internet connection.");
+      throw ServerException("Please Check internet connection.");
     }
   }
 
@@ -184,7 +184,7 @@ class HttpApiConsumer implements ApiConsumer {
       throw ServerException(
           "Request timed out. Please check your connection and try again later.");
     } on SocketException {
-      throw ServerException("No internet connection.");
+      throw ServerException("Please Check internet connection.");
     }
   }
 

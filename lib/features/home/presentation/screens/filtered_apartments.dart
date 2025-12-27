@@ -11,6 +11,7 @@ import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
 import '../widgets/apartment_card.dart';
 import '../widgets/search_field_widget.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class FilteredApartments extends StatefulWidget {
   final FilterApartmentParams filterApartmentParams;
@@ -57,7 +58,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
           onPressed: () => Nav.back(),
         ),
         title: Text(
-          "Search Results",
+          AppLocalizations.of(context)!.searchResults,
           style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
         ),
       ),
@@ -80,7 +81,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                         size: 80.sp, color: Colors.grey.shade300),
                     SizedBox(height: 20.h),
                     Text(
-                      "Oops! Something went wrong.",
+                      AppLocalizations.of(context)!.somethingWentWrong,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleLarge,
                     ),
@@ -102,7 +103,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                         ),
-                        child: const Text("Retry",
+                        child: Text(AppLocalizations.of(context)!.retry,
                             style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     )
@@ -135,7 +136,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                           SizedBox(height: 20.h),
                           if (apartments.isNotEmpty)
                             Text(
-                              "Found ${apartments.length} properties",
+                              AppLocalizations.of(context)!.foundProperties(apartments.length),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
@@ -158,7 +159,7 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                                 size: 60.sp, color: Colors.grey.shade300),
                             SizedBox(height: 10.h),
                             Text(
-                              "No apartments found matching your filters.",
+                              AppLocalizations.of(context)!.noApartmentsFoundFilters,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w500,
@@ -166,8 +167,8 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                             ),
                             TextButton(
                               onPressed: () => Nav.back(),
-                              child: const Text(
-                                "Adjust Filters",
+                              child: Text(
+                                AppLocalizations.of(context)!.adjustFilters,
                                 style: TextStyle(color: AppColors.primary),
                               ),
                             )

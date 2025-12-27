@@ -4,13 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/core/enums/apartment_status_enum.dart';
+import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_state.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/apartment_image_header.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class ApartmentDetailsScreen extends StatefulWidget {
   final int id;
@@ -127,13 +130,15 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                   SizedBox(height: 32.h),
                   Divider(color: theme.dividerColor, thickness: 1.5),
                   SizedBox(height: 32.h),
-                  _buildSectionTitle('Facilities', theme),
+                  _buildSectionTitle(
+                      AppLocalizations.of(context)!.facilities, theme),
                   SizedBox(height: 16.h),
                   _buildFacilitiesRow(apartment, theme),
                   SizedBox(height: 32.h),
                   Divider(color: theme.dividerColor, thickness: 1.5),
                   SizedBox(height: 32.h),
-                  _buildSectionTitle('Description', theme),
+                  _buildSectionTitle(
+                      AppLocalizations.of(context)!.description, theme),
                   SizedBox(height: 12.h),
                   Text(
                     apartment.description,
@@ -164,10 +169,15 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildFacilityItem(
-            FontAwesomeIcons.bed, "${apartment.roomCount} Rooms", theme),
-        _buildFacilityItem(FontAwesomeIcons.bath, "1 Bath", theme),
-        _buildFacilityItem(FontAwesomeIcons.wifi, "Wifi", theme),
-        _buildFacilityItem(FontAwesomeIcons.kitchenSet, "Kitchen", theme),
+            FontAwesomeIcons.bed,
+            AppLocalizations.of(context)!.roomsCount(apartment.roomCount),
+            theme),
+        _buildFacilityItem(FontAwesomeIcons.bath,
+            AppLocalizations.of(context)!.oneBath, theme),
+        _buildFacilityItem(
+            FontAwesomeIcons.wifi, AppLocalizations.of(context)!.wifi, theme),
+        _buildFacilityItem(FontAwesomeIcons.kitchenSet,
+            AppLocalizations.of(context)!.kitchen, theme),
       ],
     );
   }
@@ -203,15 +213,15 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
     switch (status) {
       case ApartmentStatus.available:
         color = const Color(0xFF4CAF50);
-        label = "Available Now";
+        label = AppLocalizations.of(context)!.available;
         break;
       case ApartmentStatus.rented:
         color = const Color(0xFFE53935);
-        label = "Rented";
+        label = AppLocalizations.of(context)!.rented;
         break;
       case ApartmentStatus.unavailable:
         color = Colors.grey;
-        label = "Currently Unavailable";
+        label = AppLocalizations.of(context)!.currentlyUnavailable;
         break;
     }
 
@@ -271,7 +281,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Price",
+                  AppLocalizations.of(context)!.price,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
@@ -294,7 +304,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                             ),
                           ),
                           TextSpan(
-                            text: " /mo",
+                            text: AppLocalizations.of(context)!.pricePerMonth,
                             style: theme.textTheme.bodyMedium
                                 ?.copyWith(fontSize: 14.sp),
                           ),
@@ -310,7 +320,12 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               child: SizedBox(
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: isAvailable ? () {} : null,
+                  onPressed: isAvailable
+                      ? () => Nav.to(AppRoutes.bookingDetails, arguments: {
+                            'id': apartment.id,
+                            'price': apartment.pricePerMonth,
+                          })
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     disabledBackgroundColor: Colors.grey.shade300,
@@ -320,7 +335,9 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                     ),
                   ),
                   child: Text(
-                    isAvailable ? 'Book Now' : 'Not Available',
+                    isAvailable
+                        ? AppLocalizations.of(context)!.bookNow
+                        : AppLocalizations.of(context)!.notAvailable,
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,

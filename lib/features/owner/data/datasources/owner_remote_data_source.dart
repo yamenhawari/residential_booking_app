@@ -53,7 +53,7 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
       'address': params.address,
       'governorate_id': _mapGovernorateToId(params.governorate).toString(),
       'price_per_month': params.price.toString(),
-      'room_count': params.roomCount.toString(),
+      'rooms': params.roomCount.toString(),
     };
 
     final files = params.images

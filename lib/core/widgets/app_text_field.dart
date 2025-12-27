@@ -15,6 +15,7 @@ class AppTextField extends StatefulWidget {
   final VoidCallback? onSuffixTap;
   final bool readOnly;
   final VoidCallback? onTap;
+  final int? maxLength;
 
   const AppTextField({
     super.key,
@@ -30,6 +31,7 @@ class AppTextField extends StatefulWidget {
     this.onSuffixTap,
     this.readOnly = false,
     this.onTap,
+    this.maxLength,
   });
 
   @override

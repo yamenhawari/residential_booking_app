@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class SearchFieldWidget extends StatefulWidget {
   const SearchFieldWidget({super.key});
@@ -40,7 +41,7 @@ class _SearchFieldState extends State<SearchFieldWidget> {
           decoration: InputDecoration(
             filled: true,
             fillColor: theme.cardColor,
-            hintText: "Search destination...",
+            hintText: AppLocalizations.of(context)!.searchHint,
             hintStyle: theme.textTheme.bodyMedium,
             prefixIcon: const Icon(
               Icons.search,

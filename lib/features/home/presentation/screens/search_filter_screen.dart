@@ -10,6 +10,7 @@ import 'package:residential_booking_app/features/home/presentation/widgets/price
 import '../../../../core/enums/governorate_enum.dart';
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/nav_helper.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 import '../cubit/filter/filter_cubit.dart';
 
 class SearchFilterScreen extends StatelessWidget {
@@ -32,7 +33,7 @@ class SearchFilterScreen extends StatelessWidget {
             onPressed: () => Nav.back(),
           ),
           title: Text(
-            "Filters",
+            AppLocalizations.of(context)!.filters,
             style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
           ),
           actions: [
@@ -40,7 +41,7 @@ class SearchFilterScreen extends StatelessWidget {
               builder: (context) => TextButton(
                 onPressed: () => context.read<FilterCubit>().reset(),
                 child: Text(
-                  "Reset",
+                  AppLocalizations.of(context)!.reset,
                   style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 14.sp,
@@ -60,25 +61,26 @@ class SearchFilterScreen extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
                     children: [
-                      const FilterSectionTitle(title: "Dates"),
+                      FilterSectionTitle(title: AppLocalizations.of(context)!.dates),
                       SizedBox(height: 12.h),
                       const DateRangeSelector(),
                       SizedBox(height: 24.h),
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
-                      const FilterSectionTitle(title: "Rooms"),
+                      FilterSectionTitle(title: AppLocalizations.of(context)!.rooms),
                       SizedBox(height: 12.h),
                       FilterChipSelector<int>(
                         items: const [1, 2, 3, 4, 5],
                         isSelected: (item) => state.roomCount == item,
                         onSelected: (item) =>
                             context.read<FilterCubit>().toggleRoomCount(item),
-                        labelBuilder: (item) => item == 5 ? "5+" : "$item",
+                        labelBuilder: (item) =>
+                            item == 5 ? AppLocalizations.of(context)!.fivePlusRooms : "$item",
                       ),
                       SizedBox(height: 24.h),
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
-                      const FilterSectionTitle(title: "Location"),
+                      FilterSectionTitle(title: AppLocalizations.of(context)!.location),
                       SizedBox(height: 12.h),
                       FilterChipSelector<Governorate>(
                         items: Governorate.values,
@@ -91,7 +93,8 @@ class SearchFilterScreen extends StatelessWidget {
                       SizedBox(height: 24.h),
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
-                      const FilterSectionTitle(title: "Price Range (Monthly)"),
+                      FilterSectionTitle(
+                          title: AppLocalizations.of(context)!.priceRangeMonthly),
                       SizedBox(height: 12.h),
                       const PriceRangeSelector(),
                       SizedBox(height: 40.h),
@@ -121,7 +124,7 @@ class SearchFilterScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'Show Results',
+                        AppLocalizations.of(context)!.showResults,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16.sp,

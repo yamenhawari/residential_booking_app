@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class LoginRegisterScreen extends StatelessWidget {
   const LoginRegisterScreen({super.key});
@@ -49,7 +50,7 @@ class LoginRegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 30.h),
                 Text(
-                  'DreamStay',
+                  AppLocalizations.of(context)!.appTitle,
                   style: TextStyle(
                     fontFamily: 'Pacifico',
                     fontSize: 40.sp,
@@ -61,7 +62,7 @@ class LoginRegisterScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   child: Text(
-                    'Your smart solution for managing residential apartments easily and efficiently',
+                    AppLocalizations.of(context)!.introWelcomeDesc,
                     style: TextStyle(
                       fontSize: 15.sp,
                       color: isDark
@@ -82,7 +83,7 @@ class LoginRegisterScreen extends StatelessWidget {
                     icon: Icon(Icons.login,
                         color: isDark ? Colors.white : AppColors.primary),
                     label: Text(
-                      'Login',
+                      AppLocalizations.of(context)!.login,
                       style: TextStyle(
                           fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
@@ -107,7 +108,7 @@ class LoginRegisterScreen extends StatelessWidget {
                     icon: Icon(Icons.person_add,
                         color: isDark ? AppColors.primary : Colors.white),
                     label: Text(
-                      'Create Account',
+                      AppLocalizations.of(context)!.createAccount,
                       style: TextStyle(
                           fontSize: 18.sp, fontWeight: FontWeight.bold),
                     ),
@@ -125,7 +126,7 @@ class LoginRegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 24.h),
                 Text(
-                  "By continuing, you agree to our Terms of Service and Privacy Policy.",
+                  "By continuing, you agree to our Terms of Service and Privacy Policy.", // TODO: Add localization for this
                   style: TextStyle(
                     color: isDark
                         ? theme.textTheme.bodyMedium?.color?.withOpacity(0.5)

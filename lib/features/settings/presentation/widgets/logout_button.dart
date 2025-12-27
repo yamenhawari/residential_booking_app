@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
+import 'package:residential_booking_app/core/utils/app_dialogs.dart';
 import 'package:residential_booking_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});
@@ -17,8 +19,17 @@ class LogoutButton extends StatelessWidget {
       height: 56.h,
       child: ElevatedButton(
         onPressed: () {
-          context.read<AuthCubit>().logout();
-          Nav.offAll(AppRoutes.loginRegister);
+          AppDialogs.showConfirm(
+            context,
+            message: 'Are you sure you want to logout?',
+            title: 'Logout',
+            confirmText: 'Yes',
+            cancelText: 'Cancel',
+            onConfirm: () {
+              context.read<AuthCubit>().logout();
+              Nav.offAll(AppRoutes.loginRegister);
+            },
+          );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.cardColor,
@@ -34,7 +45,7 @@ class LogoutButton extends StatelessWidget {
             Icon(Icons.logout, color: AppColors.error, size: 20.sp),
             SizedBox(width: 8.w),
             Text(
-              "Log Out",
+              AppLocalizations.of(context)!.logout,
               style: TextStyle(
                 color: AppColors.error,
                 fontSize: 16.sp,

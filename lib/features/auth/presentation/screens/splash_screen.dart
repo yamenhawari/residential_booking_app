@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/utils/app_snackbars.dart';
 import 'package:residential_booking_app/core/widgets/smooth_loading_widget.dart';
+import 'package:residential_booking_app/features/auth/domain/entities/enums/user_enums.dart';
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/nav_helper.dart';
 import '../../../../core/navigation/app_routes.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,9 +30,11 @@ class _SplashScreenState extends State<SplashScreen> {
         if (state is AuthUserCheckSuccess) {
           if (context.mounted) {
             AppSnackBars.showSuccess(context,
-                message: "Welcome Back ${state.user.firstName}");
+                message: AppLocalizations.of(context)!
+                    .welcomeBackUser(state.user.firstName));
           }
-          Nav.offAll(AppRoutes.mainLayout);
+          Nav.offAll(AppRoutes.mainLayout,
+              arguments: state.user.role == UserRole.owner);
         } else if (state is AuthError) {
           Nav.offAll(AppRoutes.loginRegister);
         } else if (state is AuthUserCheckFail) {
@@ -67,13 +71,13 @@ class _SplashScreenState extends State<SplashScreen> {
                         ],
                       ),
                       child: Image.asset(
-                        "assets/icons/home_15751764.png",
+                        "assets/icons/icon.png",
                         fit: BoxFit.contain,
                       ),
                     ),
                     SizedBox(height: 30.h),
                     Text(
-                      'DreamStay',
+                      AppLocalizations.of(context)!.appTitle,
                       style: TextStyle(
                         fontFamily: 'Pacifico',
                         fontSize: 42.sp,

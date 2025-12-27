@@ -9,5 +9,10 @@ class AppRoutes {
   static const String searchFilter = '/searchFilter';
   static const String apartmentDetails = '/apartmentDetails';
   static const String filteredApartments = '/filteredApartments';
+  static const String bookingDetails = '/bookingDetails';
+  static const String myBookingManage = '/myBookingManage';
+  static const String addApartment = '/addApartment';
+  static const String ownerDashboard = '/ownerDashboard';
+  static const String ownerApartments = '/ownerApartments';
   static const String settings = '/settings';
 }

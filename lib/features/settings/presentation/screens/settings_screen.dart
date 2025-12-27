@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
-import 'package:residential_booking_app/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/locale_cubit.dart';
+import 'package:residential_booking_app/features/settings/presentation/cubit/theme_cubit.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 import '../widgets/currency_selector_widget.dart';
 import '../widgets/logout_button.dart';
 import '../widgets/profile_header_card.dart';
@@ -32,7 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.h),
                 child: Text(
-                  "Select Theme",
+                  context.tr.theme,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -40,26 +43,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 builder: (context, currentMode) {
                   return Column(
                     children: [
-                      _buildThemeOption(
+                      _buildOptionTile(
                         context,
-                        title: "System Default",
+                        title: context.tr.systemDefault,
                         icon: Icons.brightness_auto,
-                        mode: ThemeMode.system,
                         isSelected: currentMode == ThemeMode.system,
+                        onTap: () {
+                          context
+                              .read<ThemeCubit>()
+                              .changeTheme(ThemeMode.system);
+                          Navigator.pop(context);
+                        },
                       ),
-                      _buildThemeOption(
+                      _buildOptionTile(
                         context,
-                        title: "Light Mode",
+                        title: context.tr.lightMode,
                         icon: Icons.light_mode,
-                        mode: ThemeMode.light,
                         isSelected: currentMode == ThemeMode.light,
+                        onTap: () {
+                          context
+                              .read<ThemeCubit>()
+                              .changeTheme(ThemeMode.light);
+                          Navigator.pop(context);
+                        },
                       ),
-                      _buildThemeOption(
+                      _buildOptionTile(
                         context,
-                        title: "Dark Mode",
+                        title: context.tr.darkMode,
                         icon: Icons.dark_mode,
-                        mode: ThemeMode.dark,
                         isSelected: currentMode == ThemeMode.dark,
+                        onTap: () {
+                          context
+                              .read<ThemeCubit>()
+                              .changeTheme(ThemeMode.dark);
+                          Navigator.pop(context);
+                        },
                       ),
                     ],
                   );
@@ -73,35 +91,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildThemeOption(
+  void _showLanguageSelector(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                child: Text(
+                  context.tr.changeLanguage,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              BlocBuilder<LocaleCubit, Locale>(
+                builder: (context, currentLocale) {
+                  return Column(
+                    children: [
+                      _buildOptionTile(
+                        context,
+                        title: AppLocalizations.of(context)!.englishLanguage,
+                        icon: Icons.language,
+                        isSelected: currentLocale.languageCode == 'en',
+                        onTap: () {
+                          context.read<LocaleCubit>().changeLanguage('en');
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildOptionTile(
+                        context,
+                        title: AppLocalizations.of(context)!.arabicLanguage,
+                        icon: Icons.language,
+                        isSelected: currentLocale.languageCode == 'ar',
+                        onTap: () {
+                          context.read<LocaleCubit>().changeLanguage('ar');
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+              SizedBox(height: 16.h),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptionTile(
     BuildContext context, {
     required String title,
     required IconData icon,
-    required ThemeMode mode,
     required bool isSelected,
+    required VoidCallback onTap,
   }) {
+    final theme = Theme.of(context);
     return ListTile(
       leading: Icon(
         icon,
-        color:
-            isSelected ? AppColors.primary : Theme.of(context).iconTheme.color,
+        color: isSelected ? AppColors.primary : theme.iconTheme.color,
       ),
       title: Text(
         title,
         style: TextStyle(
-          color: isSelected
-              ? AppColors.primary
-              : Theme.of(context).textTheme.bodyLarge?.color,
+          color:
+              isSelected ? AppColors.primary : theme.textTheme.bodyLarge?.color,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
       trailing: isSelected
           ? const Icon(Icons.check_circle, color: AppColors.primary)
           : null,
-      onTap: () {
-        context.read<ThemeCubit>().changeTheme(mode);
-        Navigator.pop(context);
-      },
+      onTap: onTap,
     );
   }
 
@@ -116,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "Settings",
+          context.tr.settings,
           style: theme.textTheme.titleLarge?.copyWith(fontSize: 18.sp),
         ),
       ),
@@ -127,7 +196,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const ProfileHeaderCard(),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Appearance", theme),
+            _buildSectionHeader(context.tr.language, theme),
+            SizedBox(height: 12.h),
+            BlocBuilder<LocaleCubit, Locale>(
+              builder: (context, locale) {
+                return SettingsTile(
+                  icon: Icons.language,
+                  iconColor: Colors.blueAccent,
+                  title: context.tr.language,
+                  subtitle: locale.languageCode == 'ar' ? "العربية" : "English",
+                  onTap: () => _showLanguageSelector(context),
+                );
+              },
+            ),
+            SizedBox(height: 30.h),
+            _buildSectionHeader(context.tr.theme, theme),
             SizedBox(height: 12.h),
             BlocBuilder<ThemeCubit, ThemeMode>(
               builder: (context, state) {
@@ -136,31 +219,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 switch (state) {
                   case ThemeMode.light:
                     icon = Icons.light_mode;
-                    text = "Light Mode";
+                    text = context.tr.lightMode;
                     break;
                   case ThemeMode.dark:
                     icon = Icons.dark_mode;
-                    text = "Dark Mode";
+                    text = context.tr.darkMode;
                     break;
                   case ThemeMode.system:
                     icon = Icons.brightness_auto;
-                    text = "System Default";
+                    text = context.tr.systemDefault;
                     break;
                 }
                 return SettingsTile(
                   icon: icon,
                   iconColor: Colors.deepPurple,
-                  title: "Theme",
+                  title: context.tr.theme,
                   subtitle: text,
                   onTap: () => _showThemeSelector(context),
                 );
               },
             ),
             SizedBox(height: 30.h),
-            _buildSectionHeader("Currency", theme),
+            _buildSectionHeader(context.tr.currency, theme),
             SizedBox(height: 12.h),
-
-            // --- UPDATED CURRENCY SELECTOR WITH CUBIT ---
             BlocBuilder<CurrencyCubit, String>(
               builder: (context, currency) {
                 return CurrencySelectorWidget(
@@ -170,50 +251,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
-            // --------------------------------------------
-
             SizedBox(height: 30.h),
-            _buildSectionHeader("Preferences", theme),
+            _buildSectionHeader(context.tr.favorites, theme),
             SizedBox(height: 12.h),
             SettingsTile(
               icon: Icons.notifications_rounded,
               iconColor: Colors.orange,
-              title: "Notifications",
-              subtitle: "Manage your alerts",
+              title: AppLocalizations.of(context)!.notifications,
+              subtitle: AppLocalizations.of(context)!.manageYourAlerts,
               onTap: () {},
             ),
-            SizedBox(height: 30.h),
-            _buildSectionHeader("Opportunities", theme),
-            SizedBox(height: 12.h),
-            SettingsTile(
-              icon: Icons.monetization_on_rounded,
-              iconColor: Colors.green,
-              title: "Join Us as Investor",
-              subtitle: "Partner with us and grow your wealth",
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content:
-                        const Text('Thank you for your interest! Coming soon.'),
-                    backgroundColor: AppColors.primary,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 30.h),
-            _buildSectionHeader("Account", theme),
-            SizedBox(height: 12.h),
             SettingsTile(
               icon: Icons.favorite_rounded,
               iconColor: Colors.pink,
-              title: "My Favorites",
-              onTap: () {},
-            ),
-            SettingsTile(
-              icon: Icons.lock_rounded,
-              iconColor: Colors.blue,
-              title: "Change Password",
+              title: context.tr.favorites,
               onTap: () {},
             ),
             SizedBox(height: 40.h),
@@ -221,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 24.h),
             Center(
               child: Text(
-                "Version 1.0.0",
+                AppLocalizations.of(context)!.versionInfo,
                 style: TextStyle(color: Colors.grey.shade400, fontSize: 12.sp),
               ),
             ),
@@ -234,7 +285,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSectionHeader(String title, ThemeData theme) {
     return Padding(
-      padding: EdgeInsets.only(left: 4.w),
+      padding: EdgeInsets.only(left: 4.w, right: 4.w),
       child: Text(
         title,
         style: TextStyle(

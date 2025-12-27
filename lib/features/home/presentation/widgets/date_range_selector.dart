@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_state.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 import '../../../../../core/resources/app_colors.dart';
 import '../cubit/filter/filter_cubit.dart';
 
@@ -47,7 +48,7 @@ class DateRangeSelector extends StatelessWidget {
           children: [
             _dateBox(
               context,
-              "Start Date",
+              AppLocalizations.of(context)!.startDate,
               state.startDate,
               () => _pickDate(context, true, state),
               () => context.read<FilterCubit>().setDateRange(null, null),
@@ -55,7 +56,7 @@ class DateRangeSelector extends StatelessWidget {
             SizedBox(width: 12.w),
             _dateBox(
               context,
-              "End Date",
+              AppLocalizations.of(context)!.endDate,
               state.endDate,
               state.startDate == null
                   ? null

@@ -3,6 +3,9 @@ import 'package:residential_booking_app/features/auth/presentation/screens/login
 import 'package:residential_booking_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/register_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/splash_screen.dart';
+import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
+import 'package:residential_booking_app/features/bookings/presentation/screens/booking_details_screen.dart';
+import 'package:residential_booking_app/features/bookings/presentation/screens/my_booking_manage_screen.dart';
 import 'package:residential_booking_app/features/home/domain/entities/filter_apartment_params.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/apartment_details_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/filtered_apartments.dart';
@@ -10,6 +13,9 @@ import 'package:residential_booking_app/features/home/presentation/screens/home_
 import 'package:residential_booking_app/features/home/presentation/screens/main_layout_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
 import 'package:residential_booking_app/features/intro/presentation/screens/introduction_screen.dart';
+import 'package:residential_booking_app/features/owner/presentation/screens/add_apartment_screen.dart';
+import 'package:residential_booking_app/features/owner/presentation/screens/owner_apartments_screen.dart';
+import 'package:residential_booking_app/features/owner/presentation/screens/owner_dashboard_screen.dart';
 import 'package:residential_booking_app/features/settings/presentation/screens/settings_screen.dart';
 import 'app_routes.dart';
 
@@ -18,10 +24,24 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
-      case AppRoutes.mainLayout:
+      case AppRoutes.addApartment:
         return MaterialPageRoute(
-          builder: (context) => MainLayoutScreen(),
+          builder: (context) => const AddApartmentScreen(),
         );
+      case AppRoutes.ownerApartments:
+        return MaterialPageRoute(
+          builder: (context) => const OwnerApartmentsScreen(),
+        );
+      case AppRoutes.ownerDashboard:
+        return MaterialPageRoute(
+          builder: (context) => const OwnerDashboardScreen(),
+        );
+      case AppRoutes.mainLayout:
+        if (args is bool) {
+          return MaterialPageRoute(
+            builder: (context) => MainLayoutScreen(isOwner: args),
+          );
+        }
       case AppRoutes.settings:
         return MaterialPageRoute(
           builder: (context) => const SettingsScreen(),
@@ -35,6 +55,21 @@ class AppRouter {
           return MaterialPageRoute(
             builder: (context) =>
                 FilteredApartments(filterApartmentParams: args),
+          );
+        }
+      case AppRoutes.bookingDetails:
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            builder: (context) => BookingDetailsScreen(
+              apartmentId: args['id'],
+              pricePerMonth: args['price'],
+            ),
+          );
+        }
+      case AppRoutes.myBookingManage:
+        if (args is Booking) {
+          return MaterialPageRoute(
+            builder: (context) => MyBookingManageScreen(booking: args),
           );
         }
       case AppRoutes.splash:

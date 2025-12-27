@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:residential_booking_app/core/api/api_constants.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import '../../../../core/datasources/user_local_data_source.dart';
 import '../../../../core/models/user_model.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
   const ProfileHeaderCard({super.key});
@@ -15,8 +17,9 @@ class ProfileHeaderCard extends StatelessWidget {
       future: GetIt.I<UserLocalDataSource>().getUser(),
       builder: (context, snapshot) {
         final user = snapshot.data;
-        final name =
-            user != null ? "${user.firstName} ${user.lastName}" : "Guest User";
+        final name = user != null
+            ? "${user.firstName} ${user.lastName}"
+            : AppLocalizations.of(context)!.guestUser;
         final role = user != null ? user.role.name.toUpperCase() : "GUEST";
 
         return Container(
@@ -46,7 +49,7 @@ class ProfileHeaderCard extends StatelessWidget {
                 child: user != null && user.profileImageUrl != null
                     ? ClipOval(
                         child: Image.network(
-                          user.profileImageUrl!,
+                          "${ApiConstants.storageBaseUrl}${user.profileImageUrl}",
                           fit: BoxFit.cover,
                           width: 60.h,
                           height: 60.h,
