@@ -8,9 +8,10 @@ import 'package:residential_booking_app/core/navigation/navigation_service.dart'
 import 'package:residential_booking_app/core/network/network_info.dart';
 import 'package:residential_booking_app/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:residential_booking_app/features/bookings/data/repositories/booking_repository_impl.dart';
-import 'package:residential_booking_app/features/bookings/domain/entities/add_review_usecase.dart';
+import 'package:residential_booking_app/features/bookings/domain/usecases/add_review_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/repositories/booking_repository.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/cancel_booking_usecase.dart';
+import 'package:residential_booking_app/features/bookings/domain/usecases/checkout_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/create_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/get_my_bookings_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/modify_booking_usecase.dart';
@@ -22,6 +23,8 @@ import 'package:residential_booking_app/features/owner/data/repositories/owner_r
 import 'package:residential_booking_app/features/owner/domain/repositories/owner_repository.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/add_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/delete_apartment_usecase.dart';
+import 'package:residential_booking_app/features/owner/domain/usecases/get_my_apartments_usecase.dart';
+import 'package:residential_booking_app/features/owner/domain/usecases/get_owner_requests_usecase.dart'; // Ensure this is imported
 import 'package:residential_booking_app/features/owner/domain/usecases/respond_booking_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/update_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
@@ -103,12 +106,12 @@ Future<void> init() async {
 
   // Blocs
   sl.registerFactory(() => BookingCubit(
-        addReviewUseCase: sl(),
-        getMyBookingsUseCase: sl(),
-        createBookingUseCase: sl(),
-        cancelBookingUseCase: sl(),
-        modifyBookingUseCase: sl(),
-      ));
+      addReviewUseCase: sl(),
+      getMyBookingsUseCase: sl(),
+      createBookingUseCase: sl(),
+      cancelBookingUseCase: sl(),
+      modifyBookingUseCase: sl(),
+      checkoutBookingUseCase: sl()));
 
   // UseCases
   sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
@@ -116,6 +119,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CancelBookingUseCase(sl()));
   sl.registerLazySingleton(() => ModifyBookingUseCase(sl()));
   sl.registerLazySingleton(() => AddReviewUseCase(sl()));
+  sl.registerLazySingleton(() => CheckoutBookingUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<BookingRepository>(
@@ -135,6 +139,8 @@ Future<void> init() async {
         updateApartmentUseCase: sl(),
         deleteApartmentUseCase: sl(),
         respondBookingUseCase: sl(),
+        getOwnerApartmentsUseCase: sl(),
+        getOwnerRequestsUseCase: sl(),
       ));
 
   // UseCases
@@ -142,6 +148,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateApartmentUseCase(sl()));
   sl.registerLazySingleton(() => DeleteApartmentUseCase(sl()));
   sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
+  sl.registerLazySingleton(() => GetOwnerApartmentsUseCase(sl()));
+  sl.registerLazySingleton(() => GetOwnerRequestsUseCase(sl()));
 
   // Repository
   sl.registerLazySingleton<OwnerRepository>(

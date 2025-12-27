@@ -16,7 +16,7 @@ class AddReviewUseCase implements UseCase<Unit, ReviewParams> {
 
 class ReviewParams {
   final int bookingId;
-  final double rating; // 1 - 5
+  final double rating;
   final String comment;
 
   ReviewParams({

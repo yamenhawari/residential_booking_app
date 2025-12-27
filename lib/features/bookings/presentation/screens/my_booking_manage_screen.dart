@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,6 +42,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
         listener: (context, state) {
           if (state is BookingActionSuccess) {
             AppSnackBars.showSuccess(context, message: state.message);
+            // Go back to list to refresh data
             Nav.back();
           } else if (state is BookingActionFailure) {
             AppSnackBars.showError(context, message: state.message);
@@ -51,26 +53,29 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Image
               Container(
                 height: 200.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.r),
-                  image: const DecorationImage(
-                    image: AssetImage("assets/images/1.jpg"),
-                    fit: BoxFit.cover,
-                  ),
+                  color: theme.dividerColor,
                 ),
+                clipBehavior: Clip.antiAlias,
+                child: _currentBooking.apartmentImageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: _currentBooking.apartmentImageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.broken_image),
+                      )
+                    : Image.asset("assets/images/1.jpg", fit: BoxFit.cover),
               ),
               SizedBox(height: 20.h),
-
-              // Title & ID
-              Text("${context.tr.apartment} #${_currentBooking.apartmentId}",
+              Text(
+                  _currentBooking.apartmentName ??
+                      "${context.tr.apartment} #${_currentBooking.apartmentId}",
                   style: theme.textTheme.titleLarge),
               SizedBox(height: 8.h),
-
-              // Status Badge
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -87,8 +92,6 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                 ),
               ),
               SizedBox(height: 24.h),
-
-              // Details Card
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20.w),
@@ -138,8 +141,6 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                 ),
               ),
               SizedBox(height: 40.h),
-
-              // Action Buttons
               if (_currentBooking.status == BookingStatus.pending) ...[
                 PrimaryButton(
                   label: context.tr.modifyBooking,
@@ -164,17 +165,41 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                 PrimaryButton(
                   label: context.tr.checkOut,
                   onPressed: () {
-                    // Fake check-out logic for now (or implement status update in cubit)
-                    AppSnackBars.showInfo(context,
-                        message: "Check-out processed. Status updated.");
-                    // In real app: context.read<BookingCubit>().completeBooking(_currentBooking.id);
+                    context
+                        .read<BookingCubit>()
+                        .checkoutBooking(_currentBooking.id);
                   },
                 ),
               ] else if (_currentBooking.status == BookingStatus.completed) ...[
-                PrimaryButton(
-                  label: context.tr.rateStay,
-                  onPressed: () => _showRatingDialog(context),
-                ),
+                // [FIX] Show stars if rated, otherwise show button
+                if (_currentBooking.myRating != null) ...[
+                  Center(
+                    child: Column(
+                      children: [
+                        Text("You rated this stay:",
+                            style: theme.textTheme.titleMedium),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              index < _currentBooking.myRating!
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                              size: 32.sp,
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  )
+                ] else ...[
+                  PrimaryButton(
+                    label: context.tr.rateStay,
+                    onPressed: () => _showRatingDialog(context),
+                  ),
+                ]
               ] else ...[
                 Center(
                   child: Text(
@@ -266,14 +291,36 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
     );
 
     if (picked != null && context.mounted) {
-      context.read<BookingCubit>().modifyBooking(
-            ModifyBookingParams(
-              bookingId: _currentBooking.id,
-              newStartDate: picked.start,
-              newEndDate: picked.end,
-            ),
-          );
+      _showModifyConfirmation(context, picked.start, picked.end);
     }
+  }
+
+  void _showModifyConfirmation(
+      BuildContext context, DateTime newStart, DateTime newEnd) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(context.tr.confirmBooking),
+        content: const Text("Confirm Date Change?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<BookingCubit>().modifyBooking(
+                    ModifyBookingParams(
+                      bookingId: _currentBooking.id,
+                      newStartDate: newStart,
+                      newEndDate: newEnd,
+                    ),
+                  );
+            },
+            child: Text(context.tr.saveChanges),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showRatingDialog(BuildContext context) {
@@ -307,7 +354,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
             SizedBox(height: 10.h),
             TextField(
               controller: commentCtrl,
-              decoration: InputDecoration(hintText: "Comment..."),
+              decoration: const InputDecoration(hintText: "Comment..."),
             )
           ],
         ),

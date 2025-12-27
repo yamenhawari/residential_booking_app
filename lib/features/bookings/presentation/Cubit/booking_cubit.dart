@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:residential_booking_app/features/bookings/domain/entities/add_review_usecase.dart';
+import 'package:residential_booking_app/features/bookings/domain/usecases/add_review_usecase.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/cancel_booking_usecase.dart';
+import '../../domain/usecases/checkout_booking_usecase.dart';
 import '../../domain/usecases/create_booking_usecase.dart';
 import '../../domain/usecases/get_my_bookings_usecase.dart';
 import '../../domain/usecases/modify_booking_usecase.dart';
@@ -12,6 +13,7 @@ class BookingCubit extends Cubit<BookingState> {
   final GetMyBookingsUseCase getMyBookingsUseCase;
   final CreateBookingUseCase createBookingUseCase;
   final CancelBookingUseCase cancelBookingUseCase;
+  final CheckoutBookingUseCase checkoutBookingUseCase;
   final ModifyBookingUseCase modifyBookingUseCase;
   final AddReviewUseCase addReviewUseCase;
 
@@ -20,6 +22,7 @@ class BookingCubit extends Cubit<BookingState> {
     required this.getMyBookingsUseCase,
     required this.createBookingUseCase,
     required this.cancelBookingUseCase,
+    required this.checkoutBookingUseCase,
     required this.modifyBookingUseCase,
   }) : super(BookingInitial());
 
@@ -40,7 +43,10 @@ class BookingCubit extends Cubit<BookingState> {
     final result = await createBookingUseCase(params);
     result.fold(
       (failure) => emit(BookingActionFailure(failure.message)),
-      (_) => emit(const BookingActionSuccess("Booking Created Successfully!")),
+      (_) {
+        emit(const BookingActionSuccess("Booking Created Successfully!"));
+        getBookings();
+      },
     );
   }
 
@@ -51,6 +57,18 @@ class BookingCubit extends Cubit<BookingState> {
       (failure) => emit(BookingActionFailure(failure.message)),
       (_) {
         emit(const BookingActionSuccess("Booking Cancelled"));
+        getBookings();
+      },
+    );
+  }
+
+  Future<void> checkoutBooking(int id) async {
+    emit(BookingActionLoading());
+    final result = await checkoutBookingUseCase(id);
+    result.fold(
+      (failure) => emit(BookingActionFailure(failure.message)),
+      (_) {
+        emit(const BookingActionSuccess("Checked Out Successfully"));
         getBookings();
       },
     );
@@ -78,7 +96,11 @@ class BookingCubit extends Cubit<BookingState> {
     ));
 
     result.fold(
-      (failure) => emit(BookingActionFailure(failure.message)),
+      (failure) {
+        // Even if it failed, we want to reload the list to ensure UI state is correct
+        emit(BookingActionFailure(failure.message));
+        getBookings();
+      },
       (_) {
         emit(const BookingActionSuccess("Review submitted successfully!"));
         getBookings();

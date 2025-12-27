@@ -1,6 +1,5 @@
 import 'package:residential_booking_app/core/api/api_constants.dart';
 import 'package:residential_booking_app/core/enums/apartment_status_enum.dart';
-
 import '../entities/apartment.dart';
 import '../enums/governorate_enum.dart';
 
@@ -19,18 +18,29 @@ class ApartmentModel extends Apartment {
   });
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
-    // 1. Safe parsing for roomCount (Handling the mismatch: API uses 'rooms')
     final rawRooms = json['rooms'] ?? json['room_count'];
     int parsedRooms = 0;
     if (rawRooms != null) {
       parsedRooms = int.tryParse(rawRooms.toString()) ?? 0;
     }
 
-    // 2. Safe parsing for governorate_id
     final rawGovId = json['governorate_id'];
     int govId = 1;
     if (rawGovId != null) {
       govId = int.tryParse(rawGovId.toString()) ?? 1;
+    }
+
+    double parsedPrice = 0.0;
+    if (json['price_per_month'] != null) {
+      parsedPrice = double.tryParse(json['price_per_month'].toString()) ?? 0.0;
+    }
+
+    List<String> parsedImages = [];
+    if (json['images'] != null && (json['images'] as List).isNotEmpty) {
+      parsedImages = (json['images'] as List).map((e) {
+        final path = e is Map ? e['image_url'] : e.toString();
+        return "${ApiConstants.storageBaseUrl}$path";
+      }).toList();
     }
 
     return ApartmentModel(
@@ -39,17 +49,10 @@ class ApartmentModel extends Apartment {
       description: json['description']?.toString() ?? '',
       governorate: _mapIdToGovernorate(govId),
       address: json['address']?.toString() ?? '',
-      pricePerMonth:
-          (double.tryParse(json['price_per_month'].toString()) ?? 0.0),
+      pricePerMonth: parsedPrice,
       rating:
-          (json['rating'] != null) ? (json['rating'] as num).toDouble() : 4.3,
-      // 3. Safe mapping for images (handling empty list)
-      images: json['images'] != null && (json['images'] as List).isNotEmpty
-          ? (json['images'] as List)
-              .map((e) =>
-                  "${ApiConstants.storageBaseUrl}${e['image_url'] ?? ''}")
-              .toList()
-          : [],
+          (json['rating'] != null) ? (json['rating'] as num).toDouble() : 0.0,
+      images: parsedImages,
       roomCount: parsedRooms,
       status:
           ApartmentStatus.fromString(json['status']?.toString() ?? 'available'),
@@ -89,7 +92,6 @@ class ApartmentModel extends Apartment {
         return Governorate.tartus;
       case 8:
         return Governorate.quneitra;
-      // FIX: Added missing return keywords below
       case 9:
         return Governorate.deirEzZor;
       case 10:

@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:residential_booking_app/core/entities/apartment.dart';
+import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
@@ -24,6 +26,8 @@ class OwnerRepositoryImpl implements OwnerRepository {
         return const Right(unit);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return Left(OfflineFailure(AppStrings.error.noInternet));
@@ -31,24 +35,52 @@ class OwnerRepositoryImpl implements OwnerRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> addApartment(AddApartmentParams params) async {
-    return _performAction(() => remoteDataSource.addApartment(params));
+  Future<Either<Failure, Unit>> addApartment(AddApartmentParams params) =>
+      _performAction(() => remoteDataSource.addApartment(params));
+
+  @override
+  Future<Either<Failure, Unit>> updateApartment(UpdateApartmentParams params) =>
+      _performAction(() => remoteDataSource.updateApartment(params));
+
+  @override
+  Future<Either<Failure, Unit>> deleteApartment(int apartmentId) =>
+      _performAction(() => remoteDataSource.deleteApartment(apartmentId));
+
+  @override
+  Future<Either<Failure, Unit>> respondToBooking(RespondBookingParams params) =>
+      _performAction(() => remoteDataSource.respondToBooking(params));
+
+  @override
+  Future<Either<Failure, List<Apartment>>> getMyApartments() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.getMyApartments();
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        // [FIX] Catch parsing errors here so the app doesn't freeze/blank
+        return Left(ServerFailure("Parsing Error: ${e.toString()}"));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
+    }
   }
 
   @override
-  Future<Either<Failure, Unit>> updateApartment(
-      UpdateApartmentParams params) async {
-    return _performAction(() => remoteDataSource.updateApartment(params));
-  }
-
-  @override
-  Future<Either<Failure, Unit>> deleteApartment(int apartmentId) async {
-    return _performAction(() => remoteDataSource.deleteApartment(apartmentId));
-  }
-
-  @override
-  Future<Either<Failure, Unit>> respondToBooking(
-      RespondBookingParams params) async {
-    return _performAction(() => remoteDataSource.respondToBooking(params));
+  Future<Either<Failure, List<Booking>>> getOwnerRequests() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.getOwnerRequests();
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        // [FIX] Catch parsing errors here
+        return Left(ServerFailure("Parsing Error: ${e.toString()}"));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
+    }
   }
 }

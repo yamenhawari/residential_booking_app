@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +24,10 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<OwnerCubit>().getDashboardData();
+    // Ensure data is fetched when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OwnerCubit>().getDashboardData();
+    });
   }
 
   @override
@@ -42,13 +46,52 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
       ),
       body: BlocBuilder<OwnerCubit, OwnerState>(
         builder: (context, state) {
-          if (state is OwnerLoading) {
+          // 1. Loading State
+          if (state is OwnerLoading || state is OwnerInitial) {
             return const LoadingWidget();
-          } else if (state is OwnerDataLoaded) {
+          }
+
+          // 2. Error State (Fixes Blank Screen)
+          else if (state is OwnerError) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline_rounded,
+                        size: 60.sp, color: Colors.red),
+                    SizedBox(height: 16.h),
+                    Text(
+                      "Failed to load dashboard",
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    SizedBox(height: 24.h),
+                    ElevatedButton.icon(
+                      onPressed: () =>
+                          context.read<OwnerCubit>().getDashboardData(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text("Retry"),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
+
+          // 3. Data Loaded State
+          else if (state is OwnerDataLoaded) {
             return RefreshIndicator(
               onRefresh: () async =>
                   context.read<OwnerCubit>().getDashboardData(),
               child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
@@ -102,7 +145,9 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               ),
             );
           }
-          return const SizedBox.shrink();
+
+          // Fallback
+          return const LoadingWidget();
         },
       ),
     );
@@ -179,22 +224,37 @@ class _BookingRequestCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 25.r,
-                backgroundColor: theme.dividerColor,
-                backgroundImage:
-                    const AssetImage("assets/images/1.jpg"), // Placeholder
+              Container(
+                width: 50.r,
+                height: 50.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: theme.dividerColor,
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: booking.tenantImageUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: booking.tenantImageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person),
+                      )
+                    : const Icon(Icons.person),
               ),
               SizedBox(width: 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Tenant Name", style: theme.textTheme.titleMedium),
+                    Text(booking.tenantName ?? "Tenant",
+                        style: theme.textTheme.titleMedium),
                     Text(
-                      "${context.tr.apartment} #${booking.apartmentId}",
+                      booking.apartmentName ??
+                          "${context.tr.apartment} #${booking.apartmentId}",
                       style: theme.textTheme.bodyMedium
                           ?.copyWith(color: AppColors.primary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

@@ -13,12 +13,20 @@ import 'package:residential_booking_app/features/settings/presentation/cubit/cur
 class ApartmentCard extends StatelessWidget {
   final Apartment apartment;
   final VoidCallback? ontap;
-  const ApartmentCard({super.key, this.ontap, required this.apartment});
+  final bool showHeart;
+
+  const ApartmentCard({
+    super.key,
+    this.ontap,
+    required this.apartment,
+    this.showHeart = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
+      height: 300.h,
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20.r),
@@ -146,11 +154,12 @@ class ApartmentCard extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              top: 16.h,
-              left: 16.w,
-              child: const HeartWidget(),
-            ),
+            if (showHeart)
+              Positioned(
+                top: 16.h,
+                left: 16.w,
+                child: const HeartWidget(),
+              ),
           ],
         ),
       ),

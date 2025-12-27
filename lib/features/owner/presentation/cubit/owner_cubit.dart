@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:residential_booking_app/core/usecases/usecase.dart';
+import 'package:residential_booking_app/features/owner/domain/usecases/get_my_apartments_usecase.dart';
 import '../../domain/usecases/add_apartment_usecase.dart';
 import '../../domain/usecases/delete_apartment_usecase.dart';
+import '../../domain/usecases/get_owner_requests_usecase.dart';
 import '../../domain/usecases/respond_booking_usecase.dart';
 import '../../domain/usecases/update_apartment_usecase.dart';
 import 'owner_state.dart';
@@ -12,6 +15,8 @@ class OwnerCubit extends Cubit<OwnerState> {
   final UpdateApartmentUseCase updateApartmentUseCase;
   final DeleteApartmentUseCase deleteApartmentUseCase;
   final RespondBookingUseCase respondBookingUseCase;
+  final GetOwnerApartmentsUseCase getOwnerApartmentsUseCase;
+  final GetOwnerRequestsUseCase getOwnerRequestsUseCase;
 
   final ImagePicker _picker = ImagePicker();
   final List<File> _selectedImages = [];
@@ -21,13 +26,63 @@ class OwnerCubit extends Cubit<OwnerState> {
     required this.updateApartmentUseCase,
     required this.deleteApartmentUseCase,
     required this.respondBookingUseCase,
+    required this.getOwnerApartmentsUseCase,
+    required this.getOwnerRequestsUseCase,
   }) : super(OwnerInitial());
 
+  // Called by Dashboard Screen
   Future<void> getDashboardData() async {
     emit(OwnerLoading());
-    await Future.delayed(const Duration(seconds: 1));
-    emit(const OwnerDataLoaded(
-        requests: [], myApartments: [], totalEarnings: 12500));
+
+    final results = await Future.wait([
+      getOwnerApartmentsUseCase(NoParams()),
+      getOwnerRequestsUseCase(NoParams()),
+    ]);
+
+    final apartmentsResult = results[0];
+    final requestsResult = results[1];
+
+    List myApartments = [];
+    List requests = [];
+    String? errorMessage;
+
+    apartmentsResult.fold(
+      (l) => errorMessage = l.message,
+      (r) => myApartments = r as List,
+    );
+
+    requestsResult.fold(
+      (l) {
+        // If requests fail but apartments loaded, don't block the UI completely
+        // Only set error if EVERYTHING failed
+        if (myApartments.isEmpty) errorMessage = l.message;
+      },
+      (r) => requests = r as List,
+    );
+
+    if (errorMessage != null && myApartments.isEmpty && requests.isEmpty) {
+      emit(OwnerError(errorMessage!));
+    } else {
+      emit(OwnerDataLoaded(
+        requests: List.from(requests),
+        myApartments: List.from(myApartments),
+        totalEarnings: 0,
+      ));
+    }
+  }
+
+  // [FIX] New method called by OwnerApartmentsScreen
+  Future<void> loadMyApartments() async {
+    emit(OwnerLoading());
+    final result = await getOwnerApartmentsUseCase(NoParams());
+
+    result.fold(
+      (failure) => emit(OwnerError(failure.message)),
+      (apartments) => emit(OwnerDataLoaded(
+          myApartments: apartments, // Only update apartments list
+          requests: [],
+          totalEarnings: 0)),
+    );
   }
 
   Future<void> pickImages() async {
@@ -51,26 +106,53 @@ class OwnerCubit extends Cubit<OwnerState> {
 
   Future<void> addApartment(AddApartmentParams params) async {
     emit(OwnerLoading());
-    final result = await addApartmentUseCase(params);
+
+    final paramsWithImages = AddApartmentParams(
+      title: params.title,
+      description: params.description,
+      governorate: params.governorate,
+      address: params.address,
+      price: params.price,
+      roomCount: params.roomCount,
+      images: List.from(_selectedImages),
+    );
+
+    final result = await addApartmentUseCase(paramsWithImages);
     result.fold(
       (failure) => emit(OwnerError(failure.message)),
       (_) {
         clearImages();
         emit(const OwnerSuccess("Property Listed Successfully"));
-        getDashboardData();
+        // Refresh based on what we are looking at
+        loadMyApartments();
       },
     );
   }
 
   Future<void> updateApartment(UpdateApartmentParams params) async {
     emit(OwnerLoading());
-    final result = await updateApartmentUseCase(params);
+
+    UpdateApartmentParams finalParams = params;
+    if (_selectedImages.isNotEmpty) {
+      finalParams = UpdateApartmentParams(
+        apartmentId: params.apartmentId,
+        title: params.title,
+        description: params.description,
+        governorate: params.governorate,
+        address: params.address,
+        price: params.price,
+        roomCount: params.roomCount,
+        newImages: List.from(_selectedImages),
+      );
+    }
+
+    final result = await updateApartmentUseCase(finalParams);
     result.fold(
       (failure) => emit(OwnerError(failure.message)),
       (_) {
         clearImages();
         emit(const OwnerSuccess("Property Updated"));
-        getDashboardData();
+        loadMyApartments();
       },
     );
   }
@@ -82,7 +164,7 @@ class OwnerCubit extends Cubit<OwnerState> {
       (failure) => emit(OwnerError(failure.message)),
       (_) {
         emit(const OwnerSuccess("Property Deleted"));
-        getDashboardData();
+        loadMyApartments();
       },
     );
   }

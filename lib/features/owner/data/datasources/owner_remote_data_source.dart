@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import '../../../../core/api/api_constants.dart';
 import '../../../../core/api/api_consumer.dart';
+import '../../../../core/models/apartment_model.dart';
+import '../../../../features/bookings/data/models/booking_model.dart';
 import '../../domain/usecases/add_apartment_usecase.dart';
 import '../../domain/usecases/update_apartment_usecase.dart';
 import '../../domain/usecases/respond_booking_usecase.dart';
@@ -10,6 +12,8 @@ abstract class OwnerRemoteDataSource {
   Future<Unit> updateApartment(UpdateApartmentParams params);
   Future<Unit> deleteApartment(int apartmentId);
   Future<Unit> respondToBooking(RespondBookingParams params);
+  Future<List<ApartmentModel>> getMyApartments();
+  Future<List<BookingModel>> getOwnerRequests();
 }
 
 class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
@@ -72,7 +76,6 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
   @override
   Future<Unit> updateApartment(UpdateApartmentParams params) async {
     final fields = <String, String>{};
-
     if (params.title != null) fields['title'] = params.title!;
     if (params.description != null) fields['description'] = params.description!;
     if (params.governorate != null) {
@@ -112,14 +115,37 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
   Future<Unit> respondToBooking(RespondBookingParams params) async {
     final url = params.accept
         ? ApiConstants.confirmBooking(params.bookingId)
-        : "${ApiConstants.bookings}/${params.bookingId}/cancel";
+        : "${ApiConstants.bookings}/${params.bookingId}/reject";
 
-    if (params.accept) {
-      await apiConsumer.put(url);
-    } else {
-      await apiConsumer.put(url);
-    }
-
+    await apiConsumer.put(url);
     return unit;
+  }
+
+  @override
+  Future<List<ApartmentModel>> getMyApartments() async {
+    final response = await apiConsumer.get(ApiConstants.myApartments);
+
+    if (response is List) {
+      return response.map((e) => ApartmentModel.fromJson(e)).toList();
+    } else if (response is Map && response.containsKey('data')) {
+      return (response['data'] as List)
+          .map((e) => ApartmentModel.fromJson(e))
+          .toList();
+    }
+    return [];
+  }
+
+  @override
+  Future<List<BookingModel>> getOwnerRequests() async {
+    final response = await apiConsumer.get(ApiConstants.ownerBookingRequests);
+
+    if (response is List) {
+      return response.map((e) => BookingModel.fromJson(e)).toList();
+    } else if (response is Map && response.containsKey('data')) {
+      return (response['data'] as List)
+          .map((e) => BookingModel.fromJson(e))
+          .toList();
+    }
+    return [];
   }
 }

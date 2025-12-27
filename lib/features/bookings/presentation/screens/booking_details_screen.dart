@@ -65,7 +65,6 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     if (_startDate == null || _endDate == null) return 0;
     final days = _endDate!.difference(_startDate!).inDays;
     final duration = days == 0 ? 1 : days;
-    // Calculate based on the passed price
     return (widget.pricePerMonth / 30) * duration;
   }
 
@@ -87,6 +86,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final currentCurrency = context.watch<CurrencyCubit>().state;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.tr.bookingDetails)),
@@ -105,25 +105,18 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Display ID and Base Price since we don't have title/address
               Text(
                 "${context.tr.apartment} #${widget.apartmentId}",
                 style: theme.textTheme.titleLarge,
               ),
               SizedBox(height: 8.h),
-              BlocBuilder<CurrencyCubit, String>(
-                builder: (context, currency) {
-                  return Text(
-                    "${context.tr.currency}: ${PriceFormatter.format(widget.pricePerMonth, currency)} ${context.tr.pricePerMonth}",
-                    style: theme.textTheme.bodyMedium,
-                  );
-                },
+              Text(
+                "${context.tr.currency}: ${PriceFormatter.format(widget.pricePerMonth, currentCurrency)} ${context.tr.pricePerMonth}",
+                style: theme.textTheme.bodyMedium,
               ),
-
               SizedBox(height: 30.h),
               Text(context.tr.selectDates, style: theme.textTheme.titleMedium),
               SizedBox(height: 12.h),
-
               GestureDetector(
                 onTap: _selectDates,
                 child: Container(
@@ -153,12 +146,10 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: 30.h),
               Text(context.tr.paymentMethod,
                   style: theme.textTheme.titleMedium),
               SizedBox(height: 12.h),
-
               Column(
                 children: _paymentMethods.map((method) {
                   final isSelected = _selectedPaymentMethod == method['id'];
@@ -208,9 +199,7 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                   );
                 }).toList(),
               ),
-
               SizedBox(height: 40.h),
-
               Container(
                 padding: EdgeInsets.all(20.w),
                 decoration: BoxDecoration(
@@ -230,17 +219,13 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
                       children: [
                         Text(context.tr.totalPrice,
                             style: theme.textTheme.titleMedium),
-                        BlocBuilder<CurrencyCubit, String>(
-                          builder: (context, currency) {
-                            return Text(
-                              PriceFormatter.format(_totalPrice, currency),
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            );
-                          },
+                        Text(
+                          PriceFormatter.format(_totalPrice, currentCurrency),
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),

@@ -16,8 +16,7 @@ import 'package:residential_booking_app/features/owner/presentation/cubit/owner_
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_state.dart';
 
 class AddApartmentScreen extends StatefulWidget {
-  final Apartment?
-      apartment; // If null, it's Add mode. If exists, it's Edit mode.
+  final Apartment? apartment;
   const AddApartmentScreen({super.key, this.apartment});
 
   @override
@@ -33,22 +32,46 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
 
   late Governorate _selectedGov;
   int _rooms = 1;
-  bool get _isEditing => widget.apartment != null;
+
+  Apartment? _apartmentData;
+  bool get _isEditing => _apartmentData != null;
 
   @override
   void initState() {
     super.initState();
-    if (_isEditing) {
-      final apt = widget.apartment!;
-      _titleCtrl.text = apt.title;
-      _descCtrl.text = apt.description;
-      _priceCtrl.text = apt.pricePerMonth.toString();
-      _addressCtrl.text = apt.address;
-      _selectedGov = apt.governorate;
-      _rooms = apt.roomCount;
-    } else {
-      _selectedGov = Governorate.damascus;
+    _selectedGov = Governorate.damascus;
+
+    // Explicitly check for apartment passed in constructor or settings arguments
+    // Use addPostFrameCallback to ensure context is ready if needed,
+    // but here synchronous init is fine for populating controllers.
+    if (widget.apartment != null) {
+      _apartmentData = widget.apartment;
+      _populateFields();
     }
+  }
+
+  // Handle case where argument comes from Navigation.pushNamed arguments
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_apartmentData == null) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Apartment) {
+        _apartmentData = args;
+        _populateFields();
+      }
+    }
+  }
+
+  void _populateFields() {
+    if (_apartmentData == null) return;
+    _titleCtrl.text = _apartmentData!.title;
+    _descCtrl.text = _apartmentData!.description;
+    _priceCtrl.text = _apartmentData!.pricePerMonth.toString();
+    _addressCtrl.text = _apartmentData!.address;
+    _selectedGov = _apartmentData!.governorate;
+    _rooms = _apartmentData!.roomCount;
+    setState(() {}); // Refresh UI
   }
 
   void _submit() {
@@ -56,7 +79,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
 
     if (_isEditing) {
       context.read<OwnerCubit>().updateApartment(UpdateApartmentParams(
-            apartmentId: widget.apartment!.id,
+            apartmentId: _apartmentData!.id,
             title: _titleCtrl.text,
             description: _descCtrl.text,
             price: double.parse(_priceCtrl.text),
@@ -72,19 +95,21 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
             address: _addressCtrl.text,
             governorate: _selectedGov,
             roomCount: _rooms,
-            images: [], // Cubit handles images from state
+            images: [],
           ));
     }
   }
 
   void _confirmDelete() {
+    if (!_isEditing) return;
     AppDialogs.showConfirm(
       context,
-      message: context.tr.deleteConfirm,
+      message: context
+          .tr.deleteConfirm, // "Are you sure you want to delete this property?"
       confirmText: context.tr.deleteProperty,
       onConfirm: () {
-        context.read<OwnerCubit>().deleteApartment(widget.apartment!.id);
-        Nav.back(); // Close dialog
+        context.read<OwnerCubit>().deleteApartment(_apartmentData!.id);
+        Nav.back();
       },
     );
   }
@@ -122,7 +147,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Image Picker
                 GestureDetector(
                   onTap: () => context.read<OwnerCubit>().pickImages(),
                   child: Container(
@@ -131,8 +155,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                     decoration: BoxDecoration(
                       color: theme.cardColor,
                       borderRadius: BorderRadius.circular(20.r),
-                      border: Border.all(
-                          color: theme.dividerColor, style: BorderStyle.solid),
+                      border: Border.all(color: theme.dividerColor),
                     ),
                     child: BlocBuilder<OwnerCubit, OwnerState>(
                       builder: (context, state) {
@@ -152,18 +175,17 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                             ),
                           );
                         }
-                        // If editing, show existing images (mock logic for now)
-                        if (_isEditing && widget.apartment!.images.isNotEmpty) {
+                        if (_isEditing && _apartmentData!.images.isNotEmpty) {
                           return ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: widget.apartment!.images.length,
+                            itemCount: _apartmentData!.images.length,
                             padding: EdgeInsets.all(10.w),
                             itemBuilder: (context, index) => Padding(
                               padding: EdgeInsets.only(right: 10.w),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12.r),
                                 child: Image.network(
-                                    widget.apartment!.images[index],
+                                    _apartmentData!.images[index],
                                     fit: BoxFit.cover,
                                     width: 140.w),
                               ),
@@ -185,7 +207,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                   ),
                 ),
                 SizedBox(height: 30.h),
-
                 AppTextField(
                   controller: _titleCtrl,
                   hint: "Sunny Apartment...",
@@ -194,7 +215,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                       v!.isEmpty ? context.tr.fieldRequired : null,
                 ),
                 SizedBox(height: 16.h),
-
                 AppTextField(
                   controller: _descCtrl,
                   hint: "Describe your property...",
@@ -202,7 +222,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                   maxLength: 500,
                 ),
                 SizedBox(height: 16.h),
-
                 Row(
                   children: [
                     Expanded(
@@ -249,7 +268,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-
                 AppTextField(
                   controller: _addressCtrl,
                   hint: "Street, Building No...",
@@ -258,7 +276,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                       v!.isEmpty ? context.tr.fieldRequired : null,
                 ),
                 SizedBox(height: 24.h),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -285,7 +302,6 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                   ],
                 ),
                 SizedBox(height: 40.h),
-
                 BlocBuilder<OwnerCubit, OwnerState>(
                   builder: (context, state) {
                     return PrimaryButton(

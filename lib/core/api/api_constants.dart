@@ -8,14 +8,17 @@ class ApiConstants {
   static const String logout = "$baseUrl/logout";
 
   static const String apartments = "$baseUrl/apartment";
+  static const String myApartments = "$baseUrl/apartment/my";
 
   static const String bookings = "$baseUrl/bookings";
-
   static const String myBookings = "$baseUrl/bookings/my/all";
+  static const String ownerBookingRequests = "$baseUrl/bookings/owner/requests";
 
   static String cancelBooking(int id) => "$baseUrl/bookings/$id/cancel";
   static String modifyBooking(int id) => "$baseUrl/bookings/$id/request-update";
   static String rateBooking(int id) => "$baseUrl/bookings/$id/review";
+  static String checkoutBooking(int id) =>
+      "$baseUrl/bookings/$id/checkout"; // Added
 
   static String confirmBooking(int id) => "$baseUrl/bookings/confirm/$id";
   static String approveUpdate(int id) =>
