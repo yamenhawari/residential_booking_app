@@ -7,6 +7,8 @@ class ApiConstants {
   static const String login = "$baseUrl/login";
   static const String logout = "$baseUrl/logout";
 
+  static const String updateFcmToken = "$baseUrl/user/fcm-token";
+
   static const String apartments = "$baseUrl/apartment";
   static const String myApartments = "$baseUrl/apartment/my";
 
@@ -25,7 +27,10 @@ class ApiConstants {
   static String approveUpdate(int id) =>
       "$baseUrl/bookings/updates/$id/approve";
   static String rejectUpdate(int id) => "$baseUrl/bookings/updates/$id/reject";
+
   static String activateApartment(int id) => "$baseUrl/apartment/$id/activate";
   static String forceDeleteApartment(int id) => "$baseUrl/apartment/$id/force";
   static const String ownerEarnings = "$baseUrl/bookings/owner/earnings";
+
+  static const String notifications = "$baseUrl/notifications";
 }

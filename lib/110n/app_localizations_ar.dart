@@ -158,6 +158,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get manageYourAlerts => 'إدارة تنبيهاتك';
 
   @override
+  String get newNotification => 'جديد';
+
+  @override
+  String get markAsRead => 'تمييز كمقروء';
+
+  @override
+  String get noNotificationsTitle => 'لا توجد إشعارات';
+
+  @override
+  String get noNotificationsDesc => 'لا توجد إشعارات حالياً.';
+
+  @override
   String get versionInfo => 'الإصدار 1.0.0';
 
   @override

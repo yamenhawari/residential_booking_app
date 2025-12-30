@@ -158,6 +158,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get manageYourAlerts => 'Управление уведомлениями';
 
   @override
+  String get newNotification => 'Новое';
+
+  @override
+  String get markAsRead => 'Отметить как прочитанное';
+
+  @override
+  String get noNotificationsTitle => 'Уведомлений нет';
+
+  @override
+  String get noNotificationsDesc => 'У вас нет новых уведомлений.';
+
+  @override
   String get versionInfo => 'Версия 1.0.0';
 
   @override

@@ -15,6 +15,7 @@ import 'package:residential_booking_app/features/home/presentation/screens/home_
 import 'package:residential_booking_app/features/home/presentation/screens/main_layout_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
 import 'package:residential_booking_app/features/intro/presentation/screens/introduction_screen.dart';
+import 'package:residential_booking_app/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:residential_booking_app/features/owner/presentation/screens/add_apartment_screen.dart';
 import 'package:residential_booking_app/features/owner/presentation/screens/owner_apartments_screen.dart';
 import 'package:residential_booking_app/features/owner/presentation/screens/owner_dashboard_screen.dart';
@@ -26,6 +27,10 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case AppRoutes.notifications:
+        return MaterialPageRoute(
+          builder: (context) => const NotificationsScreen(),
+        );
       case AppRoutes.favoritesScreen:
         return MaterialPageRoute(
           builder: (context) => const FavoritesScreen(),

@@ -93,9 +93,6 @@ class ProfileHeaderCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (user != null)
-                Icon(Icons.edit_outlined,
-                    color: theme.iconTheme.color, size: 22.sp),
             ],
           ),
         );

@@ -19,6 +19,12 @@ import 'package:residential_booking_app/features/bookings/presentation/Cubit/boo
 import 'package:residential_booking_app/features/home/domain/usecases/get_aparment_by_id_usecase.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_cubit.dart';
+import 'package:residential_booking_app/features/notifications/data/datasources/notification_remote_data_source.dart';
+import 'package:residential_booking_app/features/notifications/data/repositories/notification_repository_impl.dart';
+import 'package:residential_booking_app/features/notifications/domain/repositories/notification_repository.dart';
+import 'package:residential_booking_app/features/notifications/domain/usecases/get_notifications_usecase.dart';
+import 'package:residential_booking_app/features/notifications/domain/usecases/mark_notification_read_usecase.dart';
+import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:residential_booking_app/features/owner/data/datasources/owner_remote_data_source.dart';
 import 'package:residential_booking_app/features/owner/data/repositories/owner_repository_impl.dart';
 import 'package:residential_booking_app/features/owner/domain/repositories/owner_repository.dart';
@@ -169,6 +175,16 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
-
   sl.registerFactory(() => FilterCubit());
+
+  sl.registerFactory(() => NotificationCubit(
+      getNotificationsUseCase: sl(), markNotificationReadUseCase: sl()));
+
+  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
+  sl.registerLazySingleton(() => MarkNotificationReadUseCase(sl()));
+
+  sl.registerLazySingleton<NotificationRepository>(() =>
+      NotificationRepositoryImpl(networkInfo: sl(), remoteDataSource: sl()));
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+      () => NotificationRemoteDataSourceImpl(apiConsumer: sl()));
 }

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:residential_booking_app/core/navigation/app_routes.dart';
+import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
+import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_state.dart';
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/utils/nav_helper.dart';
-import '../../../../core/navigation/app_routes.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
@@ -21,7 +23,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> _onRefresh() async {
-    await context.read<HomeCubit>().getApartments();
+    context.read<HomeCubit>().getApartments();
+    context.read<NotificationCubit>().getNotifications();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<NotificationCubit>().getNotifications();
   }
 
   @override
@@ -49,29 +58,63 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          Container(
-            height: 45.h,
-            margin: EdgeInsets.only(right: 20.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: theme.cardColor,
-              border: Border.all(color: theme.dividerColor),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+          BlocBuilder<NotificationCubit, NotificationState>(
+            builder: (context, state) {
+              int unreadCount = 0;
+              if (state is NotificationLoaded) {
+                unreadCount =
+                    state.notifications.where((n) => !n.isRead).length;
+              }
+
+              return GestureDetector(
+                onTap: () {
+                  Nav.to(AppRoutes.notifications);
+                },
+                child: Container(
+                  height: 45.h,
+                  width: 45.h,
+                  margin: EdgeInsets.only(right: 20.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.cardColor,
+                    border: Border.all(color: theme.dividerColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.bell,
+                        color: theme.iconTheme.color,
+                        size: 20.sp,
+                      ),
+                      if (unreadCount > 0)
+                        Positioned(
+                          top: 10.h,
+                          right: 10.w,
+                          child: Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 8.w,
+                              minHeight: 8.w,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                FontAwesomeIcons.bell,
-                color: theme.iconTheme.color,
-                size: 20.sp,
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -167,13 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: theme.textTheme.bodyMedium
                                   ?.copyWith(fontSize: 16.sp),
                             ),
-                            // [FIX 3] Added Refresh Button for Empty State
                             SizedBox(height: 16.h),
                             ElevatedButton.icon(
                               onPressed: _onRefresh,
                               icon: const Icon(Icons.refresh),
-                              label: Text(AppLocalizations.of(context)!
-                                  .retry), // Or "Refresh"
+                              label: Text(AppLocalizations.of(context)!.retry),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,

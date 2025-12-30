@@ -398,6 +398,30 @@ abstract class AppLocalizations {
   /// **'Manage your alerts'**
   String get manageYourAlerts;
 
+  /// No description provided for @newNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newNotification;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get markAsRead;
+
+  /// No description provided for @noNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get noNotificationsTitle;
+
+  /// No description provided for @noNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up.'**
+  String get noNotificationsDesc;
+
   /// No description provided for @versionInfo.
   ///
   /// In en, this message translates to:

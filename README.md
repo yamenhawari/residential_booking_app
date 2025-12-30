@@ -1,33 +1,81 @@
-Residential Apartment Booking App
+🏠 DreamStay - Mobile Application
 
-A comprehensive mobile application for booking residential apartments. This application connects Tenants with Owners to facilitate property booking, management, and review.
+DreamStay is a modern, cross-platform residential booking application built with Flutter. It facilitates a seamless connection between tenants seeking accommodation and property owners managing their listings. The app is architected using Clean Architecture principles to ensure scalability, maintainability, and testability.
 
-🏗 Architecture
-This project follows strict Clean Architecture principles to ensure scalability, testability, and separation of concerns.
+🌟 Key Features
 
-Structure: lib/ ├── core/ (Failures, Exceptions, Network Info, API Constants, Resources) └── features/ └── auth/ ├── domain/ (Pure Business Logic: Entities, UseCases, Repo Contracts) ├── data/ (API Implementation, Models, Local Storage) └── presentation/ (BLoC/Cubit, UI)
+Role-Based Access: Specialized interfaces for Tenants (booking/search) and Investors (property management).
+
+Advanced Search: Filter properties by date range, price, location (Governorates), and room count.
+
+Smart Booking System: Real-time availability checks, conflict prevention, and date modification requests.
+
+Owner Dashboard: Dynamic earnings calculation, booking request management (Accept/Reject), and property lifecycle management (Activate/Force Delete).
+
+Notification Center: In-app history and Push Notifications via Firebase Cloud Messaging (FCM).
+
+Localization (i18n): Full support for 🇺🇸 English, 🇸🇦 Arabic, 🇫🇷 French, 🇩🇪 German, and 🇷🇺 Russian.
+
+Offline Support: Local storage (Hive) for favorites and user session persistence.
+
+🏗️ Architecture
+
+This project strictly follows Clean Architecture separated into three layers:
+
+lib/
+├── core/ # Shared utilities, network client, routing, resources
+├── features/ # Feature-based separation
+│ ├── auth/ # Authentication (Login, Register, Token Sync)
+│ ├── home/ # Browsing, Filtering, Apartment Details
+│ ├── bookings/ # Booking logic, Reviews
+│ ├── owner/ # Management Logic (CRUD, Requests, Earnings)
+│ ├── notifications/ # Notification Logic
+│ └── ...
+└── main.dart # Dependency Injection & App Entry
+
+⚙️ Prerequisites
+
+Flutter SDK: 3.x.x or higher.
+
+Dart SDK: 3.x.x or higher.
+
+Backend: The Laravel API must be running.
+
+🚀 Installation & Setup
+
+Clone the Repository
+
+git clone [https://github.com/yourusername/residential_booking_app_frontend.git](https://github.com/yourusername/residential_booking_app_frontend.git)
+cd residential_booking_app_frontend
+
+Install Dependencies
+
+flutter pub get
+
+⚠️ Important: API Configuration
+Open lib/core/api/api_constants.dart and find the ip variable:
+
+// CHANGE THIS to your machine's local IP address (e.g., 192.168.1.5:8000)
+static const String ip = "YOUR_LOCAL_IP:8000";
+
+⚠️ Important: Firebase Configuration
+
+Android: Place google-services.json in android/app/.
+
+iOS: Place GoogleService-Info.plist in ios/Runner/.
+
+Run the App
+
+flutter run
 
 🛠 Tech Stack
-Framework: Flutter & Dart
-State Management: Flutter BLoC (Cubit)
-Architecture: Clean Architecture
-Functional Programming: Dartz (Either, Unit)
-Networking: Http
-Local Storage: Hive
-Equality: Equatable
-🚀 Completed Features (Current Phase)
 
-1. Core Layer
-   Centralized Error Handling (Failures/Exceptions).
-   Network Connectivity Checks.
-   Resource Management (Strings, API Endpoints).
-2. Authentication Feature
-   Domain Layer:
-   Entities with strict Enum support (UserRole, UserStatus).
-   UseCases: Login, Register, VerifyOtp, Logout, GetCurrentUser.
-   Data Layer:
-   RemoteDataSource: Handles API communication and JSON serialization.
-   LocalDataSource: Handles caching User/Token via Hive.
-   Repository: Coordinates data and handles "Remember Me" logic.
-   State Management:
-   AuthCubit: Manages authentication states (Loading, Success, Error) without mixing UI logic.
+State Management: flutter_bloc
+
+Dependency Injection: get_it
+
+Networking: dio / http
+
+Local DB: hive
+
+UI Components: flutter_screenutil, table_calendar

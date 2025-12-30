@@ -297,7 +297,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               iconColor: Colors.orange,
               title: AppLocalizations.of(context)!.notifications,
               subtitle: AppLocalizations.of(context)!.manageYourAlerts,
-              onTap: () {},
+              onTap: () {
+                Nav.to(AppRoutes.notifications);
+              },
             ),
             SettingsTile(
               icon: Icons.favorite_rounded,

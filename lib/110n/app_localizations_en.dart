@@ -159,6 +159,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageYourAlerts => 'Manage your alerts';
 
   @override
+  String get newNotification => 'New';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get noNotificationsTitle => 'No notifications';
+
+  @override
+  String get noNotificationsDesc => 'You\'re all caught up.';
+
+  @override
   String get versionInfo => 'Version 1.0.0';
 
   @override

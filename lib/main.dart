@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:residential_booking_app/110n/app_localizations.dart';
 import 'package:residential_booking_app/core/services/notification_service.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_cubit.dart';
+import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
 
 import 'core/di/injection_container.dart' as di;
 import 'core/navigation/app_router.dart';
@@ -52,9 +53,6 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider(create: (_) => ThemeCubit()),
-            BlocProvider(create: (_) => CurrencyCubit()),
-            BlocProvider(create: (_) => LocaleCubit()),
             BlocProvider(
               create: (_) => di.sl<AuthCubit>()..checkAuthStatus(),
             ),
@@ -76,6 +74,10 @@ class MyApp extends StatelessWidget {
             BlocProvider(
               create: (_) => di.sl<FilterCubit>(),
             ),
+            BlocProvider(create: (_) => di.sl<NotificationCubit>()),
+            BlocProvider(create: (_) => ThemeCubit()),
+            BlocProvider(create: (_) => CurrencyCubit()),
+            BlocProvider(create: (_) => LocaleCubit()),
           ],
           child: Builder(
             builder: (context) {

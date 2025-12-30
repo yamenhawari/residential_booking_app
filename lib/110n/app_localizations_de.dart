@@ -159,6 +159,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get manageYourAlerts => 'Benachrichtigungen verwalten';
 
   @override
+  String get newNotification => 'Neu';
+
+  @override
+  String get markAsRead => 'Als gelesen markieren';
+
+  @override
+  String get noNotificationsTitle => 'Keine Benachrichtigungen';
+
+  @override
+  String get noNotificationsDesc => 'Sie sind auf dem Laufenden.';
+
+  @override
   String get versionInfo => 'Version 1.0.0';
 
   @override
