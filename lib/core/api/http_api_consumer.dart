@@ -11,7 +11,7 @@ class HttpApiConsumer implements ApiConsumer {
   final http.Client client;
   final UserLocalDataSource userLocalDataSource;
 
-  static const Duration _timeoutDuration = Duration(seconds: 60);
+  static const Duration _timeoutDuration = Duration(seconds: 30);
 
   HttpApiConsumer({
     required this.client,
@@ -32,21 +32,15 @@ class HttpApiConsumer implements ApiConsumer {
     }
 
     if (requiresAuth) {
-      final token = await userLocalDataSource.getToken();
-      if (token.isNotEmpty) {
-        headers['Authorization'] = '${AppStrings.api.bearer} $token';
-      }
+      try {
+        final token = await userLocalDataSource.getToken();
+        if (token.isNotEmpty) {
+          headers['Authorization'] = '${AppStrings.api.bearer} $token';
+        }
+      } catch (_) {}
     }
 
     return headers;
-  }
-
-  Uri _buildUri(String path, Map<String, dynamic>? queryParameters) {
-    final uri = Uri.parse(path);
-    if (queryParameters != null && queryParameters.isNotEmpty) {
-      return uri.replace(queryParameters: queryParameters);
-    }
-    return uri;
   }
 
   @override
@@ -58,15 +52,13 @@ class HttpApiConsumer implements ApiConsumer {
     try {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(requiresAuth: requiresAuth);
-
       final response =
           await client.get(uri, headers: headers).timeout(_timeoutDuration);
-
       return _handleResponse(response);
     } on TimeoutException {
-      throw ServerException("Request timed out. Please try again later.");
+      throw const ServerException("Request timed out.");
     } on SocketException {
-      throw ServerException("Please Check internet connection.");
+      throw const ServerException("No internet connection.");
     }
   }
 
@@ -80,19 +72,15 @@ class HttpApiConsumer implements ApiConsumer {
     try {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(requiresAuth: requiresAuth);
-
       final response = await client
-          .post(
-            uri,
-            headers: headers,
-            body: body != null ? json.encode(body) : null,
-          )
+          .post(uri,
+              headers: headers, body: body != null ? json.encode(body) : null)
           .timeout(_timeoutDuration);
       return _handleResponse(response);
     } on TimeoutException {
-      throw ServerException("Request timed out. Please try again later.");
+      throw const ServerException("Request timed out.");
     } on SocketException {
-      throw ServerException("Please Check internet connection.");
+      throw const ServerException("No internet connection.");
     }
   }
 
@@ -106,19 +94,15 @@ class HttpApiConsumer implements ApiConsumer {
     try {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(requiresAuth: requiresAuth);
-
       final response = await client
-          .put(
-            uri,
-            headers: headers,
-            body: body != null ? json.encode(body) : null,
-          )
+          .put(uri,
+              headers: headers, body: body != null ? json.encode(body) : null)
           .timeout(_timeoutDuration);
       return _handleResponse(response);
     } on TimeoutException {
-      throw ServerException("Request timed out. Please try again later.");
+      throw const ServerException("Request timed out.");
     } on SocketException {
-      throw ServerException("Please Check internet connection.");
+      throw const ServerException("No internet connection.");
     }
   }
 
@@ -132,20 +116,15 @@ class HttpApiConsumer implements ApiConsumer {
     try {
       final uri = _buildUri(path, queryParameters);
       final headers = await _getHeaders(requiresAuth: requiresAuth);
-
       final response = await client
-          .delete(
-            uri,
-            headers: headers,
-            body: body != null ? json.encode(body) : null,
-          )
+          .delete(uri,
+              headers: headers, body: body != null ? json.encode(body) : null)
           .timeout(_timeoutDuration);
-
       return _handleResponse(response);
     } on TimeoutException {
-      throw ServerException("Request timed out. Please try again later.");
+      throw const ServerException("Request timed out.");
     } on SocketException {
-      throw ServerException("Please Check internet connection.");
+      throw const ServerException("No internet connection.");
     }
   }
 
@@ -161,12 +140,11 @@ class HttpApiConsumer implements ApiConsumer {
       final uri = Uri.parse(path);
       final request = http.MultipartRequest('POST', uri);
 
-      request.headers.addAll(await _getHeaders(
-        isMultipart: true,
-        requiresAuth: requiresAuth,
-      ));
-
+      request.headers.addAll(
+          await _getHeaders(isMultipart: true, requiresAuth: requiresAuth));
       request.fields.addAll(fields);
+
+      if (isPut) request.fields['_method'] = 'PUT';
 
       for (var fileParam in files) {
         if (await fileParam.file.exists()) {
@@ -179,14 +157,20 @@ class HttpApiConsumer implements ApiConsumer {
 
       final streamedResponse = await request.send().timeout(_timeoutDuration);
       final response = await http.Response.fromStream(streamedResponse);
-
       return _handleResponse(response);
     } on TimeoutException {
-      throw ServerException(
-          "Request timed out. Please check your connection and try again later.");
+      throw const ServerException("Request timed out.");
     } on SocketException {
-      throw ServerException("Please Check internet connection.");
+      throw const ServerException("No internet connection.");
     }
+  }
+
+  Uri _buildUri(String path, Map<String, dynamic>? queryParameters) {
+    final uri = Uri.parse(path);
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      return uri.replace(queryParameters: queryParameters);
+    }
+    return uri;
   }
 
   dynamic _handleResponse(http.Response response) {
@@ -194,25 +178,30 @@ class HttpApiConsumer implements ApiConsumer {
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonBody;
-    } else {
-      String errorMessage = AppStrings.error.server;
+    }
 
-      if (jsonBody is Map) {
-        if (jsonBody['message'] != null) {
-          errorMessage = jsonBody['message'];
-        }
-        if (jsonBody['errors'] != null) {
-          final errors = jsonBody['errors'];
-          if (errors is Map && errors.isNotEmpty) {
-            final firstError = errors.values.first;
-            if (firstError is List && firstError.isNotEmpty) {
-              errorMessage = firstError.first;
-            }
+    if (response.statusCode == 401) {
+      throw const ServerException("Session expired. Please login again.");
+    }
+
+    String errorMessage = AppStrings.error.server;
+    if (jsonBody is Map) {
+      if (jsonBody['message'] != null) {
+        errorMessage = jsonBody['message'];
+      }
+      if (jsonBody['errors'] != null) {
+        final errors = jsonBody['errors'];
+        if (errors is Map && errors.isNotEmpty) {
+          final firstError = errors.values.first;
+          if (firstError is List && firstError.isNotEmpty) {
+            errorMessage = firstError.first;
+          } else if (firstError is String) {
+            errorMessage = firstError;
           }
         }
       }
-      throw ServerException(errorMessage);
     }
+    throw ServerException(errorMessage);
   }
 
   dynamic _tryDecodeJson(String source) {

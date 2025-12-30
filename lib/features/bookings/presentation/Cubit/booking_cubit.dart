@@ -86,19 +86,21 @@ class BookingCubit extends Cubit<BookingState> {
     );
   }
 
-  // [MODIFIED] Forces success even if backend fails
   Future<void> addReview(int bookingId, double rating, String comment) async {
     emit(BookingActionLoading());
 
-    // We attempt the request, but we don't care about the result (fold)
-    await addReviewUseCase(ReviewParams(
+    final result = await addReviewUseCase(ReviewParams(
       bookingId: bookingId,
       rating: rating,
       comment: comment,
     ));
 
-    emit(const BookingActionSuccess("Review added Successfully"));
-
-    getBookings();
+    result.fold(
+      (failure) => emit(BookingActionFailure(failure.message)),
+      (_) {
+        emit(const BookingActionSuccess("Review added Successfully"));
+        getBookings();
+      },
+    );
   }
 }

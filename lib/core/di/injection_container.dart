@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -6,19 +7,34 @@ import 'package:residential_booking_app/core/api/http_api_consumer.dart';
 import 'package:residential_booking_app/core/datasources/user_local_data_source.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
 import 'package:residential_booking_app/core/network/network_info.dart';
+import 'package:residential_booking_app/core/utils/repository_utils.dart';
+import 'package:residential_booking_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:residential_booking_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:residential_booking_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:residential_booking_app/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:residential_booking_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:residential_booking_app/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:residential_booking_app/features/auth/domain/usecases/register_usecase.dart';
+import 'package:residential_booking_app/features/auth/domain/usecases/update_fcm_token_usecase.dart';
+import 'package:residential_booking_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:residential_booking_app/features/bookings/data/datasources/booking_remote_data_source.dart';
 import 'package:residential_booking_app/features/bookings/data/repositories/booking_repository_impl.dart';
-import 'package:residential_booking_app/features/bookings/domain/usecases/add_review_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/repositories/booking_repository.dart';
+import 'package:residential_booking_app/features/bookings/domain/usecases/add_review_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/cancel_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/checkout_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/create_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/get_my_bookings_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/modify_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
+import 'package:residential_booking_app/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:residential_booking_app/features/home/data/repositories/home_repository_impl.dart';
+import 'package:residential_booking_app/features/home/domain/repositories/home_repository.dart';
 import 'package:residential_booking_app/features/home/domain/usecases/get_aparment_by_id_usecase.dart';
+import 'package:residential_booking_app/features/home/domain/usecases/get_apartments_usecase.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_cubit.dart';
+import 'package:residential_booking_app/features/home/presentation/cubit/home/home_cubit.dart';
 import 'package:residential_booking_app/features/notifications/data/datasources/notification_remote_data_source.dart';
 import 'package:residential_booking_app/features/notifications/data/repositories/notification_repository_impl.dart';
 import 'package:residential_booking_app/features/notifications/domain/repositories/notification_repository.dart';
@@ -28,34 +44,26 @@ import 'package:residential_booking_app/features/notifications/presentation/cubi
 import 'package:residential_booking_app/features/owner/data/datasources/owner_remote_data_source.dart';
 import 'package:residential_booking_app/features/owner/data/repositories/owner_repository_impl.dart';
 import 'package:residential_booking_app/features/owner/domain/repositories/owner_repository.dart';
+import 'package:residential_booking_app/features/owner/domain/usecases/activate_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/add_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/delete_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/get_my_apartments_usecase.dart';
+import 'package:residential_booking_app/features/owner/domain/usecases/get_owner_earnings_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/get_owner_requests_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/orce_delete_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/respond_booking_usecase.dart';
 import 'package:residential_booking_app/features/owner/domain/usecases/update_apartment_usecase.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
-import 'package:residential_booking_app/features/owner/domain/usecases/activate_apartment_usecase.dart';
-import 'package:residential_booking_app/features/owner/domain/usecases/get_owner_earnings_usecase.dart';
-import '../../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/domain/repositories/auth_repository.dart';
-import '../../features/auth/domain/usecases/get_current_user_usecase.dart';
-import '../../features/auth/domain/usecases/login_usecase.dart';
-import '../../features/auth/domain/usecases/logout_usecase.dart';
-import '../../features/auth/domain/usecases/register_usecase.dart';
-import '../../features/auth/domain/usecases/update_fcm_token_usecase.dart';
-import '../../features/auth/presentation/cubit/auth_cubit.dart';
-import '../../features/home/data/datasources/home_remote_data_source.dart';
-import '../../features/home/data/repositories/home_repository_impl.dart';
-import '../../features/home/domain/repositories/home_repository.dart';
-import '../../features/home/domain/usecases/get_apartments_usecase.dart';
-import '../../features/home/presentation/cubit/home/home_cubit.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // ! Features
+
+  // ---------------------------------------------------------------------------
+  // AUTH FEATURE
+  // ---------------------------------------------------------------------------
+  // Cubit
   sl.registerFactory(() => AuthCubit(
         registerUseCase: sl(),
         loginUseCase: sl(),
@@ -64,12 +72,14 @@ Future<void> init() async {
         updateFcmTokenUseCase: sl(),
       ));
 
+  // Use Cases
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
   sl.registerLazySingleton(() => UpdateFcmTokenUseCase(sl()));
 
+  // Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl(),
@@ -78,20 +88,28 @@ Future<void> init() async {
     ),
   );
 
+  // Data Source
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(apiConsumer: sl()),
   );
 
+  // ---------------------------------------------------------------------------
+  // HOME FEATURE
+  // ---------------------------------------------------------------------------
+  // Cubits
   sl.registerFactory(() => HomeCubit(
         getApartmentsUseCase: sl(),
       ));
   sl.registerFactory(
     () => ApartmentDetailsCubit(getApartmentByIdUseCase: sl()),
   );
+  sl.registerFactory(() => FilterCubit());
 
+  // Use Cases
   sl.registerLazySingleton(() => GetApartmentsUseCase(sl()));
   sl.registerLazySingleton(() => GetApartmentBYIdUseCase(sl()));
 
+  // Repository
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepositoryImpl(
       remoteDataSource: sl(),
@@ -99,10 +117,15 @@ Future<void> init() async {
     ),
   );
 
+  // Data Source
   sl.registerLazySingleton<HomeRemoteDataSource>(
     () => HomeRemoteDataSourceImpl(apiConsumer: sl()),
   );
 
+  // ---------------------------------------------------------------------------
+  // BOOKINGS FEATURE
+  // ---------------------------------------------------------------------------
+  // Cubit
   sl.registerFactory(() => BookingCubit(
       addReviewUseCase: sl(),
       getMyBookingsUseCase: sl(),
@@ -111,6 +134,7 @@ Future<void> init() async {
       modifyBookingUseCase: sl(),
       checkoutBookingUseCase: sl()));
 
+  // Use Cases
   sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
   sl.registerLazySingleton(() => GetMyBookingsUseCase(sl()));
   sl.registerLazySingleton(() => CancelBookingUseCase(sl()));
@@ -118,14 +142,20 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddReviewUseCase(sl()));
   sl.registerLazySingleton(() => CheckoutBookingUseCase(sl()));
 
+  // Repository
   sl.registerLazySingleton<BookingRepository>(
     () => BookingRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
+  // Data Source
   sl.registerLazySingleton<BookingRemoteDataSource>(
     () => BookingRemoteDataSourceImpl(apiConsumer: sl()),
   );
 
+  // ---------------------------------------------------------------------------
+  // OWNER FEATURE
+  // ---------------------------------------------------------------------------
+  // Cubit
   sl.registerFactory(() => OwnerCubit(
         addApartmentUseCase: sl(),
         updateApartmentUseCase: sl(),
@@ -138,6 +168,7 @@ Future<void> init() async {
         getOwnerEarningsUseCase: sl(),
       ));
 
+  // Use Cases
   sl.registerLazySingleton(() => AddApartmentUseCase(sl()));
   sl.registerLazySingleton(() => UpdateApartmentUseCase(sl()));
   sl.registerLazySingleton(() => DeleteApartmentUseCase(sl()));
@@ -148,14 +179,40 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetOwnerRequestsUseCase(sl()));
   sl.registerLazySingleton(() => GetOwnerEarningsUseCase(sl()));
 
+  // Repository
   sl.registerLazySingleton<OwnerRepository>(
     () => OwnerRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
+  // Data Source
   sl.registerLazySingleton<OwnerRemoteDataSource>(
     () => OwnerRemoteDataSourceImpl(apiConsumer: sl()),
   );
 
+  // ---------------------------------------------------------------------------
+  // NOTIFICATION FEATURE
+  // ---------------------------------------------------------------------------
+  // Cubit
+  sl.registerFactory(() => NotificationCubit(
+      getNotificationsUseCase: sl(), markNotificationReadUseCase: sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
+  sl.registerLazySingleton(() => MarkNotificationReadUseCase(sl()));
+
+  // Repository
+  sl.registerLazySingleton<NotificationRepository>(() =>
+      NotificationRepositoryImpl(networkInfo: sl(), remoteDataSource: sl()));
+
+  // Data Source
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+      () => NotificationRemoteDataSourceImpl(apiConsumer: sl()));
+
+  // ! Core & External
+
+  // ---------------------------------------------------------------------------
+  // CORE UTILS & SERVICES
+  // ---------------------------------------------------------------------------
   sl.registerLazySingleton<ApiConsumer>(
     () => HttpApiConsumer(
       client: sl(),
@@ -168,23 +225,19 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<UserLocalDataSource>(
-    () => UserLocalDataSourceImpl(),
+    () => UserLocalDataSourceImpl(secureStorage: sl()),
   );
 
   sl.registerLazySingleton<NavigationService>(() => NavigationService());
 
+  sl.registerLazySingleton<RepositoryUtils>(
+    () => RepositoryUtils(sl()),
+  );
+
+  // ---------------------------------------------------------------------------
+  // EXTERNAL LIBRARIES
+  // ---------------------------------------------------------------------------
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
-  sl.registerFactory(() => FilterCubit());
-
-  sl.registerFactory(() => NotificationCubit(
-      getNotificationsUseCase: sl(), markNotificationReadUseCase: sl()));
-
-  sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
-  sl.registerLazySingleton(() => MarkNotificationReadUseCase(sl()));
-
-  sl.registerLazySingleton<NotificationRepository>(() =>
-      NotificationRepositoryImpl(networkInfo: sl(), remoteDataSource: sl()));
-  sl.registerLazySingleton<NotificationRemoteDataSource>(
-      () => NotificationRemoteDataSourceImpl(apiConsumer: sl()));
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
 }

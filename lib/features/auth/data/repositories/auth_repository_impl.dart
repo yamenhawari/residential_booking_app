@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:residential_booking_app/core/datasources/user_local_data_source.dart';
+import 'package:residential_booking_app/core/utils/repository_utils.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
@@ -14,25 +15,17 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final UserLocalDataSource userLocalDataSource;
   final NetworkInfo networkInfo;
+  final RepositoryUtils _repoUtils;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
     required this.userLocalDataSource,
     required this.networkInfo,
-  });
+  }) : _repoUtils = RepositoryUtils(networkInfo);
 
   @override
-  Future<Either<Failure, Unit>> register(RegisterParams params) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await remoteDataSource.register(params);
-        return const Right(unit);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      }
-    } else {
-      return Left(OfflineFailure(AppStrings.error.noInternet));
-    }
+  Future<Either<Failure, Unit>> register(RegisterParams params) {
+    return _repoUtils.safeCall(() => remoteDataSource.register(params));
   }
 
   @override
@@ -59,13 +52,15 @@ class AuthRepositoryImpl implements AuthRepository {
         await userLocalDataSource.deleteUser();
         return const Right(unit);
       } on ServerException catch (e) {
+        await userLocalDataSource.deleteUser();
         return Left(ServerFailure(e.message));
-      } on CacheException {
+      } catch (_) {
         await userLocalDataSource.deleteUser();
         return const Right(unit);
       }
     } else {
-      return Left(OfflineFailure(AppStrings.error.noInternet));
+      await userLocalDataSource.deleteUser();
+      return const Right(unit);
     }
   }
 
@@ -80,16 +75,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> updateFcmToken(String token) async {
-    if (await networkInfo.isConnected) {
-      try {
-        await remoteDataSource.updateFcmToken(token);
-        return const Right(unit);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(e.message));
-      }
-    } else {
-      return Left(OfflineFailure(AppStrings.error.noInternet));
-    }
+  Future<Either<Failure, Unit>> updateFcmToken(String token) {
+    return _repoUtils.safeCall(() => remoteDataSource.updateFcmToken(token));
   }
 }

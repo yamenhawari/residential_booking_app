@@ -24,33 +24,6 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
 
   OwnerRemoteDataSourceImpl({required this.apiConsumer});
 
-  int _mapGovernorateToId(dynamic gov) {
-    switch (gov.toString()) {
-      case 'Governorate.damascus':
-        return 1;
-      case 'Governorate.aleppo':
-        return 2;
-      case 'Governorate.homs':
-        return 3;
-      case 'Governorate.rifDimashq':
-        return 4;
-      case 'Governorate.daraa':
-        return 5;
-      case 'Governorate.latakia':
-        return 6;
-      case 'Governorate.tartus':
-        return 7;
-      case 'Governorate.quneitra':
-        return 8;
-      case 'Governorate.deirEzZor':
-        return 9;
-      case 'Governorate.hama':
-        return 10;
-      default:
-        return 1;
-    }
-  }
-
   @override
   Future<Unit> addApartment(AddApartmentParams params) async {
     final fields = {
@@ -58,7 +31,7 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
       'title': params.title,
       'description': params.description,
       'address': params.address,
-      'governorate_id': _mapGovernorateToId(params.governorate).toString(),
+      'governorate_id': params.governorate.id.toString(),
       'price_per_month': params.price.toString(),
       'room_count': params.roomCount.toString(),
     };
@@ -84,8 +57,7 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
     if (params.title != null) fields['title'] = params.title!;
     if (params.description != null) fields['description'] = params.description!;
     if (params.governorate != null) {
-      fields['governorate_id'] =
-          _mapGovernorateToId(params.governorate!).toString();
+      fields['governorate_id'] = params.governorate!.id.toString();
     }
     if (params.address != null) fields['address'] = params.address!;
     if (params.price != null) {
