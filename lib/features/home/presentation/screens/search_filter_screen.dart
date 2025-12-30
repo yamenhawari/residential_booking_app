@@ -61,26 +61,30 @@ class SearchFilterScreen extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
                     children: [
-                      FilterSectionTitle(title: AppLocalizations.of(context)!.dates),
+                      FilterSectionTitle(
+                          title: AppLocalizations.of(context)!.dates),
                       SizedBox(height: 12.h),
-                      const DateRangeSelector(),
+                      Builder(builder: (context) => DateRangeSelector()),
                       SizedBox(height: 24.h),
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
-                      FilterSectionTitle(title: AppLocalizations.of(context)!.rooms),
+                      FilterSectionTitle(
+                          title: AppLocalizations.of(context)!.rooms),
                       SizedBox(height: 12.h),
                       FilterChipSelector<int>(
                         items: const [1, 2, 3, 4, 5],
                         isSelected: (item) => state.roomCount == item,
                         onSelected: (item) =>
                             context.read<FilterCubit>().toggleRoomCount(item),
-                        labelBuilder: (item) =>
-                            item == 5 ? AppLocalizations.of(context)!.fivePlusRooms : "$item",
+                        labelBuilder: (item) => item == 5
+                            ? AppLocalizations.of(context)!.fivePlusRooms
+                            : "$item",
                       ),
                       SizedBox(height: 24.h),
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
-                      FilterSectionTitle(title: AppLocalizations.of(context)!.location),
+                      FilterSectionTitle(
+                          title: AppLocalizations.of(context)!.location),
                       SizedBox(height: 12.h),
                       FilterChipSelector<Governorate>(
                         items: Governorate.values,
@@ -94,7 +98,8 @@ class SearchFilterScreen extends StatelessWidget {
                       Divider(color: theme.dividerColor),
                       SizedBox(height: 24.h),
                       FilterSectionTitle(
-                          title: AppLocalizations.of(context)!.priceRangeMonthly),
+                          title:
+                              AppLocalizations.of(context)!.priceRangeMonthly),
                       SizedBox(height: 12.h),
                       const PriceRangeSelector(),
                       SizedBox(height: 40.h),

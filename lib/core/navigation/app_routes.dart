@@ -15,4 +15,5 @@ class AppRoutes {
   static const String ownerDashboard = '/ownerDashboard';
   static const String ownerApartments = '/ownerApartments';
   static const String settings = '/settings';
+  static const String favoritesScreen = '/favoritesScreen';
 }

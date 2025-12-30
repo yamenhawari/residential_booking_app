@@ -4,14 +4,12 @@ import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/search_filter_screen.dart';
 import 'package:residential_booking_app/110n/app_localizations.dart';
 
-class SearchFieldWidget extends StatefulWidget {
-  const SearchFieldWidget({super.key});
+class SearchFieldWidget extends StatelessWidget {
+  // Changed to StatelessWidget
+  final VoidCallback? onTap; // Added custom callback
 
-  @override
-  State<SearchFieldWidget> createState() => _SearchFieldState();
-}
+  const SearchFieldWidget({super.key, this.onTap});
 
-class _SearchFieldState extends State<SearchFieldWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -29,14 +27,16 @@ class _SearchFieldState extends State<SearchFieldWidget> {
         height: 50.h,
         child: TextField(
           readOnly: true,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SearchFilterScreen(),
-              ),
-            );
-          },
+          onTap: onTap ??
+              () {
+                // Default behavior if no callback provided
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchFilterScreen(),
+                  ),
+                );
+              },
           style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             filled: true,

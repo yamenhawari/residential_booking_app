@@ -45,6 +45,9 @@ class ApartmentCard extends StatelessWidget {
             Positioned.fill(
               child: CachedNetworkImage(
                 imageUrl: apartment.mainImageUrl,
+                httpHeaders: const {
+                  "ngrok-skip-browser-warning": "true",
+                },
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Center(
                   child: SmoothLoadingWidget(color: AppColors.primary),
@@ -158,7 +161,7 @@ class ApartmentCard extends StatelessWidget {
               Positioned(
                 top: 16.h,
                 left: 16.w,
-                child: const HeartWidget(),
+                child: HeartWidget(apartment: apartment),
               ),
           ],
         ),

@@ -11,6 +11,7 @@ abstract class AuthRemoteDataSource {
   Future<Unit> register(RegisterParams params);
   Future<UserModel> login(LoginParams params);
   Future<Unit> logout(String token);
+  Future<Unit> updateFcmToken(String token);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -28,6 +29,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'role': params.role == UserRole.owner ? 'owner' : 'tenant',
       'password': params.password,
       'password_confirmation': params.password,
+      'fcm_token': params.fcmToken,
     };
 
     final files = <FileParam>[];
@@ -55,6 +57,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       body: {
         'phone': params.phoneNumber,
         'password': params.password,
+        'fcm_token': params.fcmToken,
       },
       requiresAuth: false,
     );
@@ -74,6 +77,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Unit> logout(String token) async {
     await apiConsumer.post(ApiConstants.logout);
+    return unit;
+  }
+
+  @override
+  Future<Unit> updateFcmToken(String token) async {
+    await apiConsumer.post(
+      "${ApiConstants.baseUrl}/user/fcm-token",
+      body: {'fcm_token': token},
+    );
     return unit;
   }
 }

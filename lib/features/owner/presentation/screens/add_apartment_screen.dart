@@ -41,43 +41,33 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
     super.initState();
     _selectedGov = Governorate.damascus;
 
-    // Explicitly check for apartment passed in constructor or settings arguments
-    // Use addPostFrameCallback to ensure context is ready if needed,
-    // but here synchronous init is fine for populating controllers.
+    // [FIX] This is where we catch the data from AppRouter
     if (widget.apartment != null) {
       _apartmentData = widget.apartment;
       _populateFields();
     }
   }
 
-  // Handle case where argument comes from Navigation.pushNamed arguments
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_apartmentData == null) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Apartment) {
-        _apartmentData = args;
-        _populateFields();
-      }
-    }
-  }
-
   void _populateFields() {
     if (_apartmentData == null) return;
+
     _titleCtrl.text = _apartmentData!.title;
     _descCtrl.text = _apartmentData!.description;
-    _priceCtrl.text = _apartmentData!.pricePerMonth.toString();
+    _priceCtrl.text = _apartmentData!.pricePerMonth.toStringAsFixed(0);
     _addressCtrl.text = _apartmentData!.address;
-    _selectedGov = _apartmentData!.governorate;
-    _rooms = _apartmentData!.roomCount;
-    setState(() {}); // Refresh UI
+
+    // We don't need setState inside initState, but safe if called later
+    setState(() {
+      _selectedGov = _apartmentData!.governorate;
+      _rooms = _apartmentData!.roomCount;
+    });
   }
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
 
     if (_isEditing) {
+      // Logic for Editing
       context.read<OwnerCubit>().updateApartment(UpdateApartmentParams(
             apartmentId: _apartmentData!.id,
             title: _titleCtrl.text,
@@ -88,6 +78,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
             roomCount: _rooms,
           ));
     } else {
+      // Logic for Creating
       context.read<OwnerCubit>().addApartment(AddApartmentParams(
             title: _titleCtrl.text,
             description: _descCtrl.text,
@@ -104,8 +95,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
     if (!_isEditing) return;
     AppDialogs.showConfirm(
       context,
-      message: context
-          .tr.deleteConfirm, // "Are you sure you want to delete this property?"
+      message: context.tr.deleteConfirm,
       confirmText: context.tr.deleteProperty,
       onConfirm: () {
         context.read<OwnerCubit>().deleteApartment(_apartmentData!.id);
@@ -209,7 +199,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                 SizedBox(height: 30.h),
                 AppTextField(
                   controller: _titleCtrl,
-                  hint: "Sunny Apartment...",
+                  hint: context.tr.sunnyApartmentHint,
                   label: context.tr.propertyTitle,
                   validator: (v) =>
                       v!.isEmpty ? context.tr.fieldRequired : null,
@@ -217,7 +207,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                 SizedBox(height: 16.h),
                 AppTextField(
                   controller: _descCtrl,
-                  hint: "Describe your property...",
+                  hint: context.tr.describePropertyHint,
                   label: context.tr.propertyDesc,
                   maxLength: 500,
                 ),
@@ -228,7 +218,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Governorate",
+                          Text(context.tr.governorateLabel,
                               style: theme.textTheme.titleMedium?.copyWith(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w600)),
@@ -270,7 +260,7 @@ class _AddApartmentScreenState extends State<AddApartmentScreen> {
                 SizedBox(height: 16.h),
                 AppTextField(
                   controller: _addressCtrl,
-                  hint: "Street, Building No...",
+                  hint: context.tr.addressHint,
                   label: context.tr.propertyAddress,
                   validator: (v) =>
                       v!.isEmpty ? context.tr.fieldRequired : null,

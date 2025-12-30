@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/usecases/usecase.dart';
@@ -5,6 +6,7 @@ import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/update_fcm_token_usecase.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -12,12 +14,14 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final LogoutUseCase logoutUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  final UpdateFcmTokenUseCase updateFcmTokenUseCase;
 
   AuthCubit({
     required this.registerUseCase,
     required this.loginUseCase,
     required this.logoutUseCase,
     required this.getCurrentUserUseCase,
+    required this.updateFcmTokenUseCase,
   }) : super(AuthInitial());
 
   static AuthCubit get(BuildContext context) => BlocProvider.of(context);
@@ -26,7 +30,10 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await getCurrentUserUseCase(NoParams());
     result.fold(
       (failure) => emit(AuthUserCheckFail()),
-      (user) => emit(AuthUserCheckSuccess(user)),
+      (user) {
+        emit(AuthUserCheckSuccess(user));
+        _syncToken();
+      },
     );
   }
 
@@ -35,7 +42,9 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await registerUseCase(params);
     result.fold(
       (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const AuthRegisterSuccess()),
+      (_) {
+        emit(const AuthRegisterSuccess());
+      },
     );
   }
 
@@ -44,7 +53,10 @@ class AuthCubit extends Cubit<AuthState> {
     final result = await loginUseCase(params);
     result.fold(
       (failure) => emit(AuthError(failure.message)),
-      (user) => emit(AuthLoginSuccess(user)),
+      (user) async {
+        emit(AuthLoginSuccess(user));
+        await _syncToken();
+      },
     );
   }
 
@@ -55,5 +67,16 @@ class AuthCubit extends Cubit<AuthState> {
       (failure) => emit(AuthError(failure.message)),
       (_) => emit(AuthLogoutSuccess()),
     );
+  }
+
+  Future<void> _syncToken() async {
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        await updateFcmTokenUseCase(token);
+      }
+    } catch (e) {
+      // Silently ignore if token retrieval fails
+    }
   }
 }

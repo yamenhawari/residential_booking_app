@@ -3,6 +3,12 @@ import '../../domain/entities/booking.dart';
 import '../../domain/entities/enums/booking_enum.dart';
 
 class BookingModel extends Booking {
+  // Extra fields for Owner Dashboard Logic
+  final String? requestType;
+  final int? pendingUpdateId;
+  final String? requestedStart;
+  final String? requestedEnd;
+
   const BookingModel({
     required super.id,
     required super.apartmentId,
@@ -15,7 +21,11 @@ class BookingModel extends Booking {
     super.apartmentImageUrl,
     super.tenantName,
     super.tenantImageUrl,
-    super.myRating, // Ensure this constructor param exists in Entity too
+    super.myRating,
+    this.requestType,
+    this.pendingUpdateId,
+    this.requestedStart,
+    this.requestedEnd,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -33,7 +43,12 @@ class BookingModel extends Booking {
         final firstImg = json['apartment']['images'][0];
         final rawUrl =
             firstImg is Map ? firstImg['image_url'] : firstImg.toString();
-        imgUrl = "${ApiConstants.storageBaseUrl}$rawUrl";
+
+        if (rawUrl.startsWith('http')) {
+          imgUrl = rawUrl;
+        } else {
+          imgUrl = "${ApiConstants.storageBaseUrl}$rawUrl";
+        }
       }
     }
 
@@ -44,8 +59,10 @@ class BookingModel extends Booking {
       final l = json['tenant']['last_name'] ?? '';
       tName = "$f $l".trim();
       if (json['tenant']['profile_image'] != null) {
-        tImage =
-            "${ApiConstants.storageBaseUrl}${json['tenant']['profile_image']}";
+        final path = json['tenant']['profile_image'];
+        tImage = path.startsWith('http')
+            ? path
+            : "${ApiConstants.storageBaseUrl}$path";
       }
     }
 
@@ -67,6 +84,11 @@ class BookingModel extends Booking {
       tenantName: tName,
       tenantImageUrl: tImage,
       myRating: userRating,
+      // [FIX] Map new fields
+      requestType: json['request_type'],
+      pendingUpdateId: json['pending_update_id'],
+      requestedStart: json['requested_start'],
+      requestedEnd: json['requested_end'],
     );
   }
 }

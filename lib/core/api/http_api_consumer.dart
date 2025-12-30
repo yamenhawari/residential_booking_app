@@ -11,7 +11,7 @@ class HttpApiConsumer implements ApiConsumer {
   final http.Client client;
   final UserLocalDataSource userLocalDataSource;
 
-  static const Duration _timeoutDuration = Duration(seconds: 20);
+  static const Duration _timeoutDuration = Duration(seconds: 60);
 
   HttpApiConsumer({
     required this.client,
@@ -23,6 +23,7 @@ class HttpApiConsumer implements ApiConsumer {
     bool requiresAuth = true,
   }) async {
     final headers = {
+      'ngrok-skip-browser-warning': 'true',
       'Accept': AppStrings.api.accept,
     };
 

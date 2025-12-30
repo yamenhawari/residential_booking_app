@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String ip = "192.168.1.107:8000";
+  static const String ip = "10.12.83.73:8000";
   static const String baseUrl = "http://$ip/api";
   static const String storageBaseUrl = "http://$ip/storage/";
 
@@ -17,11 +17,15 @@ class ApiConstants {
   static String cancelBooking(int id) => "$baseUrl/bookings/$id/cancel";
   static String modifyBooking(int id) => "$baseUrl/bookings/$id/request-update";
   static String rateBooking(int id) => "$baseUrl/bookings/$id/review";
-  static String checkoutBooking(int id) =>
-      "$baseUrl/bookings/$id/checkout"; // Added
+  static String checkoutBooking(int id) => "$baseUrl/bookings/$id/checkout";
 
   static String confirmBooking(int id) => "$baseUrl/bookings/confirm/$id";
+  static String rejectBooking(int id) => "$baseUrl/bookings/$id/reject";
+
   static String approveUpdate(int id) =>
       "$baseUrl/bookings/updates/$id/approve";
   static String rejectUpdate(int id) => "$baseUrl/bookings/updates/$id/reject";
+  static String activateApartment(int id) => "$baseUrl/apartment/$id/activate";
+  static String forceDeleteApartment(int id) => "$baseUrl/apartment/$id/force";
+  static const String ownerEarnings = "$baseUrl/bookings/owner/earnings";
 }

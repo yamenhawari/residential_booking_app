@@ -126,7 +126,7 @@ class LoginRegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 24.h),
                 Text(
-                  "By continuing, you agree to our Terms of Service and Privacy Policy.", // TODO: Add localization for this
+                  AppLocalizations.of(context)!.termsDisclaimer,
                   style: TextStyle(
                     color: isDark
                         ? theme.textTheme.bodyMedium?.color?.withOpacity(0.5)

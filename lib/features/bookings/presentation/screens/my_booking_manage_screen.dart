@@ -171,12 +171,11 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                   },
                 ),
               ] else if (_currentBooking.status == BookingStatus.completed) ...[
-                // [FIX] Show stars if rated, otherwise show button
                 if (_currentBooking.myRating != null) ...[
                   Center(
                     child: Column(
                       children: [
-                        Text("You rated this stay:",
+                        Text(context.tr.youRatedStay,
                             style: theme.textTheme.titleMedium),
                         SizedBox(height: 10.h),
                         Row(
@@ -203,7 +202,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
               ] else ...[
                 Center(
                   child: Text(
-                    "This booking is archived.",
+                    context.tr.bookingArchived,
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: theme.disabledColor),
                   ),
@@ -262,12 +261,12 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
               title: Text(context.tr.cancel),
-              content:
-                  const Text("Are you sure you want to cancel this booking?"),
+              content: Text(context.tr.deleteConfirm.replaceAll('property',
+                  'booking')), // You might want a specific key for this
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text("No")),
+                    child: Text(context.tr.no)),
                 TextButton(
                     onPressed: () {
                       Navigator.pop(ctx);
@@ -275,8 +274,8 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                           .read<BookingCubit>()
                           .cancelBooking(_currentBooking.id);
                     },
-                    child:
-                        const Text("Yes", style: TextStyle(color: Colors.red))),
+                    child: Text(context.tr.yes,
+                        style: TextStyle(color: Colors.red))),
               ],
             ));
   }
@@ -301,10 +300,11 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(context.tr.confirmBooking),
-        content: const Text("Confirm Date Change?"),
+        content: Text(context.tr.confirmDateChange),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.tr.cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
@@ -354,13 +354,14 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
             SizedBox(height: 10.h),
             TextField(
               controller: commentCtrl,
-              decoration: const InputDecoration(hintText: "Comment..."),
+              decoration: const InputDecoration(hintText: "..."),
             )
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.tr.cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);

@@ -41,7 +41,6 @@ class AuthRepositoryImpl implements AuthRepository {
       try {
         final remoteUser = await remoteDataSource.login(params);
         await userLocalDataSource.saveUser(remoteUser);
-
         return Right(remoteUser);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
@@ -77,6 +76,20 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(user);
     } on CacheException {
       return Left(CacheFailure(AppStrings.error.cache));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateFcmToken(String token) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.updateFcmToken(token);
+        return const Right(unit);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
     }
   }
 }

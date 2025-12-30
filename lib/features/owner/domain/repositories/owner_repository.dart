@@ -10,7 +10,10 @@ abstract class OwnerRepository {
   Future<Either<Failure, Unit>> addApartment(AddApartmentParams params);
   Future<Either<Failure, Unit>> updateApartment(UpdateApartmentParams params);
   Future<Either<Failure, Unit>> deleteApartment(int apartmentId);
+  Future<Either<Failure, Unit>> activateApartment(int apartmentId);
+  Future<Either<Failure, Unit>> forceDeleteApartment(int apartmentId);
   Future<Either<Failure, Unit>> respondToBooking(RespondBookingParams params);
   Future<Either<Failure, List<Apartment>>> getMyApartments();
   Future<Either<Failure, List<Booking>>> getOwnerRequests();
+  Future<Either<Failure, double>> getOwnerEarnings();
 }

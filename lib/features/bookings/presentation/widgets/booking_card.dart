@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,43 +8,12 @@ import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
-import 'package:residential_booking_app/features/bookings/domain/entities/enums/booking_enum.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 
 class BookingCard extends StatelessWidget {
   final Booking booking;
   const BookingCard({super.key, required this.booking});
-
-  Color _getStatusColor(BookingStatus status) {
-    switch (status) {
-      case BookingStatus.pending:
-        return Colors.orange;
-      case BookingStatus.confirmed:
-        return Colors.green;
-      case BookingStatus.cancelled:
-        return Colors.red;
-      case BookingStatus.rejected:
-        return Colors.red;
-      case BookingStatus.completed:
-        return Colors.blue;
-    }
-  }
-
-  String _getStatusText(BuildContext context, BookingStatus status) {
-    switch (status) {
-      case BookingStatus.pending:
-        return context.tr.pending;
-      case BookingStatus.confirmed:
-        return context.tr.confirmed;
-      case BookingStatus.cancelled:
-        return context.tr.cancelled;
-      case BookingStatus.rejected:
-        return context.tr.rejected;
-      case BookingStatus.completed:
-        return context.tr.completed;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,13 +81,14 @@ class BookingCard extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(booking.status).withOpacity(0.1),
+                      color:
+                          booking.status.color.withOpacity(0.1), // Refactored
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
-                      _getStatusText(context, booking.status),
+                      booking.status.localizedName(context), // Refactored
                       style: TextStyle(
-                        color: _getStatusColor(booking.status),
+                        color: booking.status.color, // Refactored
                         fontSize: 10.sp,
                         fontWeight: FontWeight.bold,
                       ),

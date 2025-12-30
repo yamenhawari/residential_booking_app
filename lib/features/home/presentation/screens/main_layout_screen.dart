@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:residential_booking_app/features/bookings/presentation/screens/my_bookings_screen.dart';
+import 'package:residential_booking_app/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/home_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/buttom_navigation_bar_widget.dart';
 import 'package:residential_booking_app/features/owner/presentation/screens/owner_dashboard_screen.dart';
 import 'package:residential_booking_app/features/settings/presentation/screens/settings_screen.dart';
-import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class PlaceholderScreen extends StatelessWidget {
   final String title;
@@ -32,7 +32,7 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
     _screens = [
       const HomeScreen(),
       const MyBookingsScreen(),
-      PlaceholderScreen(AppLocalizations.of(context)!.favorites),
+      const FavoritesScreen(),
       if (widget.isOwner) const OwnerDashboardScreen(),
       const SettingsScreen(),
     ];

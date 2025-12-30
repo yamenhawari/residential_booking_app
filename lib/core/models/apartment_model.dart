@@ -35,10 +35,15 @@ class ApartmentModel extends Apartment {
       parsedPrice = double.tryParse(json['price_per_month'].toString()) ?? 0.0;
     }
 
-    List<String> parsedImages = [];
+    List<dynamic> parsedImages = [];
     if (json['images'] != null && (json['images'] as List).isNotEmpty) {
       parsedImages = (json['images'] as List).map((e) {
         final path = e is Map ? e['image_url'] : e.toString();
+
+        if (path.startsWith('http') || path.startsWith('https')) {
+          return path;
+        }
+
         return "${ApiConstants.storageBaseUrl}$path";
       }).toList();
     }
@@ -52,7 +57,7 @@ class ApartmentModel extends Apartment {
       pricePerMonth: parsedPrice,
       rating:
           (json['rating'] != null) ? (json['rating'] as num).toDouble() : 0.0,
-      images: parsedImages,
+      images: parsedImages.cast<String>(),
       roomCount: parsedRooms,
       status:
           ApartmentStatus.fromString(json['status']?.toString() ?? 'available'),

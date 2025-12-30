@@ -6,10 +6,8 @@ import '../usecases/register_usecase.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, Unit>> register(RegisterParams params);
-
   Future<Either<Failure, User>> login(LoginParams params);
-
   Future<Either<Failure, Unit>> logout();
-
   Future<Either<Failure, User>> getCurrentUser();
+  Future<Either<Failure, Unit>> updateFcmToken(String token);
 }

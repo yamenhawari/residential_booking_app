@@ -20,9 +20,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       ApiConstants.apartments,
       queryParameters: _mapParamsToQuery(params),
     );
-    print(
-        "===================\n\n\n\n\n\n\n\n${response.toString()}\n\n\n\n\n\n\n\n=========================");
-    final List<dynamic> data = response as List;
+
+    final List<dynamic> data =
+        response is Map ? response['data'] ?? [] : response;
     return data.map((e) => ApartmentModel.fromJson(e)).toList();
   }
 
@@ -39,8 +39,8 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
     if (params.selectedGovernorates != null &&
         params.selectedGovernorates!.isNotEmpty) {
-      map['governorate_id'] = params.selectedGovernorates!
-          .map((e) => _mapGovernorateToId(e.name))
+      map['governorate_id[]'] = params.selectedGovernorates!
+          .map((e) => _mapGovernorateToId(e).toString())
           .toList();
     }
 

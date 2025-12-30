@@ -47,6 +47,14 @@ class OwnerRepositoryImpl implements OwnerRepository {
       _performAction(() => remoteDataSource.deleteApartment(apartmentId));
 
   @override
+  Future<Either<Failure, Unit>> activateApartment(int apartmentId) =>
+      _performAction(() => remoteDataSource.activateApartment(apartmentId));
+
+  @override
+  Future<Either<Failure, Unit>> forceDeleteApartment(int apartmentId) =>
+      _performAction(() => remoteDataSource.forceDeleteApartment(apartmentId));
+
+  @override
   Future<Either<Failure, Unit>> respondToBooking(RespondBookingParams params) =>
       _performAction(() => remoteDataSource.respondToBooking(params));
 
@@ -59,7 +67,6 @@ class OwnerRepositoryImpl implements OwnerRepository {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } catch (e) {
-        // [FIX] Catch parsing errors here so the app doesn't freeze/blank
         return Left(ServerFailure("Parsing Error: ${e.toString()}"));
       }
     } else {
@@ -76,8 +83,23 @@ class OwnerRepositoryImpl implements OwnerRepository {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } catch (e) {
-        // [FIX] Catch parsing errors here
         return Left(ServerFailure("Parsing Error: ${e.toString()}"));
+      }
+    } else {
+      return Left(OfflineFailure(AppStrings.error.noInternet));
+    }
+  }
+
+  @override
+  Future<Either<Failure, double>> getOwnerEarnings() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final result = await remoteDataSource.getOwnerEarnings();
+        return Right(result);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(e.message));
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return Left(OfflineFailure(AppStrings.error.noInternet));

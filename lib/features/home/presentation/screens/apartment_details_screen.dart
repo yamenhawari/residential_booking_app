@@ -67,7 +67,8 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
           physics: const BouncingScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
-              child: ApartmentImageHeader(images: apartment.images),
+              child: ApartmentImageHeader(
+                  apartment: apartment, images: apartment.images),
             ),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 120.h),

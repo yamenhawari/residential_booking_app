@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart'; // [ADDED]
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -124,7 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (!(_formKey.currentState?.validate() ?? false)) {
       AppSnackBars.showWarning(context,
           message: AppLocalizations.of(context)!.checkInputFields);
@@ -140,6 +141,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           message: AppLocalizations.of(context)!.uploadIdPhoto);
       return;
     }
+    String? token;
+    try {
+      token = await FirebaseMessaging.instance.getToken();
+    } catch (_) {}
+
+    if (!mounted) return;
+
     context.read<AuthCubit>().register(RegisterParams(
           dob: _birthDateController.text.trim(),
           firstName: _firstNameController.text.trim(),
@@ -147,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           phoneNumber: _phoneController.text.trim(),
           password: _passwordController.text,
           role: _selectedRole,
-          fcmToken: "fcm_token", //! dont forget todo later
+          fcmToken: token ?? "", // Pass real token
           profileImage: File(_profileImage!.path),
           idImage: File(_idImage!.path),
         ));

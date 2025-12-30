@@ -11,6 +11,7 @@ import 'package:residential_booking_app/features/bookings/domain/usecases/create
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_state.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
+import 'package:residential_booking_app/core/widgets/modern_date_range_picker.dart'; // [NEW] Import
 
 class BookingDetailsScreen extends StatefulWidget {
   final int apartmentId;
@@ -38,27 +39,23 @@ class _BookingDetailsScreenState extends State<BookingDetailsScreen> {
     {'id': 3, 'icon': Icons.money, 'key': 'cash'},
   ];
 
-  void _selectDates() async {
-    final picked = await showDateRangePicker(
+  // [NEW] Updated function to use Modern Picker
+  void _selectDates() {
+    showModalBottomSheet(
       context: context,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: AppColors.primary),
-          ),
-          child: child!,
-        );
-      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => ModernDateRangePicker(
+        initialStartDate: _startDate,
+        initialEndDate: _endDate,
+        onDateRangeSelected: (start, end) {
+          setState(() {
+            _startDate = start;
+            _endDate = end;
+          });
+        },
+      ),
     );
-
-    if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
-      });
-    }
   }
 
   double get _totalPrice {

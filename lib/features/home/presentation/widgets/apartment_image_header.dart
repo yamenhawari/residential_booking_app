@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/heart_widget.dart';
 import 'package:residential_booking_app/core/widgets/smooth_loading_widget.dart';
 
 class ApartmentImageHeader extends StatefulWidget {
   final List<String>? images;
+  final Apartment apartment;
 
-  const ApartmentImageHeader({super.key, this.images});
+  const ApartmentImageHeader({super.key, this.images, required this.apartment});
 
   @override
   State<ApartmentImageHeader> createState() => _ApartmentImageHeaderState();
@@ -45,6 +47,9 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
               return isNetwork
                   ? Image.network(
                       imagePath,
+                      headers: const {
+                        "ngrok-skip-browser-warning": "true",
+                      },
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
@@ -81,7 +86,7 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
           Positioned(
             top: 50.h,
             right: 20.w,
-            child: const HeartWidget(),
+            child: HeartWidget(apartment: widget.apartment),
           ),
           Positioned(
             bottom: 20.h,

@@ -3,9 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:residential_booking_app/core/api/api_constants.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/extentions.dart';
 import '../../../../core/datasources/user_local_data_source.dart';
 import '../../../../core/models/user_model.dart';
-import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
   const ProfileHeaderCard({super.key});
@@ -19,8 +19,9 @@ class ProfileHeaderCard extends StatelessWidget {
         final user = snapshot.data;
         final name = user != null
             ? "${user.firstName} ${user.lastName}"
-            : AppLocalizations.of(context)!.guestUser;
-        final role = user != null ? user.role.name.toUpperCase() : "GUEST";
+            : context.tr.guestUser;
+        final role =
+            user != null ? user.role.name.toUpperCase() : context.tr.guestRole;
 
         return Container(
           padding: EdgeInsets.all(20.w),

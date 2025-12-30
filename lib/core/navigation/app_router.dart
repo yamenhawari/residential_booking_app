@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:residential_booking_app/core/entities/apartment.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/login_register_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:residential_booking_app/features/auth/presentation/screens/register_screen.dart';
@@ -6,6 +7,7 @@ import 'package:residential_booking_app/features/auth/presentation/screens/splas
 import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
 import 'package:residential_booking_app/features/bookings/presentation/screens/booking_details_screen.dart';
 import 'package:residential_booking_app/features/bookings/presentation/screens/my_booking_manage_screen.dart';
+import 'package:residential_booking_app/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:residential_booking_app/features/home/domain/entities/filter_apartment_params.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/apartment_details_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/filtered_apartments.dart';
@@ -24,10 +26,19 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
-      case AppRoutes.addApartment:
+      case AppRoutes.favoritesScreen:
         return MaterialPageRoute(
-          builder: (context) => const AddApartmentScreen(),
+          builder: (context) => const FavoritesScreen(),
         );
+      case AppRoutes.addApartment:
+        Apartment? apartmentArg;
+        if (args is Apartment) {
+          apartmentArg = args;
+        }
+        return MaterialPageRoute(
+          builder: (context) => AddApartmentScreen(apartment: apartmentArg),
+        );
+
       case AppRoutes.ownerApartments:
         return MaterialPageRoute(
           builder: (context) => const OwnerApartmentsScreen(),
@@ -48,7 +59,7 @@ class AppRouter {
         );
       case AppRoutes.introduction:
         return MaterialPageRoute(
-          builder: (context) => IntroductionScreen(),
+          builder: (context) => const IntroductionScreen(),
         );
       case AppRoutes.filteredApartments:
         if (args is FilterApartmentParams) {
@@ -74,31 +85,31 @@ class AppRouter {
         }
       case AppRoutes.splash:
         return MaterialPageRoute(
-          builder: (context) => SplashScreen(),
+          builder: (context) => const SplashScreen(),
         );
       case AppRoutes.loginRegister:
         return MaterialPageRoute(
-          builder: (context) => LoginRegisterScreen(),
+          builder: (context) => const LoginRegisterScreen(),
         );
 
       case AppRoutes.login:
         return MaterialPageRoute(
-          builder: (context) => LoginScreen(),
+          builder: (context) => const LoginScreen(),
         );
 
       case AppRoutes.register:
         return MaterialPageRoute(
-          builder: (context) => RegisterScreen(),
+          builder: (context) => const RegisterScreen(),
         );
 
       case AppRoutes.home:
         return MaterialPageRoute(
-          builder: (context) => HomeScreen(),
+          builder: (context) => const HomeScreen(),
         );
 
       case AppRoutes.searchFilter:
         return MaterialPageRoute(
-          builder: (context) => SearchFilterScreen(),
+          builder: (context) => const SearchFilterScreen(),
         );
 
       case AppRoutes.apartmentDetails:

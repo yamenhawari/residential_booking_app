@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart'; // [ADDED]
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,17 +35,24 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     if (!(_formKey.currentState?.validate() ?? false)) {
       AppSnackBars.showWarning(context,
           message: AppLocalizations.of(context)!.checkInputFields);
       return;
     }
     FocusManager.instance.primaryFocus?.unfocus();
+    String? token;
+    try {
+      token = await FirebaseMessaging.instance.getToken();
+    } catch (_) {}
+
+    if (!mounted) return;
+
     context.read<AuthCubit>().login(LoginParams(
           phoneNumber: _phoneController.text.trim(),
           password: _passwordController.text,
-          fcmToken: "fcm_token", //TODO! dont forget todo later
+          fcmToken: token ?? "",
         ));
   }
 

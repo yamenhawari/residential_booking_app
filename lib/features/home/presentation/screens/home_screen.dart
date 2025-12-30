@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Text(
                           AppLocalizations.of(context)!.retry,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                       ),
@@ -167,6 +167,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: theme.textTheme.bodyMedium
                                   ?.copyWith(fontSize: 16.sp),
                             ),
+                            // [FIX 3] Added Refresh Button for Empty State
+                            SizedBox(height: 16.h),
+                            ElevatedButton.icon(
+                              onPressed: _onRefresh,
+                              icon: const Icon(Icons.refresh),
+                              label: Text(AppLocalizations.of(context)!
+                                  .retry), // Or "Refresh"
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),

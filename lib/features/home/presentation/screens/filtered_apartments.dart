@@ -104,7 +104,8 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                           ),
                         ),
                         child: Text(AppLocalizations.of(context)!.retry,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     )
                   ],
@@ -132,11 +133,15 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SearchFieldWidget(),
+                          // [FIX 1] Use replace to prevent screen stacking
+                          SearchFieldWidget(
+                            onTap: () => Nav.replace(AppRoutes.searchFilter),
+                          ),
                           SizedBox(height: 20.h),
                           if (apartments.isNotEmpty)
                             Text(
-                              AppLocalizations.of(context)!.foundProperties(apartments.length),
+                              AppLocalizations.of(context)!
+                                  .foundProperties(apartments.length),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
@@ -159,17 +164,21 @@ class _FilteredApartmentsState extends State<FilteredApartments> {
                                 size: 60.sp, color: Colors.grey.shade300),
                             SizedBox(height: 10.h),
                             Text(
-                              AppLocalizations.of(context)!.noApartmentsFoundFilters,
+                              AppLocalizations.of(context)!
+                                  .noApartmentsFoundFilters,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
+                            // [FIX 2] Navigate to Search Filter instead of Back/Home
                             TextButton(
-                              onPressed: () => Nav.back(),
+                              onPressed: () =>
+                                  Nav.replace(AppRoutes.searchFilter),
                               child: Text(
                                 AppLocalizations.of(context)!.adjustFilters,
-                                style: TextStyle(color: AppColors.primary),
+                                style:
+                                    const TextStyle(color: AppColors.primary),
                               ),
                             )
                           ],

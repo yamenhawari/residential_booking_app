@@ -38,8 +38,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
         },
         child: BlocBuilder<BookingCubit, BookingState>(
           buildWhen: (previous, current) {
-            // Only rebuild if we are loading the list, success list, or failed loading list.
-            // Do NOT rebuild if it is just an Action Loading (stay on list)
             return current is GetBookingsLoading ||
                 current is GetBookingsSuccess ||
                 current is GetBookingsFailure;
@@ -66,7 +64,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 onRefresh: () async =>
                     context.read<BookingCubit>().getBookings(),
                 child: ListView.separated(
-                  padding: EdgeInsets.all(20.w),
+                  padding: EdgeInsets.only(
+                    left: 20.w,
+                    right: 20.w,
+                    top: 20.w,
+                    bottom: MediaQuery.of(context).padding.bottom + 80.h,
+                  ),
                   itemCount: state.bookings.length,
                   separatorBuilder: (_, __) => SizedBox(height: 16.h),
                   itemBuilder: (context, index) =>
@@ -80,7 +83,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     child: const Text("Retry")),
               );
             }
-            // Default (Initial)
             return const LoadingWidget();
           },
         ),

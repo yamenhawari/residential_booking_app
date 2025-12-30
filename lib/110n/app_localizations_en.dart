@@ -492,4 +492,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fieldRequired => 'This field is required';
+
+  @override
+  String get termsDisclaimer =>
+      'By continuing, you agree to our Terms of Service and Privacy Policy.';
+
+  @override
+  String get youRatedStay => 'You rated this stay:';
+
+  @override
+  String get bookingArchived => 'This booking is archived.';
+
+  @override
+  String get confirmDateChange => 'Confirm Date Change?';
+
+  @override
+  String get sunnyApartmentHint => 'Sunny Apartment...';
+
+  @override
+  String get describePropertyHint => 'Describe your property...';
+
+  @override
+  String get governorateLabel => 'Governorate';
+
+  @override
+  String get addressHint => 'Street, Building No...';
+
+  @override
+  String get errorLoadingProperties => 'Error loading properties';
+
+  @override
+  String get failedToLoadDashboard => 'Failed to load dashboard';
+
+  @override
+  String get noFavoritesYet => 'No favorites yet';
+
+  @override
+  String get logoutConfirmation => 'Are you sure you want to logout?';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get guestRole => 'GUEST';
+
+  @override
+  String get days => 'Days';
+
+  @override
+  String get frenchLanguage => 'Français';
+
+  @override
+  String get russianLanguage => 'Русский';
+
+  @override
+  String get germanLanguage => 'Deutsch';
 }

@@ -490,4 +490,62 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get termsDisclaimer =>
+      'بالمتابعة، أنت توافق على شروط الخدمة وسياسة الخصوصية.';
+
+  @override
+  String get youRatedStay => 'لقد قيمت هذه الإقامة:';
+
+  @override
+  String get bookingArchived => 'هذا الحجز مؤرشف.';
+
+  @override
+  String get confirmDateChange => 'تأكيد تغيير التاريخ؟';
+
+  @override
+  String get sunnyApartmentHint => 'شقة مشمسة...';
+
+  @override
+  String get describePropertyHint => 'وصف العقار...';
+
+  @override
+  String get governorateLabel => 'المحافظة';
+
+  @override
+  String get addressHint => 'الشارع، رقم المبنى...';
+
+  @override
+  String get errorLoadingProperties => 'خطأ في تحميل العقارات';
+
+  @override
+  String get failedToLoadDashboard => 'فشل تحميل لوحة التحكم';
+
+  @override
+  String get noFavoritesYet => 'لا توجد مفضلات بعد';
+
+  @override
+  String get logoutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
+  String get guestRole => 'زائر';
+
+  @override
+  String get days => 'أيام';
+
+  @override
+  String get frenchLanguage => 'Français';
+
+  @override
+  String get russianLanguage => 'Русский';
+
+  @override
+  String get germanLanguage => 'Deutsch';
 }

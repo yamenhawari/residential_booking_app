@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
+import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/locale_cubit.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/theme_cubit.dart';
@@ -134,6 +136,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Navigator.pop(context);
                         },
                       ),
+                      _buildOptionTile(
+                        context,
+                        title: AppLocalizations.of(context)!.frenchLanguage,
+                        icon: Icons.language,
+                        isSelected: currentLocale.languageCode == 'fr',
+                        onTap: () {
+                          context.read<LocaleCubit>().changeLanguage('fr');
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildOptionTile(
+                        context,
+                        title: AppLocalizations.of(context)!.germanLanguage,
+                        icon: Icons.language,
+                        isSelected: currentLocale.languageCode == 'de',
+                        onTap: () {
+                          context.read<LocaleCubit>().changeLanguage('de');
+                          Navigator.pop(context);
+                        },
+                      ),
+                      _buildOptionTile(
+                        context,
+                        title: AppLocalizations.of(context)!.russianLanguage,
+                        icon: Icons.language,
+                        isSelected: currentLocale.languageCode == 'ru',
+                        onTap: () {
+                          context.read<LocaleCubit>().changeLanguage('ru');
+                          Navigator.pop(context);
+                        },
+                      ),
                     ],
                   );
                 },
@@ -200,11 +232,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 12.h),
             BlocBuilder<LocaleCubit, Locale>(
               builder: (context, locale) {
+                String subtitle = "English";
+                if (locale.languageCode == 'ar') subtitle = "العربية";
+                if (locale.languageCode == 'fr') subtitle = "Français";
+                if (locale.languageCode == 'de') subtitle = "Deutsch";
+                if (locale.languageCode == 'ru') subtitle = "Русский";
+
                 return SettingsTile(
                   icon: Icons.language,
                   iconColor: Colors.blueAccent,
                   title: context.tr.language,
-                  subtitle: locale.languageCode == 'ar' ? "العربية" : "English",
+                  subtitle: subtitle,
                   onTap: () => _showLanguageSelector(context),
                 );
               },
@@ -265,7 +303,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.favorite_rounded,
               iconColor: Colors.pink,
               title: context.tr.favorites,
-              onTap: () {},
+              onTap: () {
+                Nav.to(AppRoutes.favoritesScreen);
+              },
             ),
             SizedBox(height: 40.h),
             const LogoutButton(),

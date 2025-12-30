@@ -14,8 +14,13 @@ class RespondBookingUseCase implements UseCase<Unit, RespondBookingParams> {
 }
 
 class RespondBookingParams {
-  final int bookingId;
+  final int id;
   final bool accept;
+  final bool isModification;
 
-  RespondBookingParams({required this.bookingId, required this.accept});
+  RespondBookingParams({
+    required this.id,
+    required this.accept,
+    this.isModification = false,
+  });
 }

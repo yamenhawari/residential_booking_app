@@ -11,9 +11,12 @@ abstract class OwnerRemoteDataSource {
   Future<Unit> addApartment(AddApartmentParams params);
   Future<Unit> updateApartment(UpdateApartmentParams params);
   Future<Unit> deleteApartment(int apartmentId);
+  Future<Unit> activateApartment(int apartmentId);
+  Future<Unit> forceDeleteApartment(int apartmentId);
   Future<Unit> respondToBooking(RespondBookingParams params);
   Future<List<ApartmentModel>> getMyApartments();
   Future<List<BookingModel>> getOwnerRequests();
+  Future<double> getOwnerEarnings();
 }
 
 class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
@@ -76,6 +79,8 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
   @override
   Future<Unit> updateApartment(UpdateApartmentParams params) async {
     final fields = <String, String>{};
+    fields['city_id'] = "1";
+
     if (params.title != null) fields['title'] = params.title!;
     if (params.description != null) fields['description'] = params.description!;
     if (params.governorate != null) {
@@ -112,12 +117,38 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
   }
 
   @override
-  Future<Unit> respondToBooking(RespondBookingParams params) async {
-    final url = params.accept
-        ? ApiConstants.confirmBooking(params.bookingId)
-        : "${ApiConstants.bookings}/${params.bookingId}/reject";
+  Future<Unit> activateApartment(int apartmentId) async {
+    await apiConsumer.put(ApiConstants.activateApartment(apartmentId));
+    return unit;
+  }
 
-    await apiConsumer.put(url);
+  @override
+  Future<Unit> forceDeleteApartment(int apartmentId) async {
+    await apiConsumer.delete(ApiConstants.forceDeleteApartment(apartmentId));
+    return unit;
+  }
+
+  @override
+  Future<Unit> respondToBooking(RespondBookingParams params) async {
+    String url;
+
+    if (params.isModification) {
+      if (params.accept) {
+        url = ApiConstants.approveUpdate(params.id);
+      } else {
+        url = ApiConstants.rejectUpdate(params.id);
+      }
+      await apiConsumer.post(url);
+    } else {
+      if (params.accept) {
+        url = ApiConstants.confirmBooking(params.id);
+        await apiConsumer.put(url);
+      } else {
+        url = ApiConstants.rejectBooking(params.id);
+        await apiConsumer.put(url);
+      }
+    }
+
     return unit;
   }
 
@@ -139,13 +170,27 @@ class OwnerRemoteDataSourceImpl implements OwnerRemoteDataSource {
   Future<List<BookingModel>> getOwnerRequests() async {
     final response = await apiConsumer.get(ApiConstants.ownerBookingRequests);
 
-    if (response is List) {
-      return response.map((e) => BookingModel.fromJson(e)).toList();
-    } else if (response is Map && response.containsKey('data')) {
-      return (response['data'] as List)
-          .map((e) => BookingModel.fromJson(e))
-          .toList();
+    final List dynamicList = (response is Map && response.containsKey('data'))
+        ? response['data']
+        : (response is List ? response : []);
+
+    return dynamicList.map((e) => BookingModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<double> getOwnerEarnings() async {
+    try {
+      final response = await apiConsumer.get(ApiConstants.ownerEarnings);
+
+      if (response is Map && response.containsKey('data')) {
+        final val = response['data'];
+        if (val == null) return 0.0;
+
+        return double.tryParse(val.toString()) ?? 0.0;
+      }
+      return 0.0;
+    } catch (e) {
+      return 0.0;
     }
-    return [];
   }
 }

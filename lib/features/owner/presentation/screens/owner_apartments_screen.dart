@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:residential_booking_app/core/enums/apartment_status_enum.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
@@ -26,6 +27,69 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
     });
   }
 
+  Color _getStatusColor(ApartmentStatus status) {
+    switch (status) {
+      case ApartmentStatus.available:
+        return Colors.green;
+      case ApartmentStatus.rented:
+        return Colors.orange;
+      case ApartmentStatus.unavailable:
+        return Colors.grey;
+    }
+  }
+
+  String _getStatusText(BuildContext context, ApartmentStatus status) {
+    switch (status) {
+      case ApartmentStatus.available:
+        return context.tr.available;
+      case ApartmentStatus.rented:
+        return context.tr.rented;
+      case ApartmentStatus.unavailable:
+        return context.tr.unavailable;
+    }
+  }
+
+  void _showUnavailableOptions(BuildContext context, int apartmentId) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading:
+                    const Icon(Icons.check_circle_outline, color: Colors.green),
+                title: Text("Make Available"), // Localize this
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.read<OwnerCubit>().activateApartment(apartmentId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_forever, color: Colors.red),
+                title: Text("Permanently Delete"), // Localize this
+                subtitle: Text("Only if no active bookings"), // Localize this
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.read<OwnerCubit>().forceDeleteApartment(apartmentId);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: Text(context.tr.cancel),
+                onTap: () => Navigator.pop(ctx),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -34,7 +98,7 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await Nav.to(AppRoutes.addApartment);
-          if (mounted) context.read<OwnerCubit>().loadMyApartments();
+          if (context.mounted) context.read<OwnerCubit>().loadMyApartments();
         },
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
@@ -50,14 +114,14 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
                 children: [
                   Icon(Icons.error_outline, size: 60.sp, color: Colors.red),
                   SizedBox(height: 10.h),
-                  Text("Error loading properties",
+                  Text(context.tr.errorLoadingProperties,
                       style: theme.textTheme.titleMedium),
                   SizedBox(height: 5.h),
                   Text(state.message, textAlign: TextAlign.center),
                   TextButton(
                     onPressed: () =>
                         context.read<OwnerCubit>().loadMyApartments(),
-                    child: const Text("Retry"),
+                    child: Text(context.tr.retry),
                   )
                 ],
               ),
@@ -91,44 +155,43 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
                     children: [
                       ApartmentCard(
                         apartment: apartment,
-                        showHeart: false, // Hides the heart icon
+                        showHeart: false,
                         ontap: () async {
-                          await Nav.to(AppRoutes.addApartment,
-                              arguments: apartment);
-                          if (mounted)
-                            context.read<OwnerCubit>().loadMyApartments();
+                          // [FIX] Logic Check for Unavailable
+                          if (apartment.status == ApartmentStatus.unavailable) {
+                            _showUnavailableOptions(context, apartment.id);
+                          } else {
+                            // Normal Edit Mode
+                            await Nav.to(AppRoutes.addApartment,
+                                arguments: apartment);
+                            if (context.mounted) {
+                              context.read<OwnerCubit>().loadMyApartments();
+                            }
+                          }
                         },
                       ),
+                      // Status Badge
                       Positioned(
                         top: 20.h,
                         left: 20.w,
-                        child: IgnorePointer(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10.w, vertical: 6.h),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 4,
-                                  )
-                                ]),
-                            child: Row(
-                              children: [
-                                Icon(Icons.edit,
-                                    size: 14.sp, color: AppColors.primary),
-                                SizedBox(width: 4.w),
-                                Text(
-                                  context.tr.editProperty,
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ],
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 6.h),
+                          decoration: BoxDecoration(
+                              color: _getStatusColor(apartment.status),
+                              borderRadius: BorderRadius.circular(8.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                )
+                              ]),
+                          child: Text(
+                            _getStatusText(context, apartment.status),
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ),

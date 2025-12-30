@@ -6,7 +6,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ar.dart';
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_ru.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,7 +98,10 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
-    Locale('en')
+    Locale('de'),
+    Locale('en'),
+    Locale('fr'),
+    Locale('ru')
   ];
 
   /// No description provided for @appTitle.
@@ -1045,6 +1051,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This field is required'**
   String get fieldRequired;
+
+  /// No description provided for @termsDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to our Terms of Service and Privacy Policy.'**
+  String get termsDisclaimer;
+
+  /// No description provided for @youRatedStay.
+  ///
+  /// In en, this message translates to:
+  /// **'You rated this stay:'**
+  String get youRatedStay;
+
+  /// No description provided for @bookingArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'This booking is archived.'**
+  String get bookingArchived;
+
+  /// No description provided for @confirmDateChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Date Change?'**
+  String get confirmDateChange;
+
+  /// No description provided for @sunnyApartmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunny Apartment...'**
+  String get sunnyApartmentHint;
+
+  /// No description provided for @describePropertyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your property...'**
+  String get describePropertyHint;
+
+  /// No description provided for @governorateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Governorate'**
+  String get governorateLabel;
+
+  /// No description provided for @addressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Street, Building No...'**
+  String get addressHint;
+
+  /// No description provided for @errorLoadingProperties.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading properties'**
+  String get errorLoadingProperties;
+
+  /// No description provided for @failedToLoadDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load dashboard'**
+  String get failedToLoadDashboard;
+
+  /// No description provided for @noFavoritesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No favorites yet'**
+  String get noFavoritesYet;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmation;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @guestRole.
+  ///
+  /// In en, this message translates to:
+  /// **'GUEST'**
+  String get guestRole;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get days;
+
+  /// No description provided for @frenchLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Français'**
+  String get frenchLanguage;
+
+  /// No description provided for @russianLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get russianLanguage;
+
+  /// No description provided for @germanLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deutsch'**
+  String get germanLanguage;
 }
 
 class _AppLocalizationsDelegate
@@ -1058,7 +1178,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ar', 'en'].contains(locale.languageCode);
+      <String>['ar', 'de', 'en', 'fr', 'ru'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1069,8 +1189,14 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'ar':
       return AppLocalizationsAr();
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'ru':
+      return AppLocalizationsRu();
   }
 
   throw FlutterError(

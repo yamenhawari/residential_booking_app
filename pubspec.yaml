@@ -46,6 +46,10 @@ dependencies:
   awesome_snackbar_content: ^0.1.8
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.7
+  firebase_core: ^4.3.0
+  firebase_messaging: ^16.1.0
+  flutter_local_notifications: ^19.5.0
+  table_calendar: ^3.2.0
 
 dev_dependencies:
   flutter_test:
