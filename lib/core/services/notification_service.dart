@@ -20,6 +20,8 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
 
+  static int? currentActiveConversationId;
+
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -81,6 +83,10 @@ class NotificationService {
 
   Future<void> _setupFCMListeners() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (_shouldSuppressNotification(message.data)) {
+        return;
+      }
+
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
@@ -115,12 +121,31 @@ class NotificationService {
     }
   }
 
+  bool _shouldSuppressNotification(Map<String, dynamic> data) {
+    if (currentActiveConversationId == null) return false;
+
+    if (data.containsKey('conversation_id')) {
+      final incomingId = int.tryParse(data['conversation_id'].toString());
+      if (incomingId != null && incomingId == currentActiveConversationId) {
+        return true;
+      }
+    }
+
+    if (data.containsKey('chat_id')) {
+      final incomingId = int.tryParse(data['chat_id'].toString());
+      if (incomingId != null && incomingId == currentActiveConversationId) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   Future<void> _syncToken() async {
     String? token = await _firebaseMessaging.getToken();
     if (token != null) {
       _sendTokenToBackend(token);
     }
-
     _firebaseMessaging.onTokenRefresh.listen(_sendTokenToBackend);
   }
 
@@ -142,16 +167,6 @@ class NotificationService {
 
   void _handleNavigation(Map<String, dynamic> data) {
     final nav = sl<NavigationService>();
-    String title = data['title'] ?? '';
-
-    if (title.contains('Request') || title.contains('Change')) {
-      nav.pushNamed(AppRoutes.ownerDashboard);
-    } else if (title.contains('Confirmed') ||
-        title.contains('Rejected') ||
-        title.contains('Approved')) {
-      nav.pushNamed(AppRoutes.mainLayout, arguments: false);
-    } else {
-      nav.pushNamed(AppRoutes.mainLayout, arguments: false);
-    }
+    nav.pushNamed(AppRoutes.mainLayout, arguments: false);
   }
 }

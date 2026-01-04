@@ -30,7 +30,7 @@ class ChatCubit extends Cubit<ChatState> {
   }) : super(ChatInitial());
 
   void loadConversations() async {
-    emit(ChatLoading());
+    if (state is! ConversationsLoaded) emit(ChatLoading());
     final result = await getConversationsUseCase(NoParams());
     result.fold(
       (l) => emit(ChatError(l.message)),
@@ -65,6 +65,13 @@ class ChatCubit extends Cubit<ChatState> {
     );
   }
 
+  void enterChat(int conversationId) {
+    _messagesTimer?.cancel();
+    emit(ChatLoading());
+    getMessages(conversationId);
+    startPollingMessages(conversationId);
+  }
+
   void getMessages(int conversationId) async {
     final result = await getMessagesUseCase(conversationId);
     result.fold(
@@ -75,9 +82,8 @@ class ChatCubit extends Cubit<ChatState> {
 
   void startPollingMessages(int conversationId) {
     _messagesTimer?.cancel();
-    getMessages(conversationId);
     _messagesTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (state is! MessageSending) {
+      if (state is! MessageSending && !isClosed) {
         getMessages(conversationId);
       }
     });
@@ -101,11 +107,10 @@ class ChatCubit extends Cubit<ChatState> {
       senderId: senderId,
       body: body,
       createdAt: DateTime.now().toIso8601String(),
-      // isPending: true,
+      isPending: true,
     );
 
-    final updatedList = List<Message>.from(currentMessages)
-      ..add(tempMessage);
+    final updatedList = List<Message>.from(currentMessages)..add(tempMessage);
     emit(MessageSending(updatedList));
 
     await sendMessageUseCase(SendMessageParams(conversationId, body));

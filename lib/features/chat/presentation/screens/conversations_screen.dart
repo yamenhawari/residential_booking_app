@@ -2,10 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:residential_booking_app/core/di/injection_container.dart';
+import 'package:residential_booking_app/core/navigation/app_routes.dart';
+import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
 import '../cubit/chat_cubit.dart';
 import '../cubit/chat_state.dart';
-import 'chat_screen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ConversationsScreen extends StatefulWidget {
@@ -31,19 +35,31 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Messages"),
+        title: Text(
+          "Messages",
+          style: theme.textTheme.titleLarge?.copyWith(fontSize: 20.sp),
+        ),
         centerTitle: true,
-        elevation: 0,
         backgroundColor: theme.scaffoldBackgroundColor,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, size: 20.sp),
+          onPressed: () => sl<NavigationService>().goBack(),
+        ),
       ),
       body: BlocBuilder<ChatCubit, ChatState>(
         buildWhen: (previous, current) =>
             current is ConversationsLoaded || current is ChatLoading,
         builder: (context, state) {
-          if (state is ChatLoading) return const LoadingWidget();
+          if (state is ChatLoading) {
+            return const LoadingWidget(color: AppColors.primary);
+          }
 
           if (state is ConversationsLoaded) {
             if (state.conversations.isEmpty) {
@@ -51,89 +67,199 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.chat_bubble_outline,
-                        size: 60.sp, color: Colors.grey[300]),
+                    Container(
+                      padding: EdgeInsets.all(24.w),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.chat_bubble_outline_rounded,
+                          size: 40.sp, color: theme.disabledColor),
+                    ),
                     SizedBox(height: 16.h),
-                    Text("No conversations yet",
-                        style: TextStyle(color: Colors.grey[500])),
+                    Text("No messages yet", style: theme.textTheme.bodyMedium),
                   ],
                 ),
               );
             }
-            return ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+
+            return ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               itemCount: state.conversations.length,
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
               itemBuilder: (context, index) {
                 final chat = state.conversations[index];
+                // Determine if the message is unread
+                final bool hasUnread = chat.unreadCount > 0;
 
-                return Dismissible(
-                  key: Key(chat.id.toString()),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(right: 20.w),
-                    color: Colors.red,
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  onDismissed: (direction) {
-                    context.read<ChatCubit>().deleteConversation(chat.id);
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 8.h),
-                    decoration: BoxDecoration(
-                        color: theme.cardColor,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.03),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          )
-                        ]),
-                    child: ListTile(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => ChatScreen(
-                                      conversationId: chat.id,
-                                      otherUserName: chat.otherUserName,
-                                      otherUserImage: chat.otherUserImage,
-                                    )));
-                      },
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      leading: CircleAvatar(
-                        radius: 28.r,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage: chat.otherUserImage != null
-                            ? CachedNetworkImageProvider(chat.otherUserImage!)
-                            : null,
-                        child: chat.otherUserImage == null
-                            ? Icon(Icons.person, color: Colors.grey[400])
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Dismissible(
+                    key: Key(chat.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    // FIX: confirmDismiss needs to await a Future<bool>
+                    confirmDismiss: (direction) async {
+                      return await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Delete Chat"),
+                            content: const Text(
+                                "Are you sure you want to delete this conversation?"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: Text(localizations.no),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: Text(
+                                  localizations.yes,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    background: Container(
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 24.w),
+                      color: AppColors.error,
+                      child: Icon(Icons.delete_outline,
+                          color: Colors.white, size: 24.sp),
+                    ),
+                    onDismissed: (direction) {
+                      // Only called if confirmDismiss returns true
+                      context.read<ChatCubit>().deleteConversation(chat.id);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // VISUAL EFFECT: Light background tint for unread messages
+                        color: hasUnread
+                            ? AppColors.primary.withOpacity(0.08)
+                            : theme.cardColor,
+                        border: hasUnread
+                            ? Border(
+                                left: BorderSide(
+                                    color: AppColors.primary, width: 4.w))
                             : null,
                       ),
-                      title: Text(chat.otherUserName,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16.sp)),
-                      subtitle: Padding(
-                        padding: EdgeInsets.only(top: 4.h),
-                        child: Text(
-                          chat.lastMessage,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontSize: 14.sp, color: Colors.grey[600]),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 12.h),
+                        onTap: () {
+                          sl<NavigationService>().pushNamed(
+                            AppRoutes.chat,
+                            arguments: {
+                              'conversationId': chat.id,
+                              'otherUserName': chat.otherUserName,
+                              'otherUserImage': chat.otherUserImage,
+                            },
+                          );
+                        },
+                        leading: Hero(
+                          tag: 'avatar_${chat.id}',
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 50.r,
+                                height: 50.r,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: theme.dividerColor, width: 1),
+                                  image: chat.otherUserImage != null
+                                      ? DecorationImage(
+                                          image: CachedNetworkImageProvider(
+                                              chat.otherUserImage!),
+                                          fit: BoxFit.cover)
+                                      : null,
+                                ),
+                                child: chat.otherUserImage == null
+                                    ? Icon(Icons.person,
+                                        color: Colors.grey[400], size: 24.sp)
+                                    : null,
+                              ),
+                              // VISUAL EFFECT: Blue dot for unread status
+                              if (hasUnread)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    width: 14.w,
+                                    height: 14.w,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                          color: theme.cardColor, width: 2),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
-                      trailing: Text(
-                        chat.lastMessageTime.isNotEmpty
-                            ? timeago.format(
-                                DateTime.parse(chat.lastMessageTime),
-                                locale: 'en_short')
-                            : "",
-                        style:
-                            TextStyle(fontSize: 12.sp, color: Colors.grey[400]),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                chat.otherUserName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  // VISUAL EFFECT: Bolder text for name
+                                  fontWeight: hasUnread
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                            ),
+                            if (chat.lastMessageTime.isNotEmpty)
+                              Padding(
+                                padding: EdgeInsets.only(left: 8.w),
+                                child: Text(
+                                  timeago.format(
+                                      DateTime.parse(chat.lastMessageTime),
+                                      locale: 'en_short'),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    fontSize: 11.sp,
+                                    // VISUAL EFFECT: Colored and bold time
+                                    color: hasUnread
+                                        ? AppColors.primary
+                                        : theme.disabledColor,
+                                    fontWeight: hasUnread
+                                        ? FontWeight.w800
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        subtitle: Padding(
+                          padding: EdgeInsets.only(top: 6.h),
+                          child: Text(
+                            chat.lastMessage,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 13.sp,
+                              // VISUAL EFFECT: Darker and bolder preview text
+                              fontWeight: hasUnread
+                                  ? FontWeight.w700
+                                  : FontWeight.normal,
+                              color: hasUnread
+                                  ? theme.textTheme.bodyLarge?.color
+                                  : theme.textTheme.bodyMedium?.color
+                                      ?.withOpacity(0.8),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),

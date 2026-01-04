@@ -7,6 +7,7 @@ class Conversation extends Equatable {
   final String? otherUserImage;
   final String lastMessage;
   final String lastMessageTime;
+  final int unreadCount;
 
   const Conversation({
     required this.id,
@@ -15,8 +16,16 @@ class Conversation extends Equatable {
     this.otherUserImage,
     required this.lastMessage,
     required this.lastMessageTime,
+    this.unreadCount = 0,
   });
 
   @override
-  List<Object?> get props => [id, otherUserId, otherUserName, lastMessage];
+  List<Object?> get props => [
+        id,
+        otherUserId,
+        otherUserName,
+        lastMessage,
+        lastMessageTime,
+        unreadCount
+      ];
 }

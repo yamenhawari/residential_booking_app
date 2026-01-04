@@ -9,6 +9,7 @@ class ConversationModel extends Conversation {
     super.otherUserImage,
     required super.lastMessage,
     required super.lastMessageTime,
+    required super.unreadCount,
   });
 
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class ConversationModel extends Conversation {
       otherUserImage: img,
       lastMessage: json['last_message'] ?? '',
       lastMessageTime: json['last_message_time'] ?? '',
+      unreadCount: json['unread_count'] ?? 0,
     );
   }
 }

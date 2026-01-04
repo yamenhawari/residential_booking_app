@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:residential_booking_app/core/di/injection_container.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
-import 'package:residential_booking_app/features/chat/presentation/screens/conversations_screen.dart';
+import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_state.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_state.dart';
 import '../../../../core/resources/app_colors.dart';
-import '../../../../core/utils/nav_helper.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../cubit/home/home_cubit.dart';
 import '../cubit/home/home_state.dart';
@@ -26,12 +28,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _onRefresh() async {
     context.read<HomeCubit>().getApartments();
     context.read<NotificationCubit>().getNotifications();
+    context.read<ChatCubit>().loadConversations();
   }
 
   @override
   void initState() {
     super.initState();
     context.read<NotificationCubit>().getNotifications();
+    // Load conversations to get unread count
+    context.read<ChatCubit>().loadConversations();
   }
 
   @override
@@ -59,18 +64,65 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ConversationsScreen()),
-            ),
-            icon: Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: theme.iconTheme.color,
-              size: 24.sp,
-            ),
+          // Chat Button
+          BlocBuilder<ChatCubit, ChatState>(
+            builder: (context, state) {
+              int chatUnreadCount = 0;
+              if (state is ConversationsLoaded) {
+                chatUnreadCount = state.conversations
+                    .fold(0, (sum, chat) => sum + chat.unreadCount);
+              }
+
+              return GestureDetector(
+                onTap: () =>
+                    sl<NavigationService>().pushNamed(AppRoutes.conversations),
+                child: Container(
+                  height: 45.h,
+                  width: 45.h,
+                  margin: EdgeInsets.only(right: 12.w),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.cardColor,
+                    border: Border.all(color: theme.dividerColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        color: theme.iconTheme.color,
+                        size: 22.sp,
+                      ),
+                      if (chatUnreadCount > 0)
+                        Positioned(
+                          top: 10.h,
+                          right: 10.w,
+                          child: Container(
+                            padding: EdgeInsets.all(4.w),
+                            decoration: const BoxDecoration(
+                              color: AppColors.error,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 8.w,
+                              minHeight: 8.w,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
-          SizedBox(width: 8.w),
+          // Notification Button
           BlocBuilder<NotificationCubit, NotificationState>(
             builder: (context, state) {
               int unreadCount = 0;
@@ -81,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               return GestureDetector(
                 onTap: () {
-                  Nav.to(AppRoutes.notifications);
+                  sl<NavigationService>().pushNamed(AppRoutes.notifications);
                 },
                 child: Container(
                   height: 45.h,
@@ -114,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Container(
                             padding: EdgeInsets.all(4.w),
                             decoration: const BoxDecoration(
-                              color: Colors.red,
+                              color: AppColors.error,
                               shape: BoxShape.circle,
                             ),
                             constraints: BoxConstraints(
@@ -250,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return ApartmentCard(
                               apartment: apartment,
                               ontap: () {
-                                Nav.to(
+                                sl<NavigationService>().pushNamed(
                                   AppRoutes.apartmentDetails,
                                   arguments: apartment.id,
                                 );

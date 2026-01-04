@@ -27,7 +27,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.tr.myBookings)),
+      appBar: AppBar(
+        title: Text(context.tr.myBookings),
+        centerTitle: true,
+      ),
       body: BlocListener<BookingCubit, BookingState>(
         listener: (context, state) {
           if (state is BookingActionFailure) {
