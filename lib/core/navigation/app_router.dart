@@ -7,6 +7,8 @@ import 'package:residential_booking_app/features/auth/presentation/screens/splas
 import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
 import 'package:residential_booking_app/features/bookings/presentation/screens/booking_details_screen.dart';
 import 'package:residential_booking_app/features/bookings/presentation/screens/my_booking_manage_screen.dart';
+import 'package:residential_booking_app/features/chat/presentation/screens/chat_screen.dart';
+import 'package:residential_booking_app/features/chat/presentation/screens/conversations_screen.dart';
 import 'package:residential_booking_app/features/favorites/presentation/screens/favorites_screen.dart';
 import 'package:residential_booking_app/features/home/domain/entities/filter_apartment_params.dart';
 import 'package:residential_booking_app/features/home/presentation/screens/apartment_details_screen.dart';
@@ -27,6 +29,19 @@ class AppRouter {
     final args = settings.arguments;
 
     switch (settings.name) {
+      case AppRoutes.conversations:
+        return MaterialPageRoute(
+          builder: (context) => const ConversationsScreen(),
+        );
+      case AppRoutes.chat:
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              conversationId: args['conversationId'],
+              otherUserName: args['otherUserName'],
+            ),
+          );
+        }
       case AppRoutes.notifications:
         return MaterialPageRoute(
           builder: (context) => const NotificationsScreen(),

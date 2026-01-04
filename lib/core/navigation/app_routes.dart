@@ -17,4 +17,6 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String notifications = '/notifications';
   static const String favoritesScreen = '/favoritesScreen';
+  static const String conversations = '/conversations';
+  static const String chat = '/chat';
 }

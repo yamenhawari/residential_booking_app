@@ -7,6 +7,9 @@ import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/features/bookings/data/models/booking_model.dart';
 import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_state.dart';
+import 'package:residential_booking_app/features/chat/presentation/screens/chat_screen.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
 import 'package:residential_booking_app/features/settings/presentation/cubit/currency_cubit.dart';
 
@@ -47,7 +50,6 @@ class BookingRequestCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Modification Header
           if (isModification)
             Padding(
               padding: EdgeInsets.only(bottom: 12.h),
@@ -61,7 +63,6 @@ class BookingRequestCard extends StatelessWidget {
                 ],
               ),
             ),
-
           Row(
             children: [
               Container(
@@ -99,27 +100,29 @@ class BookingRequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!isModification)
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    "${(booking.endDate.difference(booking.startDate).inDays)} ${context.tr.days}",
-                    style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.sp),
-                  ),
+              BlocListener<ChatCubit, ChatState>(
+                listener: (context, state) {
+                  if (state is ChatCreated) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => ChatScreen(
+                                  conversationId: state.conversationId,
+                                  otherUserName: booking.tenantName ?? "Tenant",
+                                )));
+                  }
+                },
+                child: IconButton(
+                  onPressed: () {
+                    context.read<ChatCubit>().startChat(booking.tenantId);
+                  },
+                  icon: Icon(Icons.chat_bubble,
+                      color: AppColors.primary, size: 20.sp),
                 ),
+              ),
             ],
           ),
           SizedBox(height: 16.h),
-
-          // Dates
           if (isModification && newStart != null) ...[
             Row(
               children: [
@@ -154,10 +157,7 @@ class BookingRequestCard extends StatelessWidget {
               ],
             ),
           ],
-
           SizedBox(height: 8.h),
-
-          // [ADDED] Price Row
           Row(
             children: [
               Icon(Icons.payments_outlined,
@@ -180,7 +180,6 @@ class BookingRequestCard extends StatelessWidget {
               ),
             ],
           ),
-
           SizedBox(height: 20.h),
           Row(
             children: [

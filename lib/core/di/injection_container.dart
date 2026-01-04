@@ -27,6 +27,15 @@ import 'package:residential_booking_app/features/bookings/domain/usecases/create
 import 'package:residential_booking_app/features/bookings/domain/usecases/get_my_bookings_usecase.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/modify_booking_usecase.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
+import 'package:residential_booking_app/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:residential_booking_app/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:residential_booking_app/features/chat/domain/repositories/chat_repository.dart';
+import 'package:residential_booking_app/features/chat/domain/usecases/delete_chat_usecase.dart';
+import 'package:residential_booking_app/features/chat/domain/usecases/get_conversations_usecase.dart';
+import 'package:residential_booking_app/features/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:residential_booking_app/features/chat/domain/usecases/send_message_usecase.dart';
+import 'package:residential_booking_app/features/chat/domain/usecases/start_chat_usecase.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:residential_booking_app/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:residential_booking_app/features/home/data/repositories/home_repository_impl.dart';
 import 'package:residential_booking_app/features/home/domain/repositories/home_repository.dart';
@@ -234,6 +243,29 @@ Future<void> init() async {
     () => RepositoryUtils(sl()),
   );
 
+  // chat
+  sl.registerFactory(() => ChatCubit(
+        getConversationsUseCase: sl(),
+        getMessagesUseCase: sl(),
+        sendMessageUseCase: sl(),
+        startChatUseCase: sl(),
+        deleteConversationUseCase: sl(),
+        deleteMessageUseCase: sl(),
+      ));
+
+  sl.registerLazySingleton(() => GetConversationsUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  sl.registerLazySingleton(() => StartChatUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteMessageUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteConversationUseCase(sl()));
+
+  sl.registerLazySingleton<ChatRepository>(
+    () => ChatRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
+  sl.registerLazySingleton<ChatRemoteDataSource>(
+    () => ChatRemoteDataSourceImpl(apiConsumer: sl()),
+  );
   // ---------------------------------------------------------------------------
   // EXTERNAL LIBRARIES
   // ---------------------------------------------------------------------------

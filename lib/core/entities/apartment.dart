@@ -13,6 +13,7 @@ class Apartment extends Equatable {
   final List<String> images;
   final int roomCount;
   final ApartmentStatus status;
+  final int ownerId; // [NEW] Added for Chat
 
   const Apartment({
     required this.status,
@@ -25,6 +26,7 @@ class Apartment extends Equatable {
     required this.rating,
     required this.images,
     required this.roomCount,
+    this.ownerId = 0,
   });
 
   String get mainImageUrl => images.isNotEmpty ? images[0] : '';
@@ -40,6 +42,7 @@ class Apartment extends Equatable {
         rating,
         images,
         roomCount,
-        status
+        status,
+        ownerId, // Added to props
       ];
 }

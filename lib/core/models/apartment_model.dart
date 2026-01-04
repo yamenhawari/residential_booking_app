@@ -15,37 +15,38 @@ class ApartmentModel extends Apartment {
     required super.images,
     required super.roomCount,
     required super.status,
+    required super.ownerId,
   });
 
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
     final rawRooms = json['rooms'] ?? json['room_count'];
-    int parsedRooms = 0;
-    if (rawRooms != null) {
-      parsedRooms = int.tryParse(rawRooms.toString()) ?? 0;
-    }
+    final parsedRooms = int.tryParse(rawRooms?.toString() ?? '') ?? 0;
 
     final rawGovId = json['governorate_id'];
-    int govId = 1;
-    if (rawGovId != null) {
-      govId = int.tryParse(rawGovId.toString()) ?? 1;
+    final govId = int.tryParse(rawGovId?.toString() ?? '') ?? 1;
+
+    final parsedPrice =
+        double.tryParse(json['price_per_month']?.toString() ?? '') ?? 0.0;
+
+    int parsedOwnerId = 0;
+    if (json['owner_id'] != null) {
+      parsedOwnerId = int.tryParse(json['owner_id'].toString()) ?? 0;
+    } else if (json['owner'] != null && json['owner']['id'] != null) {
+      parsedOwnerId = int.tryParse(json['owner']['id'].toString()) ?? 0;
     }
 
-    double parsedPrice = 0.0;
-    if (json['price_per_month'] != null) {
-      parsedPrice = double.tryParse(json['price_per_month'].toString()) ?? 0.0;
-    }
+    List<String> parsedImages = [];
+    if (json['images'] != null && json['images'] is List) {
+      parsedImages = (json['images'] as List)
+          .map((e) {
+            final path = e is Map ? e['image_url'] : e.toString();
 
-    List<dynamic> parsedImages = [];
-    if (json['images'] != null && (json['images'] as List).isNotEmpty) {
-      parsedImages = (json['images'] as List).map((e) {
-        final path = e is Map ? e['image_url'] : e.toString();
+            if (path.startsWith('http')) return path;
 
-        if (path.startsWith('http') || path.startsWith('https')) {
-          return path;
-        }
-
-        return "${ApiConstants.storageBaseUrl}$path";
-      }).toList();
+            return "${ApiConstants.storageBaseUrl}$path";
+          })
+          .cast<String>()
+          .toList();
     }
 
     return ApartmentModel(
@@ -56,11 +57,12 @@ class ApartmentModel extends Apartment {
       address: json['address']?.toString() ?? '',
       pricePerMonth: parsedPrice,
       rating:
-          (json['rating'] != null) ? (json['rating'] as num).toDouble() : 0.0,
-      images: parsedImages.cast<String>(),
+          (json['rating'] != null) ? (json['rating'] as num).toDouble() : 3.8,
+      images: parsedImages,
       roomCount: parsedRooms,
       status:
           ApartmentStatus.fromString(json['status']?.toString() ?? 'available'),
+      ownerId: parsedOwnerId,
     );
   }
 
@@ -75,7 +77,8 @@ class ApartmentModel extends Apartment {
       'rating': rating,
       'images': images,
       'room_count': roomCount,
-      'status': status.toApiString
+      'status': status.toApiString,
+      'owner_id': ownerId, // NEW
     };
   }
 

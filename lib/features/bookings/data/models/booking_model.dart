@@ -3,15 +3,16 @@ import '../../domain/entities/booking.dart';
 import '../../domain/entities/enums/booking_enum.dart';
 
 class BookingModel extends Booking {
-  // Extra fields for Owner Dashboard Logic
   final String? requestType;
   final int? pendingUpdateId;
   final String? requestedStart;
   final String? requestedEnd;
+  final double? apartmentPrice;
 
   const BookingModel({
     required super.id,
     required super.apartmentId,
+    required super.tenantId,
     required super.startDate,
     required super.endDate,
     required super.totalPrice,
@@ -26,6 +27,7 @@ class BookingModel extends Booking {
     this.pendingUpdateId,
     this.requestedStart,
     this.requestedEnd,
+    this.apartmentPrice,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -36,14 +38,21 @@ class BookingModel extends Booking {
 
     String? title;
     String? imgUrl;
+    double? aptPrice;
+
     if (json['apartment'] != null) {
       title = json['apartment']['title'];
+
+      if (json['apartment']['price_per_month'] != null) {
+        aptPrice =
+            double.tryParse(json['apartment']['price_per_month'].toString());
+      }
+
       if (json['apartment']['images'] != null &&
           (json['apartment']['images'] as List).isNotEmpty) {
         final firstImg = json['apartment']['images'][0];
         final rawUrl =
             firstImg is Map ? firstImg['image_url'] : firstImg.toString();
-
         if (rawUrl.startsWith('http')) {
           imgUrl = rawUrl;
         } else {
@@ -74,6 +83,7 @@ class BookingModel extends Booking {
     return BookingModel(
       id: json['id'],
       apartmentId: json['apartment_id'],
+      tenantId: json['tenant_id'] ?? 0,
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
       totalPrice: parsedPrice,
@@ -84,11 +94,11 @@ class BookingModel extends Booking {
       tenantName: tName,
       tenantImageUrl: tImage,
       myRating: userRating,
-      // [FIX] Map new fields
       requestType: json['request_type'],
       pendingUpdateId: json['pending_update_id'],
       requestedStart: json['requested_start'],
       requestedEnd: json['requested_end'],
+      apartmentPrice: aptPrice,
     );
   }
 }

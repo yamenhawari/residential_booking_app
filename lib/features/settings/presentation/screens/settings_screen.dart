@@ -312,12 +312,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 40.h),
             const LogoutButton(),
             SizedBox(height: 24.h),
-            Center(
-              child: Text(
-                AppLocalizations.of(context)!.versionInfo,
-                style: TextStyle(color: Colors.grey.shade400, fontSize: 12.sp),
-              ),
-            ),
             SizedBox(height: 100.h),
           ],
         ),

@@ -13,7 +13,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        // تفعيل الـ Desugaring (ضروري جداً)
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -37,10 +36,8 @@ android {
 }
 
 dependencies {
-    // ✅ تم تحديث الإصدار إلى 2.1.4 كما طلب الخطأ
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 
-    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-analytics")
 }

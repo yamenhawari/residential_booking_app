@@ -8,6 +8,7 @@ import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/features/auth/presentation/widgets/primary_button.dart';
+import 'package:residential_booking_app/features/bookings/data/models/booking_model.dart';
 import 'package:residential_booking_app/features/bookings/domain/entities/booking.dart';
 import 'package:residential_booking_app/features/bookings/domain/entities/enums/booking_enum.dart';
 import 'package:residential_booking_app/features/bookings/domain/usecases/modify_booking_usecase.dart';
@@ -42,7 +43,6 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
         listener: (context, state) {
           if (state is BookingActionSuccess) {
             AppSnackBars.showSuccess(context, message: state.message);
-            // Go back to list to refresh data
             Nav.back();
           } else if (state is BookingActionFailure) {
             AppSnackBars.showError(context, message: state.message);
@@ -261,8 +261,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
               title: Text(context.tr.cancel),
-              content: Text(context.tr.deleteConfirm.replaceAll('property',
-                  'booking')), // You might want a specific key for this
+              content: const Text("Are you sure?"),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx),
@@ -275,7 +274,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                           .cancelBooking(_currentBooking.id);
                     },
                     child: Text(context.tr.yes,
-                        style: TextStyle(color: Colors.red))),
+                        style: const TextStyle(color: Colors.red))),
               ],
             ));
   }
@@ -290,17 +289,55 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
     );
 
     if (picked != null && context.mounted) {
-      _showModifyConfirmation(context, picked.start, picked.end);
+      double newPrice = 0.0;
+
+      final newDays = picked.end.difference(picked.start).inDays;
+      final duration = newDays == 0 ? 1 : newDays;
+
+      if (_currentBooking is BookingModel &&
+          (_currentBooking as BookingModel).apartmentPrice != null) {
+        final monthlyPrice = (_currentBooking as BookingModel).apartmentPrice!;
+        newPrice = (monthlyPrice / 30) * duration;
+      } else {
+        final oldDays = _currentBooking.endDate
+            .difference(_currentBooking.startDate)
+            .inDays;
+        final ratePerDay =
+            _currentBooking.totalPrice / (oldDays == 0 ? 1 : oldDays);
+        newPrice = ratePerDay * duration;
+      }
+
+      _showModifyConfirmation(context, picked.start, picked.end, newPrice);
     }
   }
 
-  void _showModifyConfirmation(
-      BuildContext context, DateTime newStart, DateTime newEnd) {
+  void _showModifyConfirmation(BuildContext context, DateTime newStart,
+      DateTime newEnd, double newPrice) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(context.tr.confirmBooking),
-        content: Text(context.tr.confirmDateChange),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(context.tr.confirmDateChange),
+            SizedBox(height: 10.h),
+            Text(
+                "New Dates: ${newStart.toString().split(' ')[0]} - ${newEnd.toString().split(' ')[0]}"),
+            SizedBox(height: 5.h),
+            // [FIX] Show new price here
+            BlocBuilder<CurrencyCubit, String>(
+              builder: (context, currency) {
+                return Text(
+                  "New Total: ${PriceFormatter.format(newPrice, currency)}",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: AppColors.primary),
+                );
+              },
+            ),
+          ],
+        ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -354,7 +391,7 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
             SizedBox(height: 10.h),
             TextField(
               controller: commentCtrl,
-              decoration: const InputDecoration(hintText: "..."),
+              decoration: const InputDecoration(hintText: "Add a comment"),
             )
           ],
         ),

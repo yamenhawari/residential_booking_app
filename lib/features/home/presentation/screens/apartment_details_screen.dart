@@ -9,6 +9,9 @@ import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_state.dart';
+import 'package:residential_booking_app/features/chat/presentation/screens/chat_screen.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/apartmentDetails/apartment_details_state.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/apartment_image_header.dart';
@@ -35,27 +38,44 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: BlocBuilder<ApartmentDetailsCubit, ApartmentDetailsState>(
-        builder: (context, state) {
-          if (state is ApartmentDetailsLoading) {
-            return const Center(child: LoadingWidget(color: AppColors.primary));
-          } else if (state is ApartmentDetailsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.grey),
-                  const SizedBox(height: 16),
-                  Text(state.message,
-                      style: TextStyle(color: Colors.grey[600])),
-                ],
+      body: BlocListener<ChatCubit, ChatState>(
+        listener: (context, state) {
+          if (state is ChatCreated) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatScreen(
+                  conversationId: state.conversationId,
+                  otherUserName: "Owner",
+                ),
               ),
             );
-          } else if (state is ApartmentDetailsLoaded) {
-            return _buildContent(state.apartment, theme);
           }
-          return const SizedBox.shrink();
         },
+        child: BlocBuilder<ApartmentDetailsCubit, ApartmentDetailsState>(
+          builder: (context, state) {
+            if (state is ApartmentDetailsLoading) {
+              return const Center(
+                  child: LoadingWidget(color: AppColors.primary));
+            } else if (state is ApartmentDetailsError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline,
+                        size: 48, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(state.message,
+                        style: TextStyle(color: Colors.grey[600])),
+                  ],
+                ),
+              );
+            } else if (state is ApartmentDetailsLoaded) {
+              return _buildContent(state.apartment, theme);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -68,7 +88,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: ApartmentImageHeader(
-                  apartment: apartment, images: apartment.images),
+                  images: apartment.images, apartment: apartment),
             ),
             SliverPadding(
               padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 120.h),
@@ -140,7 +160,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                   SizedBox(height: 32.h),
                   _buildSectionTitle(
                       AppLocalizations.of(context)!.description, theme),
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 2.h),
                   Text(
                     apartment.description,
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -148,6 +168,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                       height: 1.6,
                     ),
                   ),
+                  SizedBox(height: 50.h)
                 ]),
               ),
             ),
@@ -275,11 +296,11 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
               children: [
                 Text(
                   AppLocalizations.of(context)!.price,
@@ -288,7 +309,7 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(width: 8.w),
                 BlocBuilder<CurrencyCubit, String>(
                   builder: (context, currency) {
                     return RichText(
@@ -300,14 +321,14 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                             style: TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
-                              fontSize: 24.sp,
+                              fontSize: 20.sp,
                               fontFamily: 'Inter',
                             ),
                           ),
                           TextSpan(
                             text: AppLocalizations.of(context)!.pricePerMonth,
                             style: theme.textTheme.bodyMedium
-                                ?.copyWith(fontSize: 14.sp),
+                                ?.copyWith(fontSize: 12.sp),
                           ),
                         ],
                       ),
@@ -316,37 +337,62 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
                 ),
               ],
             ),
-            SizedBox(width: 24.w),
-            Expanded(
-              child: SizedBox(
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: isAvailable
-                      ? () => Nav.to(AppRoutes.bookingDetails, arguments: {
-                            'id': apartment.id,
-                            'price': apartment.pricePerMonth,
-                          })
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.r),
+            SizedBox(height: 16.h),
+            Row(
+              children: [
+                SizedBox(
+                  height: 56.h,
+                  width: 60.w,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      final ownerId = apartment.ownerId;
+                      context.read<ChatCubit>().startChat(ownerId);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: AppColors.primary, width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
+                    child: Icon(Icons.chat_bubble_outline,
+                        color: AppColors.primary),
                   ),
-                  child: Text(
-                    isAvailable
-                        ? AppLocalizations.of(context)!.bookNow
-                        : AppLocalizations.of(context)!.notAvailable,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: isAvailable ? Colors.white : Colors.grey.shade600,
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: SizedBox(
+                    height: 56.h,
+                    child: ElevatedButton(
+                      onPressed: isAvailable
+                          ? () => Nav.to(AppRoutes.bookingDetails, arguments: {
+                                'id': apartment.id,
+                                'price': apartment.pricePerMonth,
+                              })
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        disabledBackgroundColor: Colors.grey.shade300,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                      ),
+                      child: Text(
+                        isAvailable
+                            ? AppLocalizations.of(context)!.bookNow
+                            : AppLocalizations.of(context)!.notAvailable,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isAvailable ? Colors.white : Colors.grey.shade600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
           ],
         ),

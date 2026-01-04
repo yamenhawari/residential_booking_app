@@ -74,7 +74,7 @@ State Management: flutter_bloc
 
 Dependency Injection: get_it
 
-Networking: dio / http
+Networking: http
 
 Local DB: hive
 

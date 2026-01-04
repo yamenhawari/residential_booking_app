@@ -4,6 +4,7 @@ import 'package:residential_booking_app/features/bookings/domain/entities/enums/
 class Booking extends Equatable {
   final int id;
   final int apartmentId;
+  final int tenantId; // [NEW] Added this
   final DateTime startDate;
   final DateTime endDate;
   final double totalPrice;
@@ -18,6 +19,7 @@ class Booking extends Equatable {
   const Booking({
     required this.id,
     required this.apartmentId,
+    required this.tenantId,
     required this.startDate,
     required this.endDate,
     required this.totalPrice,
@@ -34,6 +36,7 @@ class Booking extends Equatable {
   List<Object?> get props => [
         id,
         apartmentId,
+        tenantId,
         startDate,
         endDate,
         status,

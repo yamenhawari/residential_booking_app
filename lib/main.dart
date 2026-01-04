@@ -7,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:residential_booking_app/110n/app_localizations.dart';
 import 'package:residential_booking_app/core/services/notification_service.dart';
+import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_cubit.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
 
@@ -73,6 +74,9 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider(
               create: (_) => di.sl<FilterCubit>(),
+            ),
+            BlocProvider(
+              create: (_) => di.sl<ChatCubit>(),
             ),
             BlocProvider(create: (_) => di.sl<NotificationCubit>()),
             BlocProvider(create: (_) => ThemeCubit()),

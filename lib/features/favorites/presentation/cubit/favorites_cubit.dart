@@ -49,7 +49,8 @@ class FavoritesCubit extends Cubit<FavoritesState> {
           rating: apartment.rating,
           images: apartment.images,
           roomCount: apartment.roomCount,
-          status: apartment.status);
+          status: apartment.status,
+          ownerId: apartment.ownerId);
 
       await box.put(apartment.id, json.encode(model.toJson()));
     }

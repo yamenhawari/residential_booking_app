@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
+import 'package:residential_booking_app/features/chat/presentation/screens/conversations_screen.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_state.dart';
 import '../../../../core/resources/app_colors.dart';
@@ -58,6 +59,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ConversationsScreen()),
+            ),
+            icon: Icon(
+              Icons.chat_bubble_outline_rounded,
+              color: theme.iconTheme.color,
+              size: 24.sp,
+            ),
+          ),
+          SizedBox(width: 8.w),
           BlocBuilder<NotificationCubit, NotificationState>(
             builder: (context, state) {
               int unreadCount = 0;
