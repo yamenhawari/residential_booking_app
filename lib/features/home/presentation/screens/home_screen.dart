@@ -122,7 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          // Notification Button
           BlocBuilder<NotificationCubit, NotificationState>(
             builder: (context, state) {
               int unreadCount = 0;
@@ -131,51 +130,56 @@ class _HomeScreenState extends State<HomeScreen> {
                     state.notifications.where((n) => !n.isRead).length;
               }
 
-              return GestureDetector(
-                onTap: () {
-                  sl<NavigationService>().pushNamed(AppRoutes.notifications);
-                },
-                child: Container(
-                  height: 45.h,
-                  width: 45.h,
-                  margin: EdgeInsets.only(right: 20.w),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: theme.cardColor,
-                    border: Border.all(color: theme.dividerColor),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Icon(
-                        FontAwesomeIcons.bell,
-                        color: theme.iconTheme.color,
-                        size: 20.sp,
-                      ),
-                      if (unreadCount > 0)
-                        Positioned(
-                          top: 10.h,
-                          right: 10.w,
-                          child: Container(
-                            padding: EdgeInsets.all(4.w),
-                            decoration: const BoxDecoration(
-                              color: AppColors.error,
-                              shape: BoxShape.circle,
-                            ),
-                            constraints: BoxConstraints(
-                              minWidth: 8.w,
-                              minHeight: 8.w,
+              return Padding(
+                padding: Directionality.of(context) == TextDirection.rtl
+                    ? EdgeInsets.only(left: 20.w)
+                    : EdgeInsets.all(0),
+                child: GestureDetector(
+                  onTap: () {
+                    sl<NavigationService>().pushNamed(AppRoutes.notifications);
+                  },
+                  child: Container(
+                    height: 45.h,
+                    width: 45.h,
+                    margin: EdgeInsets.only(right: 20.w),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: theme.cardColor,
+                      border: Border.all(color: theme.dividerColor),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.bell,
+                          color: theme.iconTheme.color,
+                          size: 20.sp,
+                        ),
+                        if (unreadCount > 0)
+                          Positioned(
+                            top: 10.h,
+                            right: 10.w,
+                            child: Container(
+                              padding: EdgeInsets.all(4.w),
+                              decoration: const BoxDecoration(
+                                color: AppColors.error,
+                                shape: BoxShape.circle,
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 8.w,
+                                minHeight: 8.w,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
