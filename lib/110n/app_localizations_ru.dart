@@ -559,4 +559,65 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get germanLanguage => 'Deutsch';
+
+  @override
+  String get messagesTitle => 'Сообщения';
+
+  @override
+  String get typeMessageHint => 'Введите сообщение...';
+
+  @override
+  String get sayHello => 'Скажите Привет! 👋';
+
+  @override
+  String get deleteChatTitle => 'Удалить чат';
+
+  @override
+  String get deleteChatContent => 'Вы уверены, что хотите удалить этот чат?';
+
+  @override
+  String get deleteSelectedTitle => 'Удалить';
+
+  @override
+  String deleteSelectedContent(Object count) {
+    return 'Удалить $count сообщений?';
+  }
+
+  @override
+  String selectedCount(Object count) {
+    return 'Выбрано: $count';
+  }
+
+  @override
+  String get makeAvailable => 'Сделать доступным';
+
+  @override
+  String get permanentlyDelete => 'Удалить навсегда';
+
+  @override
+  String get deleteCondition => 'Только если нет активных бронирований';
+
+  @override
+  String get dateChangeRequest => 'Запрос на изменение даты';
+
+  @override
+  String get oldLabel => 'Старая: ';
+
+  @override
+  String get newLabel => 'Новая: ';
+
+  @override
+  String get newTotal => 'Новая сумма: ';
+
+  @override
+  String get addComment => 'Добавить комментарий';
+
+  @override
+  String get noMessagesYet => 'Сообщений пока нет';
+
+  @override
+  String get tenantDefault => 'Арендатор';
+
+  @override
+  String get unknown => 'Неизвестно';
 }

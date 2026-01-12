@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import '../cubit/notification_cubit.dart';
 import '../cubit/notification_state.dart';
@@ -35,20 +36,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           if (state is NotificationLoading) {
             return const LoadingWidget();
           } else if (state is NotificationError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.grey),
-                  SizedBox(height: 16.h),
-                  Text(state.message),
-                  TextButton(
-                    onPressed: () =>
-                        context.read<NotificationCubit>().getNotifications(),
-                    child: Text(context.tr.retry),
-                  )
-                ],
-              ),
+            return CustomErrorWidget(
+              message: state.message,
+              onRetry: () =>
+                  context.read<NotificationCubit>().getNotifications(),
             );
           } else if (state is NotificationLoaded) {
             if (state.notifications.isEmpty) {

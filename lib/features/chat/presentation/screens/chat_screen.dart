@@ -8,6 +8,8 @@ import 'package:residential_booking_app/core/models/user_model.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/services/notification_service.dart';
 import 'package:residential_booking_app/core/utils/app_dialogs.dart';
+import 'package:residential_booking_app/core/utils/extentions.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/chat/domain/entities/message.dart';
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
@@ -44,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _loadCurrentUser();
-    context.read<ChatCubit>().startPollingMessages(widget.conversationId);
+    context.read<ChatCubit>().enterChat(widget.conversationId);
     NotificationService.currentActiveConversationId = widget.conversationId;
   }
 
@@ -103,8 +105,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void _deleteSelectedMessages() {
     AppDialogs.showConfirm(
       context,
-      title: "Delete",
-      message: "Delete ${_selectedMessageIds.length} messages?",
+      title: context.tr.deleteSelectedTitle,
+      // FIX: Called as a function passing the count
+      message: context.tr.deleteSelectedContent(_selectedMessageIds.length),
       onConfirm: () {
         for (var id in _selectedMessageIds) {
           context.read<ChatCubit>().deleteMessage(id, widget.conversationId);
@@ -135,11 +138,21 @@ class _ChatScreenState extends State<ChatScreen> {
                   current is MessagesLoaded ||
                   current is ChatLoading ||
                   current is ChatInitial ||
-                  current is MessageSending,
+                  current is MessageSending ||
+                  current is ChatError,
               builder: (context, state) {
                 if (state is ChatInitial ||
                     (state is ChatLoading && state is! MessageSending)) {
                   return const LoadingWidget(color: AppColors.primary);
+                }
+
+                if (state is ChatError) {
+                  return CustomErrorWidget(
+                    message: state.message,
+                    onRetry: () => context
+                        .read<ChatCubit>()
+                        .getMessages(widget.conversationId),
+                  );
                 }
 
                 List<Message> messages = [];
@@ -202,7 +215,8 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Icon(Icons.waving_hand, size: 40.sp, color: Colors.orange),
           SizedBox(height: 10.h),
-          Text("Say Hello! 👋", style: Theme.of(context).textTheme.bodyMedium),
+          Text(context.tr.sayHello,
+              style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/home/presentation/widgets/apartment_card.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
@@ -63,7 +64,7 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
               ListTile(
                 leading:
                     const Icon(Icons.check_circle_outline, color: Colors.green),
-                title: Text("Make Available"), // Localize this
+                title: Text(context.tr.makeAvailable),
                 onTap: () {
                   Navigator.pop(ctx);
                   context.read<OwnerCubit>().activateApartment(apartmentId);
@@ -71,8 +72,8 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: Text("Permanently Delete"), // Localize this
-                subtitle: Text("Only if no active bookings"), // Localize this
+                title: Text(context.tr.permanentlyDelete),
+                subtitle: Text(context.tr.deleteCondition),
                 onTap: () {
                   Navigator.pop(ctx);
                   context.read<OwnerCubit>().forceDeleteApartment(apartmentId);
@@ -108,23 +109,9 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
           if (state is OwnerLoading || state is OwnerInitial) {
             return const LoadingWidget();
           } else if (state is OwnerError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 60.sp, color: Colors.red),
-                  SizedBox(height: 10.h),
-                  Text(context.tr.errorLoadingProperties,
-                      style: theme.textTheme.titleMedium),
-                  SizedBox(height: 5.h),
-                  Text(state.message, textAlign: TextAlign.center),
-                  TextButton(
-                    onPressed: () =>
-                        context.read<OwnerCubit>().loadMyApartments(),
-                    child: Text(context.tr.retry),
-                  )
-                ],
-              ),
+            return CustomErrorWidget(
+              message: state.message,
+              onRetry: () => context.read<OwnerCubit>().loadMyApartments(),
             );
           } else if (state is OwnerDataLoaded) {
             if (state.myApartments.isEmpty) {
@@ -157,11 +144,9 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
                         apartment: apartment,
                         showHeart: false,
                         ontap: () async {
-                          // [FIX] Logic Check for Unavailable
                           if (apartment.status == ApartmentStatus.unavailable) {
                             _showUnavailableOptions(context, apartment.id);
                           } else {
-                            // Normal Edit Mode
                             await Nav.to(AppRoutes.addApartment,
                                 arguments: apartment);
                             if (context.mounted) {
@@ -170,7 +155,6 @@ class _OwnerApartmentsScreenState extends State<OwnerApartmentsScreen> {
                           }
                         },
                       ),
-                      // Status Badge
                       Positioned(
                         top: 20.h,
                         left: 20.w,

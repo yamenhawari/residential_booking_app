@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/extentions.dart';
 
 class ChatInputArea extends StatelessWidget {
   final TextEditingController controller;
@@ -40,7 +41,7 @@ class ChatInputArea extends StatelessWidget {
                   textAlignVertical: TextAlignVertical.center,
                   style: theme.textTheme.bodyLarge,
                   decoration: InputDecoration(
-                    hintText: "Type a message...",
+                    hintText: context.tr.typeMessageHint,
                     hintStyle:
                         TextStyle(color: theme.disabledColor, fontSize: 14.sp),
                     border: InputBorder.none,

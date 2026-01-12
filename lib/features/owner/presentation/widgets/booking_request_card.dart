@@ -34,6 +34,8 @@ class BookingRequestCard extends StatelessWidget {
         ? (booking as BookingModel).requestedEnd
         : null;
 
+    final tenantName = booking.tenantName ?? context.tr.tenantDefault;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
       padding: EdgeInsets.all(20.w),
@@ -57,8 +59,8 @@ class BookingRequestCard extends StatelessWidget {
                 children: [
                   Icon(Icons.edit_calendar, color: Colors.blue, size: 20.sp),
                   SizedBox(width: 8.w),
-                  Text("Date Change Request",
-                      style: TextStyle(
+                  Text(context.tr.dateChangeRequest,
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold)),
                 ],
               ),
@@ -87,8 +89,7 @@ class BookingRequestCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(booking.tenantName ?? "Tenant",
-                        style: theme.textTheme.titleMedium),
+                    Text(tenantName, style: theme.textTheme.titleMedium),
                     Text(
                       booking.apartmentName ??
                           "${context.tr.apartment} #${booking.apartmentId}",
@@ -108,7 +109,7 @@ class BookingRequestCard extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (_) => ChatScreen(
                                   conversationId: state.conversationId,
-                                  otherUserName: booking.tenantName ?? "Tenant",
+                                  otherUserName: tenantName,
                                 )));
                   }
                 },
@@ -128,7 +129,8 @@ class BookingRequestCard extends StatelessWidget {
               children: [
                 Icon(Icons.calendar_today, size: 16.sp, color: Colors.grey),
                 SizedBox(width: 8.w),
-                Text("Old: ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(context.tr.oldLabel,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 Text(booking.startDate.toString().split(' ')[0]),
               ],
             ),
@@ -137,11 +139,11 @@ class BookingRequestCard extends StatelessWidget {
               children: [
                 Icon(Icons.event_available, size: 16.sp, color: Colors.blue),
                 SizedBox(width: 8.w),
-                Text("New: ",
-                    style: TextStyle(
+                Text(context.tr.newLabel,
+                    style: const TextStyle(
                         fontWeight: FontWeight.bold, color: Colors.blue)),
                 Text("$newStart  ➔  $newEnd",
-                    style: TextStyle(color: Colors.blue)),
+                    style: const TextStyle(color: Colors.blue)),
               ],
             ),
           ] else ...[

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/utils/app_snackbars.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_cubit.dart';
 import 'package:residential_booking_app/features/bookings/presentation/Cubit/booking_state.dart';
@@ -80,10 +81,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 ),
               );
             } else if (state is GetBookingsFailure) {
-              return Center(
-                child: TextButton(
-                    onPressed: () => context.read<BookingCubit>().getBookings(),
-                    child: const Text("Retry")),
+              return CustomErrorWidget(
+                message: state.message,
+                onRetry: () => context.read<BookingCubit>().getBookings(),
               );
             }
             return const LoadingWidget();

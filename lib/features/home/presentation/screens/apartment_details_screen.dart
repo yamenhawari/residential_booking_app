@@ -8,6 +8,7 @@ import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_state.dart';
@@ -58,17 +59,10 @@ class _ApartmentDetailsScreenState extends State<ApartmentDetailsScreen> {
               return const Center(
                   child: LoadingWidget(color: AppColors.primary));
             } else if (state is ApartmentDetailsError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    Text(state.message,
-                        style: TextStyle(color: Colors.grey[600])),
-                  ],
-                ),
+              return CustomErrorWidget(
+                message: state.message,
+                onRetry: () =>
+                    context.read<ApartmentDetailsCubit>().getDetails(widget.id),
               );
             } else if (state is ApartmentDetailsLoaded) {
               return _buildContent(state.apartment, theme);

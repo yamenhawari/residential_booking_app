@@ -7,12 +7,26 @@ class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(const FilterState());
 
   void setDateRange(DateTime? start, DateTime? end) {
-    emit(state.copyWith(startDate: start, endDate: end));
+    emit(FilterState(
+      startDate: start,
+      endDate: end,
+      roomCount: state.roomCount,
+      selectedGovernorates: state.selectedGovernorates,
+      minPrice: state.minPrice,
+      maxPrice: state.maxPrice,
+    ));
   }
 
   void toggleRoomCount(int count) {
     if (state.roomCount == count) {
-      emit(state.copyWith(roomCount: null));
+      emit(FilterState(
+        startDate: state.startDate,
+        endDate: state.endDate,
+        roomCount: null,
+        selectedGovernorates: state.selectedGovernorates,
+        minPrice: state.minPrice,
+        maxPrice: state.maxPrice,
+      ));
     } else {
       emit(state.copyWith(roomCount: count));
     }

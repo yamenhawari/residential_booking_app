@@ -562,4 +562,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get germanLanguage => 'Deutsch';
+
+  @override
+  String get messagesTitle => 'Messages';
+
+  @override
+  String get typeMessageHint => 'Type a message...';
+
+  @override
+  String get sayHello => 'Say Hello! 👋';
+
+  @override
+  String get deleteChatTitle => 'Delete Chat';
+
+  @override
+  String get deleteChatContent =>
+      'Are you sure you want to delete this conversation?';
+
+  @override
+  String get deleteSelectedTitle => 'Delete';
+
+  @override
+  String deleteSelectedContent(Object count) {
+    return 'Delete $count messages?';
+  }
+
+  @override
+  String selectedCount(Object count) {
+    return '$count selected';
+  }
+
+  @override
+  String get makeAvailable => 'Make Available';
+
+  @override
+  String get permanentlyDelete => 'Permanently Delete';
+
+  @override
+  String get deleteCondition => 'Only if no active bookings';
+
+  @override
+  String get dateChangeRequest => 'Date Change Request';
+
+  @override
+  String get oldLabel => 'Old: ';
+
+  @override
+  String get newLabel => 'New: ';
+
+  @override
+  String get newTotal => 'New Total: ';
+
+  @override
+  String get addComment => 'Add a comment';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get tenantDefault => 'Tenant';
+
+  @override
+  String get unknown => 'Unknown';
 }

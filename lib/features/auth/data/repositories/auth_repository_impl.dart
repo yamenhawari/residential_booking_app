@@ -52,15 +52,12 @@ class AuthRepositoryImpl implements AuthRepository {
         await userLocalDataSource.deleteUser();
         return const Right(unit);
       } on ServerException catch (e) {
-        await userLocalDataSource.deleteUser();
         return Left(ServerFailure(e.message));
-      } catch (_) {
-        await userLocalDataSource.deleteUser();
-        return const Right(unit);
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
       }
     } else {
-      await userLocalDataSource.deleteUser();
-      return const Right(unit);
+      return Left(OfflineFailure(AppStrings.error.noInternet));
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:residential_booking_app/core/di/injection_container.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/utils/extentions.dart';
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isSelectionMode;
@@ -36,8 +37,8 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.close),
           onPressed: onClearSelection,
         ),
-        title:
-            Text("$selectedCount selected", style: theme.textTheme.titleMedium),
+        title: Text(context.tr.selectedCount(selectedCount),
+            style: theme.textTheme.titleMedium),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline, color: AppColors.error),

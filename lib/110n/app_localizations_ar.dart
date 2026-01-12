@@ -560,4 +560,65 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get germanLanguage => 'Deutsch';
+
+  @override
+  String get messagesTitle => 'الرسائل';
+
+  @override
+  String get typeMessageHint => 'اكتب رسالة...';
+
+  @override
+  String get sayHello => 'قل مرحباً! 👋';
+
+  @override
+  String get deleteChatTitle => 'حذف المحادثة';
+
+  @override
+  String get deleteChatContent => 'هل أنت متأكد أنك تريد حذف هذه المحادثة؟';
+
+  @override
+  String get deleteSelectedTitle => 'حذف';
+
+  @override
+  String deleteSelectedContent(Object count) {
+    return 'حذف $count رسائل؟';
+  }
+
+  @override
+  String selectedCount(Object count) {
+    return '$count محدد';
+  }
+
+  @override
+  String get makeAvailable => 'إجعله متاحاً';
+
+  @override
+  String get permanentlyDelete => 'حذف نهائي';
+
+  @override
+  String get deleteCondition => 'فقط إذا لم يكن هناك حجوزات نشطة';
+
+  @override
+  String get dateChangeRequest => 'طلب تغيير التاريخ';
+
+  @override
+  String get oldLabel => 'القديم: ';
+
+  @override
+  String get newLabel => 'الجديد: ';
+
+  @override
+  String get newTotal => 'المجموع الجديد: ';
+
+  @override
+  String get addComment => 'أضف تعليقاً';
+
+  @override
+  String get noMessagesYet => 'لا توجد رسائل بعد';
+
+  @override
+  String get tenantDefault => 'مستأجر';
+
+  @override
+  String get unknown => 'غير معروف';
 }

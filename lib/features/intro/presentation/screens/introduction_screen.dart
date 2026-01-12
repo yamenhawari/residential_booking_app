@@ -18,11 +18,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   int _currentPage = 0;
   Key _sliderKey = UniqueKey();
 
-  // Define background colors for each slide to create a dynamic atmosphere
   final List<Color> _bgColors = [
-    const Color(0xFFEDF1F9), // Light Blue/Grey tint
-    const Color(0xFFF9F1ED), // Light Orange/Warm tint
-    const Color(0xFFEDF9F2), // Light Green/Fresh tint
+    const Color(0xFFEDF1F9),
+    const Color(0xFFF9F1ED),
+    const Color(0xFFEDF9F2),
   ];
 
   final List<Map<String, String>> _slides = [
@@ -90,19 +89,16 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    // Safety check for colors if array lengths mismatch
     final currentColor = _currentPage < _bgColors.length
         ? _bgColors[_currentPage]
         : theme.scaffoldBackgroundColor;
 
     return Scaffold(
-      // Animate the background color of the whole screen
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 500),
         color: currentColor,
         child: Stack(
           children: [
-            // 1. Image Area (Top 60%)
             Positioned(
               top: 0,
               left: 0,
@@ -119,12 +115,10 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                 },
                 itemCount: _slides.length,
                 itemBuilder: (context, index) {
-                  return _buildImageContent(_slides[index]);
+                  return _buildImageContent(_slides[index], currentColor);
                 },
               ),
             ),
-
-            // 2. Skip Button (Top Right)
             if (_currentPage != _slides.length - 1)
               Positioned(
                 top: 50.h,
@@ -150,17 +144,14 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   ),
                 ),
               ),
-
-            // 3. Bottom Sheet Information Card
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
-                height: 0.42.sh, // Occupy bottom ~40%
+                height: 0.42.sh,
                 decoration: BoxDecoration(
-                  color: theme
-                      .scaffoldBackgroundColor, // Usually white or dark grey
+                  color: theme.scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(40.r),
                     topRight: Radius.circular(40.r),
@@ -179,7 +170,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Text Content with Animation Switcher
                       Expanded(
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 400),
@@ -227,8 +217,6 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
                           ),
                         ),
                       ),
-
-                      // Indicators and Button
                       Column(
                         children: [
                           _buildPageIndicators(theme),
@@ -252,13 +240,15 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
     );
   }
 
-  Widget _buildImageContent(Map<String, String> data) {
+  Widget _buildImageContent(Map<String, String> data, Color bgColor) {
     return Container(
       padding: EdgeInsets.fromLTRB(20.w, 80.h, 20.w, 60.h),
       alignment: Alignment.center,
       child: Image.asset(
         data["image"]!,
         fit: BoxFit.contain,
+        color: bgColor,
+        colorBlendMode: BlendMode.multiply,
         errorBuilder: (context, error, stackTrace) {
           return Icon(Icons.image,
               size: 100.sp, color: Colors.grey.withOpacity(0.3));
@@ -276,7 +266,7 @@ class _IntroductionScreenState extends State<IntroductionScreen> {
           duration: const Duration(milliseconds: 300),
           margin: EdgeInsets.symmetric(horizontal: 4.w),
           height: 6.h,
-          width: _currentPage == index ? 24.w : 6.w, // Pill shape for active
+          width: _currentPage == index ? 24.w : 6.w,
           decoration: BoxDecoration(
             color: _currentPage == index
                 ? AppColors.primary

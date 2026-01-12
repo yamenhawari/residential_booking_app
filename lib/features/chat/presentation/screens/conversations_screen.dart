@@ -6,6 +6,7 @@ import 'package:residential_booking_app/core/di/injection_container.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
 import 'package:residential_booking_app/core/resources/app_colors.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/110n/app_localizations.dart';
 import '../cubit/chat_cubit.dart';
@@ -41,7 +42,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          "Messages",
+          localizations.messagesTitle,
           style: theme.textTheme.titleLarge?.copyWith(fontSize: 20.sp),
         ),
         centerTitle: true,
@@ -55,10 +56,19 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       ),
       body: BlocBuilder<ChatCubit, ChatState>(
         buildWhen: (previous, current) =>
-            current is ConversationsLoaded || current is ChatLoading,
+            current is ConversationsLoaded ||
+            current is ChatLoading ||
+            current is ChatError,
         builder: (context, state) {
           if (state is ChatLoading) {
             return const LoadingWidget(color: AppColors.primary);
+          }
+
+          if (state is ChatError) {
+            return CustomErrorWidget(
+              message: state.message,
+              onRetry: () => context.read<ChatCubit>().loadConversations(),
+            );
           }
 
           if (state is ConversationsLoaded) {
@@ -77,7 +87,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           size: 40.sp, color: theme.disabledColor),
                     ),
                     SizedBox(height: 16.h),
-                    Text("No messages yet", style: theme.textTheme.bodyMedium),
+                    Text(localizations.noMessagesYet,
+                        style: theme.textTheme.bodyMedium),
                   ],
                 ),
               );
@@ -89,7 +100,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               separatorBuilder: (context, index) => SizedBox(height: 12.h),
               itemBuilder: (context, index) {
                 final chat = state.conversations[index];
-                // Determine if the message is unread
                 final bool hasUnread = chat.unreadCount > 0;
 
                 return ClipRRect(
@@ -97,15 +107,13 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                   child: Dismissible(
                     key: Key(chat.id.toString()),
                     direction: DismissDirection.endToStart,
-                    // FIX: confirmDismiss needs to await a Future<bool>
                     confirmDismiss: (direction) async {
                       return await showDialog<bool>(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text("Delete Chat"),
-                            content: const Text(
-                                "Are you sure you want to delete this conversation?"),
+                            title: Text(localizations.deleteChatTitle),
+                            content: Text(localizations.deleteChatContent),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () =>
@@ -133,12 +141,10 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           color: Colors.white, size: 24.sp),
                     ),
                     onDismissed: (direction) {
-                      // Only called if confirmDismiss returns true
                       context.read<ChatCubit>().deleteConversation(chat.id);
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        // VISUAL EFFECT: Light background tint for unread messages
                         color: hasUnread
                             ? AppColors.primary.withOpacity(0.08)
                             : theme.cardColor,
@@ -184,7 +190,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                         color: Colors.grey[400], size: 24.sp)
                                     : null,
                               ),
-                              // VISUAL EFFECT: Blue dot for unread status
                               if (hasUnread)
                                 Positioned(
                                   right: 0,
@@ -212,7 +217,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.titleMedium?.copyWith(
-                                  // VISUAL EFFECT: Bolder text for name
                                   fontWeight: hasUnread
                                       ? FontWeight.w800
                                       : FontWeight.w600,
@@ -229,7 +233,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                       locale: 'en_short'),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     fontSize: 11.sp,
-                                    // VISUAL EFFECT: Colored and bold time
                                     color: hasUnread
                                         ? AppColors.primary
                                         : theme.disabledColor,
@@ -249,7 +252,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontSize: 13.sp,
-                              // VISUAL EFFECT: Darker and bolder preview text
                               fontWeight: hasUnread
                                   ? FontWeight.w700
                                   : FontWeight.normal,

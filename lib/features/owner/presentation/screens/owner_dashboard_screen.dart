@@ -6,6 +6,7 @@ import 'package:residential_booking_app/core/resources/app_colors.dart';
 import 'package:residential_booking_app/core/utils/extentions.dart';
 import 'package:residential_booking_app/core/utils/nav_helper.dart';
 import 'package:residential_booking_app/core/utils/price_formatter.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/core/widgets/loading_widget.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_cubit.dart';
 import 'package:residential_booking_app/features/owner/presentation/cubit/owner_state.dart';
@@ -35,6 +36,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(context.tr.ownerDashboard),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: () => Nav.to(AppRoutes.addApartment),
@@ -47,35 +49,9 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           if (state is OwnerLoading || state is OwnerInitial) {
             return const LoadingWidget();
           } else if (state is OwnerError) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline_rounded,
-                        size: 60.sp, color: Colors.red),
-                    SizedBox(height: 16.h),
-                    Text(
-                      context.tr.failedToLoadDashboard,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    SizedBox(height: 24.h),
-                    ElevatedButton.icon(
-                      onPressed: () =>
-                          context.read<OwnerCubit>().getDashboardData(),
-                      icon: const Icon(Icons.refresh),
-                      label: Text(context.tr.retry),
-                    )
-                  ],
-                ),
-              ),
+            return CustomErrorWidget(
+              message: state.message,
+              onRetry: () => context.read<OwnerCubit>().getDashboardData(),
             );
           } else if (state is OwnerDataLoaded) {
             return RefreshIndicator(

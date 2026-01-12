@@ -1189,6 +1189,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deutsch'**
   String get germanLanguage;
+
+  /// No description provided for @messagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messagesTitle;
+
+  /// No description provided for @typeMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get typeMessageHint;
+
+  /// No description provided for @sayHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Say Hello! 👋'**
+  String get sayHello;
+
+  /// No description provided for @deleteChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Chat'**
+  String get deleteChatTitle;
+
+  /// No description provided for @deleteChatContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this conversation?'**
+  String get deleteChatContent;
+
+  /// No description provided for @deleteSelectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteSelectedTitle;
+
+  /// No description provided for @deleteSelectedContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} messages?'**
+  String deleteSelectedContent(Object count);
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(Object count);
+
+  /// No description provided for @makeAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Make Available'**
+  String get makeAvailable;
+
+  /// No description provided for @permanentlyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently Delete'**
+  String get permanentlyDelete;
+
+  /// No description provided for @deleteCondition.
+  ///
+  /// In en, this message translates to:
+  /// **'Only if no active bookings'**
+  String get deleteCondition;
+
+  /// No description provided for @dateChangeRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Change Request'**
+  String get dateChangeRequest;
+
+  /// No description provided for @oldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Old: '**
+  String get oldLabel;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New: '**
+  String get newLabel;
+
+  /// No description provided for @newTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'New Total: '**
+  String get newTotal;
+
+  /// No description provided for @addComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment'**
+  String get addComment;
+
+  /// No description provided for @noMessagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get noMessagesYet;
+
+  /// No description provided for @tenantDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant'**
+  String get tenantDefault;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
 }
 
 class _AppLocalizationsDelegate

@@ -162,12 +162,17 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
                   ),
                 ),
               ] else if (_currentBooking.status == BookingStatus.confirmed) ...[
-                PrimaryButton(
-                  label: context.tr.checkOut,
-                  onPressed: () {
-                    context
-                        .read<BookingCubit>()
-                        .checkoutBooking(_currentBooking.id);
+                BlocBuilder<BookingCubit, BookingState>(
+                  builder: (context, state) {
+                    return PrimaryButton(
+                      label: context.tr.checkOut,
+                      loading: state is BookingActionLoading,
+                      onPressed: () {
+                        context
+                            .read<BookingCubit>()
+                            .checkoutBooking(_currentBooking.id);
+                      },
+                    );
                   },
                 ),
               ] else if (_currentBooking.status == BookingStatus.completed) ...[
@@ -326,7 +331,6 @@ class _MyBookingManageScreenState extends State<MyBookingManageScreen> {
             Text(
                 "New Dates: ${newStart.toString().split(' ')[0]} - ${newEnd.toString().split(' ')[0]}"),
             SizedBox(height: 5.h),
-            // [FIX] Show new price here
             BlocBuilder<CurrencyCubit, String>(
               builder: (context, currency) {
                 return Text(

@@ -5,8 +5,7 @@ import 'package:residential_booking_app/features/home/presentation/screens/searc
 import 'package:residential_booking_app/110n/app_localizations.dart';
 
 class SearchFieldWidget extends StatelessWidget {
-  // Changed to StatelessWidget
-  final VoidCallback? onTap; // Added custom callback
+  final VoidCallback? onTap;
 
   const SearchFieldWidget({super.key, this.onTap});
 
@@ -27,9 +26,10 @@ class SearchFieldWidget extends StatelessWidget {
         height: 50.h,
         child: TextField(
           readOnly: true,
+          canRequestFocus: false,
+          enableInteractiveSelection: false,
           onTap: onTap ??
               () {
-                // Default behavior if no callback provided
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -64,6 +64,10 @@ class SearchFieldWidget extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.r),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
               borderSide: BorderSide.none,
             ),

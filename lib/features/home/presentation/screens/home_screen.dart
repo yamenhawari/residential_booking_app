@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:residential_booking_app/core/di/injection_container.dart';
 import 'package:residential_booking_app/core/navigation/app_routes.dart';
 import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/core/widgets/custom_error_widget.dart';
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_state.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
@@ -34,8 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    // Ensure we are viewing default apartments (clearing any previous filter state if any)
+    context.read<HomeCubit>().getApartments();
     context.read<NotificationCubit>().getNotifications();
-    // Load conversations to get unread count
     context.read<ChatCubit>().loadConversations();
   }
 
@@ -64,7 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          // Chat Button
           BlocBuilder<ChatCubit, ChatState>(
             builder: (context, state) {
               int chatUnreadCount = 0;
@@ -196,48 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           if (state is HomeError) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40.w),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.cloud_off_rounded,
-                        size: 80.sp, color: Colors.grey.shade300),
-                    SizedBox(height: 20.h),
-                    Text(
-                      AppLocalizations.of(context)!.somethingWentWrong,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    SizedBox(height: 30.h),
-                    SizedBox(
-                      height: 45.h,
-                      width: 150.w,
-                      child: ElevatedButton(
-                        onPressed: _onRefresh,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                        ),
-                        child: Text(
-                          AppLocalizations.of(context)!.retry,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+            return CustomErrorWidget(
+              message: state.message,
+              onRetry: _onRefresh,
             );
           }
 
