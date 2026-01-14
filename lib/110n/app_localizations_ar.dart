@@ -621,4 +621,94 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unknown => 'غير معروف';
+
+  @override
+  String get serverError => 'خطأ في الخادم';
+
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول';
+
+  @override
+  String get logoutFailed => 'فشل تسجيل الخروج';
+
+  @override
+  String get invalidCode => 'رمز التحقق غير صالح';
+
+  @override
+  String get noInternet => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get cacheError => 'خطأ في الذاكرة المؤقتة';
+
+  @override
+  String get bookingConflict => 'التواريخ المحددة محجوزة بالفعل';
+
+  @override
+  String get selfBooking => 'لا يمكنك حجز شقتك الخاصة';
+
+  @override
+  String get bookingFailed => 'فشل إنشاء الحجز';
+
+  @override
+  String get unexpectedError => 'خطأ غير متوقع';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح';
+
+  @override
+  String get registerSuccess => 'تم التسجيل بنجاح';
+
+  @override
+  String get valFieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get valInvalidName => 'أدخل اسماً صحيحاً';
+
+  @override
+  String get valPhoneRequired => 'رقم الهاتف مطلوب';
+
+  @override
+  String get valInvalidPhone => 'أدخل رقم هاتف صحيح';
+
+  @override
+  String get valPasswordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get valPasswordTooShort => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get valDateRequired => 'التاريخ مطلوب';
+
+  @override
+  String get valInvalidDateFormat => 'أدخل التاريخ بصيغة YYYY-MM-DD';
+
+  @override
+  String get govDamascus => 'دمشق';
+
+  @override
+  String get govAleppo => 'حلب';
+
+  @override
+  String get govHoms => 'حمص';
+
+  @override
+  String get govRifDimashq => 'ريف دمشق';
+
+  @override
+  String get govDaraa => 'درعا';
+
+  @override
+  String get govLatakia => 'اللاذقية';
+
+  @override
+  String get govTartus => 'طرطوس';
+
+  @override
+  String get govQuneitra => 'القنيطرة';
+
+  @override
+  String get govDeirEzZor => 'دير الزور';
+
+  @override
+  String get govHama => 'حماة';
 }

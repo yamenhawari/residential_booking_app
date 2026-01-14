@@ -44,7 +44,6 @@ class HomeRepositoryImpl implements HomeRepository {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } catch (e) {
-        // FIX: Catch unexpected errors here as well
         return Left(ServerFailure(e.toString()));
       }
     } else {

@@ -1303,6 +1303,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get unknown;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Error'**
+  String get serverError;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Failed'**
+  String get loginFailed;
+
+  /// No description provided for @logoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout Failed'**
+  String get logoutFailed;
+
+  /// No description provided for @invalidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Verification Code'**
+  String get invalidCode;
+
+  /// No description provided for @noInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Internet Connection'**
+  String get noInternet;
+
+  /// No description provided for @cacheError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache Error'**
+  String get cacheError;
+
+  /// No description provided for @bookingConflict.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected dates are already booked.'**
+  String get bookingConflict;
+
+  /// No description provided for @selfBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot book your own apartment.'**
+  String get selfBooking;
+
+  /// No description provided for @bookingFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create booking.'**
+  String get bookingFailed;
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected Error'**
+  String get unexpectedError;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Successful'**
+  String get loginSuccess;
+
+  /// No description provided for @registerSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration Successful'**
+  String get registerSuccess;
+
+  /// No description provided for @valFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get valFieldRequired;
+
+  /// No description provided for @valInvalidName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid name'**
+  String get valInvalidName;
+
+  /// No description provided for @valPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone is required'**
+  String get valPhoneRequired;
+
+  /// No description provided for @valInvalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number'**
+  String get valInvalidPhone;
+
+  /// No description provided for @valPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get valPasswordRequired;
+
+  /// No description provided for @valPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get valPasswordTooShort;
+
+  /// No description provided for @valDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is required'**
+  String get valDateRequired;
+
+  /// No description provided for @valInvalidDateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter date as YYYY-MM-DD'**
+  String get valInvalidDateFormat;
+
+  /// No description provided for @govDamascus.
+  ///
+  /// In en, this message translates to:
+  /// **'Damascus'**
+  String get govDamascus;
+
+  /// No description provided for @govAleppo.
+  ///
+  /// In en, this message translates to:
+  /// **'Aleppo'**
+  String get govAleppo;
+
+  /// No description provided for @govHoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Homs'**
+  String get govHoms;
+
+  /// No description provided for @govRifDimashq.
+  ///
+  /// In en, this message translates to:
+  /// **'Rif Dimashq'**
+  String get govRifDimashq;
+
+  /// No description provided for @govDaraa.
+  ///
+  /// In en, this message translates to:
+  /// **'Daraa'**
+  String get govDaraa;
+
+  /// No description provided for @govLatakia.
+  ///
+  /// In en, this message translates to:
+  /// **'Latakia'**
+  String get govLatakia;
+
+  /// No description provided for @govTartus.
+  ///
+  /// In en, this message translates to:
+  /// **'Tartus'**
+  String get govTartus;
+
+  /// No description provided for @govQuneitra.
+  ///
+  /// In en, this message translates to:
+  /// **'Quneitra'**
+  String get govQuneitra;
+
+  /// No description provided for @govDeirEzZor.
+  ///
+  /// In en, this message translates to:
+  /// **'Deir ez-Zor'**
+  String get govDeirEzZor;
+
+  /// No description provided for @govHama.
+  ///
+  /// In en, this message translates to:
+  /// **'Hama'**
+  String get govHama;
 }
 
 class _AppLocalizationsDelegate

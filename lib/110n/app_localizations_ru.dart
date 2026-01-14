@@ -620,4 +620,94 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get unknown => 'Неизвестно';
+
+  @override
+  String get serverError => 'Ошибка сервера';
+
+  @override
+  String get loginFailed => 'Ошибка входа';
+
+  @override
+  String get logoutFailed => 'Ошибка выхода';
+
+  @override
+  String get invalidCode => 'Неверный код подтверждения';
+
+  @override
+  String get noInternet => 'Нет подключения к интернету';
+
+  @override
+  String get cacheError => 'Ошибка кэша';
+
+  @override
+  String get bookingConflict => 'Выбранные даты уже заняты';
+
+  @override
+  String get selfBooking => 'Вы не можете забронировать свою квартиру';
+
+  @override
+  String get bookingFailed => 'Не удалось создать бронирование';
+
+  @override
+  String get unexpectedError => 'Непредвиденная ошибка';
+
+  @override
+  String get loginSuccess => 'Вход выполнен успешно';
+
+  @override
+  String get registerSuccess => 'Регистрация прошла успешно';
+
+  @override
+  String get valFieldRequired => 'Обязательное поле';
+
+  @override
+  String get valInvalidName => 'Введите корректное имя';
+
+  @override
+  String get valPhoneRequired => 'Телефон обязателен';
+
+  @override
+  String get valInvalidPhone => 'Введите корректный номер телефона';
+
+  @override
+  String get valPasswordRequired => 'Пароль обязателен';
+
+  @override
+  String get valPasswordTooShort => 'Пароль должен быть не менее 6 символов';
+
+  @override
+  String get valDateRequired => 'Дата обязательна';
+
+  @override
+  String get valInvalidDateFormat => 'Введите дату в формате ГГГГ-ММ-ДД';
+
+  @override
+  String get govDamascus => 'Дамаск';
+
+  @override
+  String get govAleppo => 'Алеппо';
+
+  @override
+  String get govHoms => 'Хомс';
+
+  @override
+  String get govRifDimashq => 'Риф Дамаск';
+
+  @override
+  String get govDaraa => 'Дараа';
+
+  @override
+  String get govLatakia => 'Латакия';
+
+  @override
+  String get govTartus => 'Тартус';
+
+  @override
+  String get govQuneitra => 'Эль-Кунейтра';
+
+  @override
+  String get govDeirEzZor => 'Дейр-эз-Зор';
+
+  @override
+  String get govHama => 'Хама';
 }

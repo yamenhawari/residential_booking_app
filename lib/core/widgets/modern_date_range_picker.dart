@@ -39,7 +39,8 @@ class _ModernDateRangePickerState extends State<ModernDateRangePicker> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      height: 600.h,
+      // Height increased to prevent overflow in months with 6 weeks
+      height: 700.h,
       decoration: BoxDecoration(
         color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),

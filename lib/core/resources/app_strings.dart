@@ -1,8 +1,11 @@
+import 'package:residential_booking_app/core/di/injection_container.dart';
+import 'package:residential_booking_app/core/navigation/navigation_service.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
+
 class AppStrings {
   static const api = _ApiStrings();
-  static const error = _ErrorStrings();
-  static const success = _SuccessStrings();
-  static const ui = _UiStrings();
+  static final error = _ErrorStrings();
+  static final success = _SuccessStrings();
 }
 
 class _ApiStrings {
@@ -13,25 +16,45 @@ class _ApiStrings {
 }
 
 class _ErrorStrings {
-  const _ErrorStrings();
-  final String server = "Server Error";
-  final String loginFailed = "Login Failed";
-  final String logoutFailed = "Logout Failed";
-  final String invalidCode = "Invalid Verification Code";
-  final String noInternet = "No Internet Connection";
-  final String cache = "Cache Error";
-  final String bookingConflict = "The selected dates are already booked.";
-  final String selfBooking = "You cannot book your own apartment.";
-  final String bookingFailed = "Failed to create booking.";
-  final String unexpected = "Unexpected Error";
+  AppLocalizations get _tr {
+    final context = sl<NavigationService>().navigatorKey.currentContext;
+    if (context == null) {
+      throw Exception("Navigation Context is null. Cannot translate string.");
+    }
+    return AppLocalizations.of(context)!;
+  }
+
+  String get server => _tr.serverError;
+  String get loginFailed => _tr.loginFailed;
+  String get logoutFailed => _tr.logoutFailed;
+  String get invalidCode => _tr.invalidCode;
+  String get noInternet => _tr.noInternet;
+  String get cache => _tr.cacheError;
+  String get bookingConflict => _tr.bookingConflict;
+  String get selfBooking => _tr.selfBooking;
+  String get bookingFailed => _tr.bookingFailed;
+  String get unexpected => _tr.unexpectedError;
+
+  // Validators
+  String get valFieldRequired => _tr.valFieldRequired;
+  String get valInvalidName => _tr.valInvalidName;
+  String get valPhoneRequired => _tr.valPhoneRequired;
+  String get valInvalidPhone => _tr.valInvalidPhone;
+  String get valPasswordRequired => _tr.valPasswordRequired;
+  String get valPasswordTooShort => _tr.valPasswordTooShort;
+  String get valDateRequired => _tr.valDateRequired;
+  String get valInvalidDateFormat => _tr.valInvalidDateFormat;
 }
 
 class _SuccessStrings {
-  const _SuccessStrings();
-  final String login = "Login Successful";
-  final String register = "Registration Successful";
-}
+  AppLocalizations get _tr {
+    final context = sl<NavigationService>().navigatorKey.currentContext;
+    if (context == null) {
+      throw Exception("Navigation Context is null. Cannot translate string.");
+    }
+    return AppLocalizations.of(context)!;
+  }
 
-class _UiStrings {
-  const _UiStrings();
+  String get login => _tr.loginSuccess;
+  String get register => _tr.registerSuccess;
 }

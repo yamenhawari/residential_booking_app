@@ -624,4 +624,96 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get unknown => 'Unbekannt';
+
+  @override
+  String get serverError => 'Serverfehler';
+
+  @override
+  String get loginFailed => 'Anmeldung fehlgeschlagen';
+
+  @override
+  String get logoutFailed => 'Abmeldung fehlgeschlagen';
+
+  @override
+  String get invalidCode => 'Ungültiger Bestätigungscode';
+
+  @override
+  String get noInternet => 'Keine Internetverbindung';
+
+  @override
+  String get cacheError => 'Cache-Fehler';
+
+  @override
+  String get bookingConflict => 'Die gewählten Daten sind bereits gebucht';
+
+  @override
+  String get selfBooking => 'Sie können Ihre eigene Wohnung nicht buchen';
+
+  @override
+  String get bookingFailed => 'Buchung fehlgeschlagen';
+
+  @override
+  String get unexpectedError => 'Unerwarteter Fehler';
+
+  @override
+  String get loginSuccess => 'Anmeldung erfolgreich';
+
+  @override
+  String get registerSuccess => 'Registrierung erfolgreich';
+
+  @override
+  String get valFieldRequired => 'Dieses Feld ist erforderlich';
+
+  @override
+  String get valInvalidName => 'Geben Sie einen gültigen Namen ein';
+
+  @override
+  String get valPhoneRequired => 'Telefonnummer ist erforderlich';
+
+  @override
+  String get valInvalidPhone => 'Geben Sie eine gültige Telefonnummer ein';
+
+  @override
+  String get valPasswordRequired => 'Passwort ist erforderlich';
+
+  @override
+  String get valPasswordTooShort =>
+      'Das Passwort muss mindestens 6 Zeichen lang sein';
+
+  @override
+  String get valDateRequired => 'Datum ist erforderlich';
+
+  @override
+  String get valInvalidDateFormat =>
+      'Geben Sie das Datum im Format JJJJ-MM-TT ein';
+
+  @override
+  String get govDamascus => 'Damaskus';
+
+  @override
+  String get govAleppo => 'Aleppo';
+
+  @override
+  String get govHoms => 'Homs';
+
+  @override
+  String get govRifDimashq => 'Rif Dimashq';
+
+  @override
+  String get govDaraa => 'Daraa';
+
+  @override
+  String get govLatakia => 'Latakia';
+
+  @override
+  String get govTartus => 'Tartus';
+
+  @override
+  String get govQuneitra => 'Quneitra';
+
+  @override
+  String get govDeirEzZor => 'Deir ez-Zor';
+
+  @override
+  String get govHama => 'Hama';
 }

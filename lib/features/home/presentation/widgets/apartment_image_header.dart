@@ -32,6 +32,8 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+
     return SizedBox(
       height: 350.h,
       width: double.infinity,
@@ -72,9 +74,12 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
                     );
             },
           ),
+
+          // Back Button
           Positioned(
             top: 50.h,
-            left: 20.w,
+            left: isRtl ? null : 20.w,
+            right: isRtl ? 20.w : null,
             child: CircleAvatar(
               backgroundColor: theme.cardColor.withOpacity(0.9),
               child: IconButton(
@@ -83,11 +88,15 @@ class _ApartmentImageHeaderState extends State<ApartmentImageHeader> {
               ),
             ),
           ),
+
+          // Favorite Button
           Positioned(
             top: 50.h,
-            right: 20.w,
+            right: isRtl ? null : 20.w,
+            left: isRtl ? 20.w : null,
             child: HeartWidget(apartment: widget.apartment),
           ),
+
           Positioned(
             bottom: 20.h,
             left: 0,

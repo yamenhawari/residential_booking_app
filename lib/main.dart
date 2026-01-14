@@ -10,7 +10,6 @@ import 'package:residential_booking_app/core/services/notification_service.dart'
 import 'package:residential_booking_app/features/chat/presentation/cubit/chat_cubit.dart';
 import 'package:residential_booking_app/features/home/presentation/Cubit/filter/filter_cubit.dart';
 import 'package:residential_booking_app/features/notifications/presentation/cubit/notification_cubit.dart';
-
 import 'core/di/injection_container.dart' as di;
 import 'core/navigation/app_router.dart';
 import 'core/navigation/app_routes.dart';

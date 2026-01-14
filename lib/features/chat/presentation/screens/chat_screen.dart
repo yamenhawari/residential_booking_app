@@ -106,7 +106,6 @@ class _ChatScreenState extends State<ChatScreen> {
     AppDialogs.showConfirm(
       context,
       title: context.tr.deleteSelectedTitle,
-      // FIX: Called as a function passing the count
       message: context.tr.deleteSelectedContent(_selectedMessageIds.length),
       onConfirm: () {
         for (var id in _selectedMessageIds) {
@@ -119,91 +118,94 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: ChatAppBar(
-        isSelectionMode: _isSelectionMode,
-        selectedCount: _selectedMessageIds.length,
-        otherUserName: widget.otherUserName,
-        otherUserImage: widget.otherUserImage,
-        conversationId: widget.conversationId,
-        onClearSelection: () => setState(() => _selectedMessageIds.clear()),
-        onDelete: _deleteSelectedMessages,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocBuilder<ChatCubit, ChatState>(
-              buildWhen: (previous, current) =>
-                  current is MessagesLoaded ||
-                  current is ChatLoading ||
-                  current is ChatInitial ||
-                  current is MessageSending ||
-                  current is ChatError,
-              builder: (context, state) {
-                if (state is ChatInitial ||
-                    (state is ChatLoading && state is! MessageSending)) {
-                  return const LoadingWidget(color: AppColors.primary);
-                }
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: ChatAppBar(
+          isSelectionMode: _isSelectionMode,
+          selectedCount: _selectedMessageIds.length,
+          otherUserName: widget.otherUserName,
+          otherUserImage: widget.otherUserImage,
+          conversationId: widget.conversationId,
+          onClearSelection: () => setState(() => _selectedMessageIds.clear()),
+          onDelete: _deleteSelectedMessages,
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ChatCubit, ChatState>(
+                buildWhen: (previous, current) =>
+                    current is MessagesLoaded ||
+                    current is ChatLoading ||
+                    current is ChatInitial ||
+                    current is MessageSending ||
+                    current is ChatError,
+                builder: (context, state) {
+                  if (state is ChatInitial ||
+                      (state is ChatLoading && state is! MessageSending)) {
+                    return const LoadingWidget(color: AppColors.primary);
+                  }
 
-                if (state is ChatError) {
-                  return CustomErrorWidget(
-                    message: state.message,
-                    onRetry: () => context
-                        .read<ChatCubit>()
-                        .getMessages(widget.conversationId),
-                  );
-                }
-
-                List<Message> messages = [];
-                if (state is MessagesLoaded) {
-                  messages = state.messages;
-                } else if (state is MessageSending) {
-                  messages = state.messages;
-                }
-
-                if (messages.isEmpty) {
-                  return _buildEmptyState();
-                }
-
-                final reversedMessages = messages.reversed.toList();
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  reverse: true,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                  itemCount: reversedMessages.length,
-                  itemBuilder: (context, index) {
-                    final message = reversedMessages[index];
-                    final bool isMe = message.senderId == _currentUserId;
-
-                    return MessageBubble(
-                      key: ValueKey(message.id),
-                      message: message,
-                      isMe: isMe,
-                      isSelected: _selectedMessageIds.contains(message.id),
-                      otherUserImage: widget.otherUserImage,
-                      onTap: () {
-                        if (_isSelectionMode) {
-                          _toggleSelection(message.id, message.senderId);
-                        }
-                      },
-                      onLongPress: () {
-                        HapticFeedback.mediumImpact();
-                        _toggleSelection(message.id, message.senderId);
-                      },
+                  if (state is ChatError) {
+                    return CustomErrorWidget(
+                      message: state.message,
+                      onRetry: () => context
+                          .read<ChatCubit>()
+                          .getMessages(widget.conversationId),
                     );
-                  },
-                );
-              },
+                  }
+
+                  List<Message> messages = [];
+                  if (state is MessagesLoaded) {
+                    messages = state.messages;
+                  } else if (state is MessageSending) {
+                    messages = state.messages;
+                  }
+
+                  if (messages.isEmpty) {
+                    return _buildEmptyState();
+                  }
+
+                  final reversedMessages = messages.reversed.toList();
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    reverse: true,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    itemCount: reversedMessages.length,
+                    itemBuilder: (context, index) {
+                      final message = reversedMessages[index];
+                      final bool isMe = message.senderId == _currentUserId;
+
+                      return MessageBubble(
+                        key: ValueKey(message.id),
+                        message: message,
+                        isMe: isMe,
+                        isSelected: _selectedMessageIds.contains(message.id),
+                        otherUserImage: widget.otherUserImage,
+                        onTap: () {
+                          if (_isSelectionMode) {
+                            _toggleSelection(message.id, message.senderId);
+                          }
+                        },
+                        onLongPress: () {
+                          HapticFeedback.mediumImpact();
+                          _toggleSelection(message.id, message.senderId);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          ChatInputArea(
-            controller: _textController,
-            onSend: _sendMessage,
-          ),
-        ],
+            ChatInputArea(
+              controller: _textController,
+              onSend: _sendMessage,
+            ),
+          ],
+        ),
       ),
     );
   }

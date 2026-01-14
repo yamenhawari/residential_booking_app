@@ -624,4 +624,94 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknown => 'Unknown';
+
+  @override
+  String get serverError => 'Server Error';
+
+  @override
+  String get loginFailed => 'Login Failed';
+
+  @override
+  String get logoutFailed => 'Logout Failed';
+
+  @override
+  String get invalidCode => 'Invalid Verification Code';
+
+  @override
+  String get noInternet => 'No Internet Connection';
+
+  @override
+  String get cacheError => 'Cache Error';
+
+  @override
+  String get bookingConflict => 'The selected dates are already booked.';
+
+  @override
+  String get selfBooking => 'You cannot book your own apartment.';
+
+  @override
+  String get bookingFailed => 'Failed to create booking.';
+
+  @override
+  String get unexpectedError => 'Unexpected Error';
+
+  @override
+  String get loginSuccess => 'Login Successful';
+
+  @override
+  String get registerSuccess => 'Registration Successful';
+
+  @override
+  String get valFieldRequired => 'This field is required';
+
+  @override
+  String get valInvalidName => 'Enter a valid name';
+
+  @override
+  String get valPhoneRequired => 'Phone is required';
+
+  @override
+  String get valInvalidPhone => 'Enter a valid phone number';
+
+  @override
+  String get valPasswordRequired => 'Password is required';
+
+  @override
+  String get valPasswordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get valDateRequired => 'Date is required';
+
+  @override
+  String get valInvalidDateFormat => 'Enter date as YYYY-MM-DD';
+
+  @override
+  String get govDamascus => 'Damascus';
+
+  @override
+  String get govAleppo => 'Aleppo';
+
+  @override
+  String get govHoms => 'Homs';
+
+  @override
+  String get govRifDimashq => 'Rif Dimashq';
+
+  @override
+  String get govDaraa => 'Daraa';
+
+  @override
+  String get govLatakia => 'Latakia';
+
+  @override
+  String get govTartus => 'Tartus';
+
+  @override
+  String get govQuneitra => 'Quneitra';
+
+  @override
+  String get govDeirEzZor => 'Deir ez-Zor';
+
+  @override
+  String get govHama => 'Hama';
 }

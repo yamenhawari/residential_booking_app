@@ -49,14 +49,12 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return response['data']['id'];
   }
 
-  // [NEW]
   @override
   Future<Unit> deleteConversation(int id) async {
     await apiConsumer.delete("${ApiConstants.baseUrl}/chat/conversations/$id");
     return unit;
   }
 
-  // [NEW]
   @override
   Future<Unit> deleteMessage(int id) async {
     await apiConsumer.delete("${ApiConstants.baseUrl}/chat/messages/$id");

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import 'package:residential_booking_app/110n/app_localizations.dart';
+
 enum Governorate {
   damascus,
   aleppo,
@@ -35,8 +38,35 @@ enum Governorate {
     }
   }
 
+  // Deprecated: Use getName(context) instead for localization
   String get displayName {
     return name[0].toUpperCase() + name.substring(1);
+  }
+
+  String getName(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    switch (this) {
+      case Governorate.damascus:
+        return tr.govDamascus;
+      case Governorate.aleppo:
+        return tr.govAleppo;
+      case Governorate.homs:
+        return tr.govHoms;
+      case Governorate.rifDimashq:
+        return tr.govRifDimashq;
+      case Governorate.daraa:
+        return tr.govDaraa;
+      case Governorate.latakia:
+        return tr.govLatakia;
+      case Governorate.tartus:
+        return tr.govTartus;
+      case Governorate.quneitra:
+        return tr.govQuneitra;
+      case Governorate.deirEzZor:
+        return tr.govDeirEzZor;
+      case Governorate.hama:
+        return tr.govHama;
+    }
   }
 
   static Governorate fromId(int id) {

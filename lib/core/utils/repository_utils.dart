@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:residential_booking_app/core/resources/app_strings.dart';
 import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../core/network/network_info.dart';
@@ -16,12 +17,12 @@ class RepositoryUtils {
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
       } on CacheException {
-        return const Left(CacheFailure("Cache Error"));
+        return Left(CacheFailure(AppStrings.error.cache));
       } catch (e) {
-        return Left(ServerFailure("Unexpected Error: $e"));
+        return Left(ServerFailure("${AppStrings.error.unexpected}: $e"));
       }
     } else {
-      return const Left(OfflineFailure("No Internet Connection"));
+      return Left(OfflineFailure(AppStrings.error.noInternet));
     }
   }
 }
